@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../components/constants/text_constants.dart';
 import '../model/current_user.dart';
+import '../model/customer.dart';
 import '../model/response_model/login_response_model.dart';
 import '../model/token.dart';
 import 'base_controller.dart';
@@ -51,14 +52,14 @@ class AccountController {
     CurrentUser currentUser = new CurrentUser();
     try {
       String url = '$baseUrl/accounts/me';
-      http.Response response =
+      Response response =
           await baseController.makeAuthenticatedRequest(url, {});
 
       print(response.statusCode);
       if (response.statusCode == 200) {
         // Handle successful response
         currentUser = CurrentUser?.fromJson(jsonDecode(response.body)["data"]);
-        print(currentUser.name);
+        //print(currentUser.name);
         // Do something with the user data...
       } else {
         // Handle error response
@@ -77,18 +78,17 @@ class AccountController {
       Map data = {"phone": phone, "password": password};
       String body = jsonEncode(data);
       Response response = await post(
-        Uri.parse('$baseUrl/accounts/login'),
+        Uri.parse('$baseUrl/accounts/login-staff'),
         body: body,
         headers: {
-          "content-type": "application/json",
+          'Content-Type': 'application/json;charset=UTF-8',
+          'Charset': 'utf-8',
           "accept": "application/json",
           "access-control-allow-origin": "*",
         },
       );
-      print('step 1: $body');
       var statusCode = jsonDecode(response.body)["statusCode"];
       var message = jsonDecode(response.body)["message"];
-      print('step 2: $statusCode + $message');
       if (statusCode == 10) {
         return new LoginResponseModel(
             statusCode: 10, message: message, data: null);
@@ -103,14 +103,12 @@ class AccountController {
       Token? token = jsonDecode(response.body)["data"] != null
           ? Token?.fromJson(jsonDecode(response.body)["data"])
           : null;
-      print('step 3: $token');
       if (token != null) {
         responseModel = new LoginResponseModel(
             statusCode: statusCode, message: message, data: token);
       }
       if (statusCode == 0 && token != null) {
         var accessToken = token.accessToken;
-        print('step 4: $accessToken');
         var refreshToken = token.refreshToken;
         if (accessToken != null && refreshToken != null) {
           await baseController.saveAccessToken(accessToken);
@@ -118,9 +116,69 @@ class AccountController {
         }
       }
     } catch (e) {
-      print('error: $e');
+      print('error login: $e');
     }
-    print('step 5: ${responseModel?.message}');
     return responseModel;
+  }
+
+  Future<Customer?> getCustomerInfomation(int accountId) async {
+    Customer? currentCustomer = Customer();
+    try {
+      String url = '$baseUrl/customers/account/$accountId';
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
+      if (response.statusCode == 200) {
+        // Handle successful response
+        currentCustomer = jsonDecode(response.body)["data"] != null
+            ? Customer?.fromJson(jsonDecode(response.body)["data"])
+            : null;
+        //Map<String, dynamic> accountDetails = json.decode(response.body);
+        return currentCustomer;
+        //print(currentUser.name);
+        // Do something with the user data...
+      } else {
+        // Handle error response
+        throw Exception('Error fetching user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getCustomerInfomationByAccountId-$e');
+      throw e;
+    }
+  }
+
+  Future<String> changePassword(String oldPassword, String newPassword) async {
+    int? userId =
+        await baseController.getInttoSharedPreference("CURRENT_USER_ID");
+    String url = '$baseUrl/accounts/$userId/change-password';
+    Map<String, dynamic> queryParams = {};
+    Map<String, dynamic> requestBody = {
+      'oldPass': oldPassword,
+      'newPass': newPassword
+    };
+    http.Response response = await baseController.makeAuthenticatedPutRequest(
+        url, queryParams, requestBody);
+    if (response.statusCode == 200) {
+      return "change password success";
+    } else {
+      // Handle error changing password
+      throw Exception('Error changing password: ${response.statusCode}');
+    }
+  }
+
+  Future<String> changeProfilePicture(
+      String SavedFileName, int accountId) async {
+    String url = '$baseUrl/accounts/$accountId/profile-picture';
+    Map<String, dynamic> queryParams = {'SavedFileName': SavedFileName};
+    Map<String, dynamic> requestBody = {};
+    print(SavedFileName);
+    print(accountId);
+    http.Response response = await baseController.makeAuthenticatedPutRequest(
+        url, queryParams, requestBody);
+    if (response.statusCode == 200) {
+      return "update profile picture success";
+    } else {
+      // Handle error changing password
+      throw Exception('Error changing password: ${response.statusCode}');
+    }
   }
 }

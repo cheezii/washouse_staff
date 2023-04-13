@@ -1,3 +1,4 @@
+
 class CurrentUser {
   String? tokenId;
   int? accountId;

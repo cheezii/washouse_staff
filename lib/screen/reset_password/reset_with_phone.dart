@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/size.dart';
 import '../started/login.dart';
@@ -16,7 +17,7 @@ class ResetWithPhone extends StatefulWidget {
 TextEditingController passwordController = TextEditingController();
 
 class _ResetWithPhoneState extends State<ResetWithPhone> {
-  final _formPwdKey = GlobalKey<FormState>();
+  final _formPhoneNumKey = GlobalKey<FormState>();
   final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
 
   @override
@@ -52,7 +53,7 @@ class _ResetWithPhoneState extends State<ResetWithPhone> {
                   ),
                   const SizedBox(height: kDefaultPadding),
                   Form(
-                    key: _formPwdKey,
+                    key: _formPhoneNumKey,
                     child: TextFormField(
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -91,12 +92,12 @@ class _ResetWithPhoneState extends State<ResetWithPhone> {
                     height: 45,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (_formPwdKey.currentState!.validate()) {
-                          _formPwdKey.currentState!.save();
+                        if (_formPhoneNumKey.currentState!.validate()) {
+                          _formPhoneNumKey.currentState!.save();
                           Navigator.push(
                               context,
                               PageTransition(
-                                  child: const OTPScreen(),
+                                  child: const OTPScreen(isSignUp: false),
                                   type: PageTransitionType.fade));
                         }
                       },

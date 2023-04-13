@@ -9,7 +9,8 @@ import '../started/login.dart';
 import 'change_password.dart';
 
 class OTPScreen extends StatefulWidget {
-  const OTPScreen({super.key});
+  final bool isSignUp;
+  const OTPScreen({super.key, required this.isSignUp});
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -75,10 +76,12 @@ class _OTPScreenState extends State<OTPScreen> {
                         TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Nhập mã OTP được gửi đến email/số điện thoại của bạn.',
-                    style:
-                        TextStyle(fontSize: 18.0, fontWeight: FontWeight.w400),
+                  Text(
+                    widget.isSignUp
+                        ? 'Nhập mã OTP được gửi đến số điện thoại của bạn.'
+                        : 'Nhập mã OTP được gửi đến email/số điện thoại của bạn.',
+                    style: const TextStyle(
+                        fontSize: 18.0, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 20),
@@ -92,11 +95,18 @@ class _OTPScreenState extends State<OTPScreen> {
                     fieldStyle: FieldStyle.underline,
                     onCompleted: (pin) {
                       print("Completed: " + pin);
-                      Navigator.push(
-                          context,
-                          PageTransition(
-                              child: const ChangePwdScreen(),
-                              type: PageTransitionType.fade));
+                      widget.isSignUp
+                          ? Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: const Login(),
+                                  type: PageTransitionType
+                                      .fade)) //register thành công
+                          : Navigator.push(
+                              context,
+                              PageTransition(
+                                  child: const ChangePwdScreen(),
+                                  type: PageTransitionType.fade));
                     },
                   ),
                   const SizedBox(height: 40),

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-import '../started/login.dart';
-import 'reset_with_phone.dart';
 
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/size.dart';
-import 'send_otp.dart';
+import '../started/login.dart';
+import 'reset_with_phone.dart';
 
 class ResetWithEmail extends StatefulWidget {
   const ResetWithEmail({super.key});
@@ -79,6 +78,7 @@ class _ResetWithEmailState extends State<ResetWithEmail> {
                         ),
                         labelText: 'Email',
                       ),
+                      keyboardType: TextInputType.number,
                       cursorColor: textColor.withOpacity(.8),
                       controller: emailController,
                     ),
@@ -94,7 +94,7 @@ class _ResetWithEmailState extends State<ResetWithEmail> {
                           Navigator.push(
                               context,
                               PageTransition(
-                                  child: const OTPScreen(),
+                                  child: const ResetWithPhone(),
                                   type: PageTransitionType.fade));
                         }
                       },

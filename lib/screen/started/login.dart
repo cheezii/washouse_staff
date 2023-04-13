@@ -2,14 +2,18 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:washouse_staff/resource/controller/center_controller.dart';
+import 'package:washouse_staff/resource/model/center.dart';
+import 'package:washouse_staff/screen/home/home_screen.dart';
 import 'package:washouse_staff/screen/started/signup.dart';
+
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/size.dart';
 import '../../resource/controller/account_controller.dart';
 import '../../resource/controller/base_controller.dart';
 import '../../resource/model/current_user.dart';
+import '../../resource/model/customer.dart';
 import '../../resource/model/response_model/login_response_model.dart';
-import '../home/base_screen.dart';
 import '../reset_password/widgets/forget_password_modal_bottom_sheet.dart';
 
 class Login extends StatefulWidget {
@@ -22,12 +26,13 @@ class Login extends StatefulWidget {
 TextEditingController phoneController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 AccountController accountController = AccountController();
+CenterController centerController = CenterController();
 BaseController baseController = BaseController();
 
 class _LoginState extends State<Login> {
+  final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
   final _formPhoneNumberKey = GlobalKey<FormState>();
   final _formPwdKey = GlobalKey<FormState>();
-  final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
   bool _isHidden = true;
   String _errorMessage = '';
   String? _responseMessage;
@@ -132,76 +137,98 @@ class _LoginState extends State<Login> {
                           _formPwdKey.currentState!.validate()) {
                         _formPwdKey.currentState!.save();
                         _formPhoneNumberKey.currentState!.save();
+                        //call api change pwd
 
-                        // LoginResponseModel? responseModel =
-                        //     await accountController.login(
-                        //         phoneController.text, passwordController.text);
-                        // if (responseModel != null) {
-                        //   if (responseModel.statusCode == 17) {
-                        //     _responseMessage =
-                        //         "Admin không thể đăng nhập trên mobile";
-                        //   } else if (responseModel.statusCode == 10) {
-                        //     _responseMessage =
-                        //         "Sai số điện thoại hoặc mật khẩu";
-                        //   } else {
-                        //     CurrentUser currentUserModel =
-                        //         await accountController.getCurrentUser();
-                        //     if (currentUserModel != null) {
-                        //       baseController.saveStringtoSharedPreference(
-                        //           "CURRENT_USER_NAME", currentUserModel.name);
-                        //       baseController.saveStringtoSharedPreference(
-                        //           "CURRENT_USER_EMAIL", currentUserModel.email);
-                        //       baseController.saveStringtoSharedPreference(
-                        //           "CURRENT_USER_AVATAR",
-                        //           currentUserModel.avatar);
-                        //       baseController.saveStringtoSharedPreference(
-                        //           "CURRENT_USER_ID",
-                        //           currentUserModel.accountId);
-                        //     }
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                child: const BaseScreen(),
-                                type: PageTransitionType.fade));
-                        // }
-                        // if (_responseMessage != null) {
-                        //   // ignore: use_build_context_synchronously
-                        //   showDialog(
-                        //     context: context,
-                        //     builder: (context) {
-                        //       return AlertDialog(
-                        //         title: Align(
-                        //             alignment: Alignment.center,
-                        //             child: Text('Lỗi!!')),
-                        //         content: Text('$_responseMessage'),
-                        //         shape: RoundedRectangleBorder(
-                        //           borderRadius: BorderRadius.circular(15),
-                        //         ),
-                        //         actions: <Widget>[
-                        //           ElevatedButton(
-                        //             child: Text(
-                        //               'Đã hiểu',
-                        //               style: TextStyle(
-                        //                   fontWeight: FontWeight.w700,
-                        //                   color: kPrimaryColor),
-                        //             ),
-                        //             style: ElevatedButton.styleFrom(
-                        //                 elevation: 0,
-                        //                 shape: RoundedRectangleBorder(
-                        //                     borderRadius:
-                        //                         BorderRadius.circular(30)),
-                        //                 backgroundColor: kBackgroundColor),
-                        //             onPressed: () {
-                        //               // Perform some action
-                        //               Navigator.of(context).pop();
-                        //             },
-                        //           )
-                        //         ],
-                        //       );
-                        //     },
-                        //   );
-                        // }
-                        //}
+                        LoginResponseModel? responseModel =
+                            await accountController.login(
+                                phoneController.text, passwordController.text);
+                        if (responseModel != null) {
+                          if (responseModel.statusCode == 17) {
+                            _responseMessage =
+                                "Admin không thể đăng nhập trên mobile";
+                          } else if (responseModel.statusCode == 10) {
+                            _responseMessage =
+                                "Sai số điện thoại hoặc mật khẩu";
+                          } else {
+                            var currentUserModel = await accountController
+                                .getCurrentUser() as CurrentUser;
+                            if (currentUserModel != null) {
+                              baseController.saveStringtoSharedPreference(
+                                  "CURRENT_USER_NAME", currentUserModel.name);
+                              baseController.saveStringtoSharedPreference(
+                                  "CURRENT_USER_EMAIL", currentUserModel.email);
+                              baseController.saveStringtoSharedPreference(
+                                  "CURRENT_USER_AVATAR",
+                                  currentUserModel.avatar);
+                              baseController.saveInttoSharedPreference(
+                                  "CURRENT_USER_ID",
+                                  currentUserModel.accountId!);
+                              baseController.saveStringtoSharedPreference(
+                                  "CURRENT_USER_PASSWORD",
+                                  passwordController.text);
+                            }
+                            Customer? currentCustomer =
+                                await accountController.getCustomerInfomation(
+                                    currentUserModel.accountId!);
+                            if (currentCustomer != null) {
+                              baseController.saveInttoSharedPreference(
+                                  "CURRENT_CUSTOMER_ID",
+                                  currentUserModel.accountId!);
+                            }
+                            LaundryCenter? currentLaundry =
+                                await centerController.getCenterInfomation();
+                            if (currentLaundry != null) {
+                              baseController.saveInttoSharedPreference(
+                                  "CENTER_ID", currentLaundry.id!);
+                              Navigator.pushNamed(context, '/home',
+                                  arguments: currentLaundry.id);
+                            } else {
+                              _responseMessage =
+                                  'Bạn chưa đăng kí làm cho trung tâm nào';
+                            }
+                            // ignore: use_build_context_synchronously
+                          }
+                        }
+                      }
+                      if (_responseMessage == null) {
+                        _responseMessage = "";
+                      }
+                      if (_responseMessage != null && _responseMessage != "") {
+                        // ignore: use_build_context_synchronously
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Align(
+                                  alignment: Alignment.center,
+                                  child: Text('Lỗi!!')),
+                              content: Text('$_responseMessage'),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  child: Text(
+                                    'Đã hiểu',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        color: kPrimaryColor),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(30)),
+                                      backgroundColor: kBackgroundColor),
+                                  onPressed: () {
+                                    // Perform some action
+                                    Navigator.of(context).pop();
+                                  },
+                                )
+                              ],
+                            );
+                          },
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -254,13 +281,12 @@ class _LoginState extends State<Login> {
                     vertical: kDefaultPadding / 2,
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       SizedBox(
                         height: kDefaultPadding * 1.5,
                         child: Image.asset('assets/images/google.png'),
                       ),
-                      const SizedBox(width: 10),
                       const Text(
                         'Đăng nhập bằng Google',
                         style: TextStyle(

@@ -31,6 +31,12 @@ dependencies:
   flutter_cupertino_localizations: ^1.0.1
   dotted_line: ^3.1.0
   intl: ^0.17.0-nullsafety.2
+  rive: ^0.10.3
+  flutter_speed_dial: ^6.2.0
+  qr_code_scanner: ^1.0.1
+  flutter_switch: ^0.3.2
+  flutter_form_builder: ^7.8.0
+  timelines: ^0.1.0
 
 dev_dependencies:
   flutter_test:
@@ -49,9 +55,13 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/icon/
     - assets/images/
+    - assets/images/avatar/
+    - assets/images/empty/
     - assets/images/logo/
     - assets/images/order/
     - assets/images/payments/
     - assets/images/resetpwd/
+    - assets/images/shipping/
     - assets/images/started/
