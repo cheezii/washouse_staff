@@ -473,9 +473,10 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           receiveDistrict = newValue!;
-                                          getReceiveWardsList(newValue);
                                           _dropDownReceiveWardKey.currentState!.reset();
                                           _dropDownReceiveWardKey.currentState!.setValue(null);
+                                          getReceiveWardsList(newValue);
+                                          
                                         });
                                       },
                                     ),
