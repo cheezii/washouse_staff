@@ -139,6 +139,13 @@ class _LoginState extends State<Login> {
                         _formPhoneNumberKey.currentState!.save();
                         //call api change pwd
 
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            });
                         LoginResponseModel? responseModel =
                             await accountController.login(
                                 phoneController.text, passwordController.text);
@@ -180,9 +187,11 @@ class _LoginState extends State<Login> {
                             if (currentLaundry != null) {
                               baseController.saveInttoSharedPreference(
                                   "CENTER_ID", currentLaundry.id!);
+                                  Navigator.of(context).pop();
                               Navigator.pushNamed(context, '/home',
                                   arguments: currentLaundry.id);
                             } else {
+                              Navigator.of(context).pop();
                               _responseMessage =
                                   'Bạn chưa đăng kí làm cho trung tâm nào';
                             }

@@ -34,20 +34,17 @@ class DetailService extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              //itemCount: demoCarts.length,
-              itemCount: 2,
-              itemBuilder: (context, index) {
-                return DetailItemCard(
-                  status: status,
-                  //cart: cartItems[index],
-                );
-              },
-            ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            //itemCount: demoCarts.length,
+            itemCount: 2,
+            itemBuilder: (context, index) {
+              return DetailItemCard(
+                status: status,
+                //cart: cartItems[index],
+              );
+            },
           ),
         ],
       ),

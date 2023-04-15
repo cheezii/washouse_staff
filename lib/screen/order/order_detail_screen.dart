@@ -508,7 +508,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                              borderRadius: BorderRadius.circular(20)),
                           backgroundColor: cancelledColor),
                       onPressed: () {},
                       child: const Text(
@@ -523,7 +523,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                              borderRadius: BorderRadius.circular(20)),
                           backgroundColor: kPrimaryColor),
                       onPressed: () {
                         setState(() {
@@ -564,7 +564,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15)),
+                              borderRadius: BorderRadius.circular(20)),
                           backgroundColor: kPrimaryColor),
                       onPressed: () {
                         setState(() {

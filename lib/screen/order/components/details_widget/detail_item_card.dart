@@ -36,7 +36,7 @@ class DetailItemCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
-                    width: 200,
+                    width: 150,
                     child: Text(
                       //cart.service.name!,
                       'tên dịch vụ',
@@ -73,9 +73,160 @@ class DetailItemCard extends StatelessWidget {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15)),
+                                borderRadius: BorderRadius.circular(20)),
                             backgroundColor: kPrimaryColor),
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    title: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text('Cập nhật đơn hàng'),
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextFormField(
+                                          style: const TextStyle(
+                                            color: textColor,
+                                          ),
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                'Số lượng/Khối lượng mới',
+                                            labelStyle: const TextStyle(
+                                                color: textBoldColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                            hintStyle: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey.shade500,
+                                            ),
+                                            contentPadding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 5),
+                                            hintText:
+                                                'Nhập Số lượng/Khối lượng mới',
+                                            floatingLabelBehavior:
+                                                FloatingLabelBehavior.always,
+                                          ),
+                                          cursorColor:
+                                              textColor.withOpacity(.8),
+                                          onSaved: (newValue) {},
+                                        ),
+                                        const SizedBox(height: 20),
+                                        SizedBox(
+                                            width: MediaQuery.of(context).size.width,
+                                            child: ElevatedButton(
+                                              onPressed: () {},
+                                              style: ElevatedButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                              .symmetric(
+                                                          horizontal: 19,
+                                                          vertical: 10),
+                                                  foregroundColor: kPrimaryColor
+                                                      .withOpacity(.7),
+                                                  elevation: 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    side: BorderSide(
+                                                        color: kPrimaryColor,
+                                                        width: 1),
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.white),
+                                              child: const Text(
+                                                'Cập nhật trạng thái',
+                                                style: TextStyle(
+                                                  color: kPrimaryColor,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          SizedBox(
+                                            width: 120,
+                                            child: ElevatedButton(
+                                              onPressed: () {},
+                                              style: ElevatedButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                              .symmetric(
+                                                          horizontal: 19,
+                                                          vertical: 10),
+                                                  elevation: 0,
+                                                  foregroundColor: cancelledColor.withOpacity(.5),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    side: BorderSide(
+                                                        color: cancelledColor,
+                                                        width: 1),
+                                                  ),
+                                                  backgroundColor:
+                                                      cancelledColor),
+                                              child: const Text(
+                                                'Hủy',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 120,
+                                            child: ElevatedButton(
+                                              onPressed: () {},
+                                              style: ElevatedButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsetsDirectional
+                                                              .symmetric(
+                                                          horizontal: 19,
+                                                          vertical: 10),
+                                                  foregroundColor: kPrimaryColor
+                                                      .withOpacity(.7),
+                                                  elevation: 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                    side: BorderSide(
+                                                        color: kPrimaryColor,
+                                                        width: 1),
+                                                  ),
+                                                  backgroundColor:
+                                                      kPrimaryColor),
+                                              child: const Text(
+                                                'Lưu',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ));
+                        },
                         child: const Text(
                           'Cập nhật',
                           style: TextStyle(fontSize: 14),
