@@ -4,10 +4,11 @@ class OrderDetailItem {
   double? unitPrice;
   double? measurement;
   double? price;
+  double? weight;
   String? customerNote;
   String? staffNote;
 
-  OrderDetailItem({this.serviceId, this.measurement, this.price, this.customerNote, this.staffNote, this.serviceName, this.unitPrice});
+  OrderDetailItem({this.serviceId, this.measurement, this.price, this.weight, this.customerNote, this.staffNote, this.serviceName, this.unitPrice});
 
   OrderDetailItem.fromJson(Map<String, dynamic> json) {
     serviceId = json['serviceId'];
@@ -15,6 +16,7 @@ class OrderDetailItem {
     unitPrice = json['unitPrice'];
     measurement = json['measurement'];
     price = json['price'];
+    weight = json['weight'];
     customerNote = json['customerNote'];
     staffNote = json['staffNote'];
   }
@@ -26,6 +28,7 @@ class OrderDetailItem {
     data['unitPrice'] = this.unitPrice;
     data['measurement'] = this.measurement;
     data['price'] = this.price;
+    data['weight'] = this.weight;
     data['customerNote'] = this.customerNote;
     data['staffNote'] = this.staffNote;
     return data;

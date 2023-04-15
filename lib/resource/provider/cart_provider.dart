@@ -33,7 +33,7 @@ class CartProvider extends ChangeNotifier {
 
   Future<void> loadCartItemsFromPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartItemsJson = prefs.getString('cartItems');
+    String? cartItemsJson = prefs.getString('cartItem');
     //String? centerName = prefs.getString('centerName');
     if (cartItemsJson != null) {
       dynamic cartItemsDynamic = jsonDecode(cartItemsJson);
@@ -91,13 +91,13 @@ class CartProvider extends ChangeNotifier {
   //   saveCartItemsToPrefs();
   // }
 
-  // Future<void> saveCartItemsToPrefs() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   List<dynamic> cartItemsDynamic = _cartItems.map((item) => item.toJson()).toList();
-  //   String cartItemsJson = jsonEncode(cartItemsDynamic);
-  //   print(cartItemsJson);
-  //   if (!cartItemsJson.isEmpty) await prefs.setString('cartItems', cartItemsJson);
-  // }
+  Future<void> saveCartItemsToPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    dynamic cartItemDynamic = _cartItem.toJson();
+    String cartItemJson = jsonEncode(cartItemDynamic);
+    print(cartItemJson);
+    if (cartItemJson.isNotEmpty) await prefs.setString('cartItem', cartItemJson);
+  }
 
   // void _setPrefItems() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -31,4 +31,16 @@ class CartUtils {
     // }
     return totalCurrentPrice;
   }
+
+  Future<CartItem> loadCartItemsFromPrefs() async {
+    CartItem _cartItem = new CartItem();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? cartItemsJson = prefs.getString('cartItem');
+    //String? centerName = prefs.getString('centerName');
+    if (cartItemsJson != null) {
+      dynamic cartItemsDynamic = jsonDecode(cartItemsJson);
+      _cartItem = cartItemsDynamic.map((item) => CartItem.fromJson(item));
+    }
+    return _cartItem;
+  }
 }
