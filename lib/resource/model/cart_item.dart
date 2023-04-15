@@ -1,16 +1,16 @@
 class CartItem {
   int? centerId;
-  OrderRequest? orderRequest;
+  OrderRequest? order;
   List<OrderDetailRequest>? orderDetails;
   List<DeliveryRequest>? deliveries;
   String? promoCode;
   int? paymentMethod;
 
-  CartItem({this.centerId, this.orderRequest, this.orderDetails, this.deliveries, this.promoCode, this.paymentMethod});
+  CartItem({this.centerId, this.order, this.orderDetails, this.deliveries, this.promoCode, this.paymentMethod});
 
   CartItem.fromJson(Map<String, dynamic> json) {
     centerId = json['centerId'];
-    orderRequest = json['orderRequest'] != null ? new OrderRequest.fromJson(json['orderRequest']) : null;
+    order = json['order'] != null ? new OrderRequest.fromJson(json['order']) : null;
     if (json['orderDetails'] != null) {
       orderDetails = <OrderDetailRequest>[];
       json['orderDetails'].forEach((v) {
@@ -30,8 +30,8 @@ class CartItem {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['centerId'] = this.centerId;
-    if (this.orderRequest != null) {
-      data['orderRequest'] = this.orderRequest!.toJson();
+    if (this.order != null) {
+      data['order'] = this.order!.toJson();
     }
     if (this.orderDetails != null) {
       data['orderDetails'] = this.orderDetails!.map((v) => v.toJson()).toList();

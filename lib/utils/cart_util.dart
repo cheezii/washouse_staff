@@ -3,44 +3,36 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:washouse_staff/resource/model/cart_item.dart';
 
+import '../resource/model/cart_item_view.dart';
+
 class CartUtils {
-  static double getTotalPriceOfCartItem(CartItem item) {
+  static double getTotalPriceOfCartItem(OrderDetailItem item) {
     double currentPrice = 0;
     double totalCurrentPrice = 0;
-    // if (item.priceType) {
-    //   bool check = false;
-    //   for (var itemPrice in item.prices!) {
-    //     if (item.measurement <= itemPrice.maxValue! && !check) {
-    //       currentPrice = itemPrice.price!.toDouble();
-    //     }
-    //     if (currentPrice > 0) {
-    //       check = true;
-    //     }
-    //   }
-    //   print('currentPrice-${currentPrice}');
-    //   print('item.minPrice-${item.minPrice}');
-    //   if (item.minPrice != null && currentPrice * item.measurement < item.minPrice!) {
-    //     totalCurrentPrice = item.minPrice!.toDouble();
-    //   } else {
-    //     totalCurrentPrice = currentPrice * item.measurement;
-    //   }
-    //   print('totalCurrentPrice-${totalCurrentPrice}');
-    // } else {
-    //   totalCurrentPrice = item.unitPrice! * item.measurement.toDouble();
-    //   currentPrice = item.price!.toDouble();
-    // }
-    return totalCurrentPrice;
-  }
-
-  Future<CartItem> loadCartItemsFromPrefs() async {
-    CartItem _cartItem = new CartItem();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cartItemsJson = prefs.getString('cartItem');
-    //String? centerName = prefs.getString('centerName');
-    if (cartItemsJson != null) {
-      dynamic cartItemsDynamic = jsonDecode(cartItemsJson);
-      _cartItem = cartItemsDynamic.map((item) => CartItem.fromJson(item));
+    if (item.priceType) {
+      bool check = false;
+      for (var itemPrice in item.prices!) {
+        if (item.measurement <= itemPrice.maxValue! && !check) {
+          currentPrice = itemPrice.price!.toDouble();
+        }
+        if (currentPrice > 0) {
+          check = true;
+        }
+      }
+      print('currentPrice-${currentPrice}');
+      print('item.minPrice-${item.minPrice}');
+      if (item.minPrice != null && currentPrice * item.measurement < item.minPrice!) {
+        totalCurrentPrice = item.minPrice!.toDouble();
+      } else {
+        totalCurrentPrice = currentPrice * item.measurement;
+      }
+      print('totalCurrentPrice-${totalCurrentPrice}');
+    } else {
+      totalCurrentPrice = item.unitPrice! * item.measurement.toDouble();
+      currentPrice = item.price!.toDouble();
     }
-    return _cartItem;
+
+    print(totalCurrentPrice);
+    return totalCurrentPrice;
   }
 }

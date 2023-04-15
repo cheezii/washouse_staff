@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 import 'package:washouse_staff/resource/controller/order_controller.dart';
+import 'package:washouse_staff/resource/controller/base_controller.dart';
 import 'package:washouse_staff/resource/model/cart_item.dart';
+import 'package:washouse_staff/resource/provider/cart_provider.dart';
 import 'package:washouse_staff/screen/order/create_order_screen.dart';
 import 'package:washouse_staff/utils/cart_util.dart';
 
@@ -40,6 +43,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
   List receiveWardList = [];
 
   OrderController orderController = OrderController();
+  BaseController baseController = BaseController();
   Future getSendDistrictList() async {
     Response response = await get(Uri.parse('$baseUrl/districts'));
     if (response.statusCode == 200) {
@@ -100,6 +104,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
   @override
   Widget build(BuildContext context) {
     //0 = không chọn, 1 = một chiều đi, 2 = một chiều về, 3 = 2 chiều
+    var provider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -599,26 +604,39 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                 print('DeliverAddress - $DeliverAddress');
                 print('DeliverWardId - $DeliverWardId');
                 print('widget.isSend - ${shippingMethod}');
-                CartItem cartItem = await CartUtils().loadCartItemsFromPrefs();
+                //CartItem cartItem = await CartProvider().loadCartItemsFromPrefs();
                 DeliveryRequest dropoff = DeliveryRequest();
                 DeliveryRequest deliver = DeliveryRequest();
                 if (checkValidateFormSend && (shippingMethod == 1 || shippingMethod == 3)) {
                   DropoffAddress = sendAdressController.value.text;
                   DropoffWardId = int.parse(sendWard!);
                   dropoff = DeliveryRequest(deliveryType: false, wardId: DropoffWardId, addressString: DropoffAddress);
+                  dynamic dropoffDynamic = dropoff.toJson();
+                  String dropoffJson = jsonEncode(dropoffDynamic);
+                  baseController.saveStringtoSharedPreference("dropoff", dropoffJson);
                 }
                 if (checkValidateFormReceive && (shippingMethod == 2 || shippingMethod == 3)) {
                   DeliverAddress = receiveAdressController.value.text;
                   DeliverWardId = int.parse(receiveWard!);
-                  deliver = DeliveryRequest(deliveryType: false, wardId: DeliverWardId, addressString: DeliverAddress);
+                  deliver = DeliveryRequest(deliveryType: true, wardId: DeliverWardId, addressString: DeliverAddress);
+                  dynamic deliverDynamic = deliver.toJson();
+                  String deliverJson = jsonEncode(deliverDynamic);
+                  baseController.saveStringtoSharedPreference("deliver", deliverJson);
                 }
+                //double totalWeight = ;
+
                 double totalWeight = 0;
+                for (var element in provider.list) {
+                  if (element.weight != null) {
+                    totalWeight = totalWeight + element.measurement * element.weight!;
+                  }
+                }
                 var totalDeliveryPrice = await orderController.calculateDeliveryPrice(
                     totalWeight, DropoffAddress, DropoffWardId, DeliverAddress, DeliverWardId, shippingMethod!);
-                //baseController.saveDoubletoSharedPreference("deliveryPrice", totalDeliveryPrice);
-                //provider.updateDeliveryPrice();
+                baseController.saveDoubletoSharedPreference("deliveryPrice", totalDeliveryPrice);
+                provider.updateDeliveryPrice();
                 //baseController.printAllSharedPreferences();
-                //Navigator.push(context, MaterialPageRoute(builder: (context) => CheckoutScreen(cart: cartItems[0])));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateOrderScreen()));
               }
             },
             child: const Text(

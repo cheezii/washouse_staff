@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../components/constants/color_constants.dart';
 import '../../../../resource/model/cart_item_view.dart';
 import '../../../../resource/model/center.dart';
 import '../../../../resource/model/service.dart';
+import '../../../../resource/provider/cart_provider.dart';
 
 class AddToCartDialog extends StatefulWidget {
   final List<CenterServices> cateList;
@@ -38,9 +40,9 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<CartProvider>(context);
     return AlertDialog(
-      title:
-          const Align(alignment: Alignment.center, child: Text('Thêm dịch vụ')),
+      title: const Align(alignment: Alignment.center, child: Text('Thêm dịch vụ')),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -85,8 +87,7 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
                 int index = categoryList.indexOf(value as CenterServices);
                 setState(() {
                   cateChoosen = value;
-                  serviceList =
-                      categoryList[index].services as List<ServiceCenter>;
+                  serviceList = categoryList[index].services as List<ServiceCenter>;
                   _dropDownServiceKey.currentState!.reset();
                   _dropDownServiceKey.currentState!.setValue(null);
                 });
@@ -178,17 +179,13 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
                           check = true;
                         }
                       }
-                      if (serviceChoosen!.minPrice != null &&
-                          currentPrice * measurementInput <
-                              serviceChoosen!.minPrice!) {
-                        totalCurrentPrice =
-                            serviceChoosen!.minPrice!.toDouble();
+                      if (serviceChoosen!.minPrice != null && currentPrice * measurementInput < serviceChoosen!.minPrice!) {
+                        totalCurrentPrice = serviceChoosen!.minPrice!.toDouble();
                       } else {
                         totalCurrentPrice = currentPrice * measurementInput;
                       }
                     } else {
-                      totalCurrentPrice =
-                          serviceChoosen!.price! * measurementInput.toDouble();
+                      totalCurrentPrice = serviceChoosen!.price! * measurementInput.toDouble();
                       currentPrice = serviceChoosen!.price!.toDouble();
                     }
                     setState(() {
@@ -262,8 +259,7 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: 19, vertical: 10),
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
             elevation: 0,
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -283,14 +279,21 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
         ElevatedButton(
           onPressed: () {
             setState(() {
-              addedItems.add(OrderDetailItem(
+              var orderDetailItem = OrderDetailItem(
                 serviceId: serviceChoosen!.serviceId!.toInt(),
-                serviceName: serviceChoosen!.serviceName,
-                measurement: measurementOfService,
-                unitPrice: unitPriceOfService,
+                serviceName: serviceChoosen!.serviceName!,
+                priceType: serviceChoosen!.priceType!,
                 price: priceOfService,
+                unitPrice: unitPriceOfService,
+                measurement: measurementOfService,
                 customerNote: noteServiceOfCustomer,
-              ));
+                weight: serviceChoosen!.rate!.toDouble() * measurementOfService,
+                minPrice: serviceChoosen!.minPrice == null ? null : serviceChoosen!.minPrice!.toDouble(),
+                prices: serviceChoosen!.prices,
+                unit: serviceChoosen!.unit,
+                staffNote: null,
+              );
+              provider.addOrderDetailItemToCart(orderDetailItem); //add to cart
               measurementOfService = 0;
               priceOfService = 0;
               unitPriceOfService = 0;
@@ -299,14 +302,12 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(
-              padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: 19, vertical: 10),
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
               foregroundColor: kPrimaryColor.withOpacity(.7),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side:
-                    BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
               ),
               backgroundColor: kPrimaryColor),
           child: const Text(

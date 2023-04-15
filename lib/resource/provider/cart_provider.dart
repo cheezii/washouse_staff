@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:washouse_staff/resource/model/cart_item_view.dart';
 
 import '../../utils/cart_util.dart';
 import '../model/cart_item.dart';
@@ -9,6 +10,7 @@ import '../model/promotion.dart';
 
 class CartProvider extends ChangeNotifier {
   CartItem _cartItem = CartItem();
+  List<OrderDetailItem> _list = [];
   //late int _counter;
   int? _centerId = 0;
   double _totalPrice = 0;
@@ -18,6 +20,7 @@ class CartProvider extends ChangeNotifier {
   String? _promoCode = '';
 
   CartItem get cartItem => _cartItem;
+  List<OrderDetailItem> get list => _list;
 
   //int get counter => _counter;
   int? get centerId => _centerId;
@@ -42,39 +45,75 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
-  // void addItemToCart(CartItem newItem) {
-  //   int existingItemIndex = _cartItems.indexWhere((item) => item.serviceId == newItem.serviceId);
-  //   if (existingItemIndex == -1) {
-  //     newItem.price = CartUtils.getTotalPriceOfCartItem(newItem);
-  //     print('newItem.price:${newItem.price}');
-  //     addTotalPrice(newItem.price!);
-  //     _cartItems.add(newItem);
-  //     print('_totalPrice:${_totalPrice}');
-  //   } else {
-  //     CartItem existingItem = _cartItems[existingItemIndex];
-  //     if (newItem.priceType) {
-  //       double totalMeasurement = existingItem.measurement + newItem.measurement;
-  //       double maxCapacity = newItem.prices!.last.maxValue!.toDouble();
-  //       if (totalMeasurement <= maxCapacity) {
-  //         newItem.measurement = totalMeasurement;
-  //         newItem.price = CartUtils.getTotalPriceOfCartItem(newItem);
-  //       } else {
-  //         newItem.measurement = maxCapacity;
-  //         newItem.price = CartUtils.getTotalPriceOfCartItem(newItem);
-  //         print("Measurement capacity exceeded for item with serviceId ${existingItem.serviceId}");
-  //       }
-  //     } else {
-  //       newItem.measurement = newItem.measurement + existingItem.measurement;
-  //       newItem.price = CartUtils.getTotalPriceOfCartItem(newItem);
-  //     }
-  //     removeTotalPrice(existingItem.price!);
-  //     _cartItems.removeAt(existingItemIndex);
-  //     addTotalPrice(newItem.price!);
-  //     _cartItems.add(newItem);
-  //   }
-  //   notifyListeners();
-  //   saveCartItemsToPrefs();
-  // }
+  void addOrderDetailItemToCart(OrderDetailItem orderDetailItem) {
+    int existingItemIndex = _list.indexWhere((item) => item.serviceId == orderDetailItem.serviceId);
+    if (existingItemIndex == -1) {
+      orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+      //addTotalPrice(newItem.price!);
+      _list.add(orderDetailItem);
+    } else {
+      OrderDetailItem existingItem = _list[existingItemIndex];
+      if (orderDetailItem.priceType) {
+        double totalMeasurement = existingItem.measurement + orderDetailItem.measurement;
+        double maxCapacity = orderDetailItem.prices!.last.maxValue!.toDouble();
+        if (totalMeasurement <= maxCapacity) {
+          orderDetailItem.measurement = totalMeasurement;
+          orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+        } else {
+          orderDetailItem.measurement = maxCapacity;
+          orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+          print("Measurement capacity exceeded for item with serviceId ${existingItem.serviceId}");
+        }
+      } else {
+        orderDetailItem.measurement = orderDetailItem.measurement + existingItem.measurement;
+        orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+      }
+      existingItem = orderDetailItem;
+      _list[existingItemIndex] = orderDetailItem;
+      //removeTotalPrice(existingItem.price!);
+      //_cartItems.removeAt(existingItemIndex);
+      //addTotalPrice(newItem.price!);
+      //_cartItems.add(newItem);
+    }
+    notifyListeners();
+    saveCartItemsToPrefs();
+  }
+
+  void updateOrderDetailItemToCart(OrderDetailItem orderDetailItem, double measurement) {
+    int existingItemIndex = _list.indexWhere((item) => item.serviceId == orderDetailItem.serviceId);
+    if (existingItemIndex == -1) {
+      return;
+    } else {
+      OrderDetailItem existingItem = _list[existingItemIndex];
+      if (orderDetailItem.priceType) {
+        double totalMeasurement = existingItem.measurement + measurement;
+        double maxCapacity = orderDetailItem.prices!.last.maxValue!.toDouble();
+        if (totalMeasurement <= maxCapacity) {
+          orderDetailItem.measurement = totalMeasurement;
+          orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+        } else {
+          orderDetailItem.measurement = maxCapacity;
+          orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+          print("Measurement capacity exceeded for item with serviceId ${existingItem.serviceId}");
+        }
+      } else {
+        orderDetailItem.measurement = orderDetailItem.measurement + measurement;
+        orderDetailItem.price = CartUtils.getTotalPriceOfCartItem(orderDetailItem);
+      }
+      existingItem = orderDetailItem;
+      if (orderDetailItem.measurement > 0) {
+        _list[existingItemIndex] = orderDetailItem;
+      } else {
+        _list.removeAt(existingItemIndex);
+      }
+      //removeTotalPrice(existingItem.price!);
+      //_cartItems.removeAt(existingItemIndex);
+      //addTotalPrice(newItem.price!);
+      //_cartItems.add(newItem);
+    }
+    notifyListeners();
+    saveCartItemsToPrefs();
+  }
 
   // void removeItemFromCart(CartItem itemToRemove) {
   //   int existingItemIndex = _cartItems.indexWhere((item) => item.serviceId == itemToRemove.serviceId);
@@ -207,22 +246,23 @@ class CartProvider extends ChangeNotifier {
   //   _discount = prefs.getDouble('discount');
   // }
 
-  // void _setDeliveryPrice() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   _deliveryPrice = prefs.getDouble('deliveryPrice');
-  //   _deliveryType = prefs.getInt("deliveryType");
-  // }
+  void _setDeliveryPrice() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _deliveryPrice = prefs.getDouble('deliveryPrice')!;
+    print(_deliveryPrice);
+    //_deliveryType = prefs.getInt("deliveryType")!;
+  }
 
   // void _getDeliveryPrice() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   _deliveryPrice = prefs.getDouble('deliveryPrice');
-  //   _deliveryType = prefs.getInt('deliveryType');
+  //   _deliveryPrice = prefs.getDouble('deliveryPrice')!;
+  //   _deliveryType = prefs.getInt('deliveryType')!;
   // }
 
-  // void updateDeliveryPrice() {
-  //   notifyListeners();
-  //   _setDeliveryPrice();
-  // }
+  void updateDeliveryPrice() {
+    notifyListeners();
+    _setDeliveryPrice();
+  }
 
   // void addTotalPrice(double productPrice) {
   //   print('productPrice-${productPrice}'); //35

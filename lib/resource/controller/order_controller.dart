@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:js';
+//import 'dart:js';
 import 'package:http/http.dart' as http;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart';
@@ -37,13 +37,6 @@ class OrderController {
   Future<double> calculateDeliveryPrice(
       double totalWeight, String? DropoffAddress, int? DropoffWardId, String? DeliverAddress, int? DeliverWardId, int DeliveryType) async {
     String url = '$baseUrl/orders/delivery-price';
-    // CartItem _CartItem = Provider.of<CartProvider>(context as BuildContext, listen: false).cartItem;
-    // double totalWeight = 0;
-    // for (var element in _CartItem.orderDetails!) {
-    //   if (element.weight != null) {
-    //     totalWeight = totalWeight + element.measurement * element.weight!;
-    //   }
-    // }
     late Map<String, dynamic> queryParams;
     if (DeliveryType == 3) {
       queryParams = {
