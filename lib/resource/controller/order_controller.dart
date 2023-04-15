@@ -9,6 +9,7 @@ import 'package:washouse_staff/resource/model/order.dart';
 
 import '../../components/constants/text_constants.dart';
 import '../model/cart_item.dart';
+import '../model/order_infomation.dart';
 import '../provider/cart_provider.dart';
 
 class OrderController {
@@ -87,5 +88,62 @@ class OrderController {
 
       return 0;
     }
+  }
+
+  Future<List<Order>> getOrderList(
+      int? Page, int? PageSize, String? SearchString, String? FromDate, String? ToDate, String? Status, String? OrderType) async {
+    List<Order> orderItems = [];
+    try {
+      String url = '$baseUrl/manager/my-center/orders';
+      Map<String, dynamic> queryParams = {
+        "Page": Page.toString(),
+        "PageSize": PageSize.toString(),
+        "SearchString": SearchString,
+        "FromDate": FromDate,
+        "ToDate": ToDate,
+        "Status": Status,
+        "OrderType": OrderType,
+      };
+
+      // queryParams = Map.fromEntries(queryParams.entries.where((e) => e.value != null && ['Page', 'PageSize'].contains(e.key)));
+      // print(queryParams.toString());
+      // queryParams.removeWhere((key, value) => value.value == 1);
+      // print(queryParams.toString());
+      Response response = await baseController.makeAuthenticatedRequest(url, queryParams);
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Handle successful response
+        var data = jsonDecode(response.body)["data"]['items'] as List;
+        orderItems = data.map((e) => Order.fromJson(e)).toList();
+        // Do something with the user data...
+      } else {
+        // Handle error response
+        throw Exception('Error fetching user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getOrderList-$e');
+    }
+    return orderItems;
+  }
+
+  Future<Order_Infomation> getOrderInformation(String orderId) async {
+    var order_Infomation = new Order_Infomation();
+    try {
+      String url = '$baseUrl/manager/my-center/orders/$orderId';
+      Response response = await baseController.makeAuthenticatedRequest(url, {});
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Handle successful response
+        order_Infomation = Order_Infomation?.fromJson(jsonDecode(response.body)["data"]);
+        print(order_Infomation.orderTrackings != null);
+        // Do something with the user data...
+      } else {
+        // Handle error response
+        throw Exception('Error fetching user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getOrderInformation-$e');
+    }
+    return order_Infomation;
   }
 }

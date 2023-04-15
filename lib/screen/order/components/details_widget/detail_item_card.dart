@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:washouse_staff/resource/model/order_infomation.dart';
 
 import '../../../../components/constants/color_constants.dart';
 import '../../../../utils/price_util.dart';
 
 class DetailItemCard extends StatelessWidget {
   final String status;
-  const DetailItemCard({super.key, required this.status});
+  final Order_Infomation order_infomation;
+  const DetailItemCard({super.key, required this.status, required this.order_infomation});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class DetailItemCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15),
               ),
               //child: Image.asset(cart.service.image!),
-              child: Image.network('ảnh'),
+              child: Image.asset('ảnh'),
             ),
           ),
         ),
@@ -39,24 +41,21 @@ class DetailItemCard extends StatelessWidget {
                     width: 150,
                     child: Text(
                       //cart.service.name!,
-                      'tên dịch vụ',
-                      style: const TextStyle(
-                          fontSize: 17,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold),
+                      '${order_infomation.orderedDetails!.first.serviceName}',
+                      style: const TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.bold),
                       maxLines: 2,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'SL: x1',
+                    'SL: ${order_infomation.orderedDetails!.first.measurement}',
                     style: const TextStyle(color: textColor, fontSize: 16),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     //'${PriceUtils().convertFormatPrice(cart.service.price!.round() * cart.measurement)} đ',
                     //'${PriceUtils().convertFormatPrice(cart.price!.round())} đ',
-                    '${PriceUtils().convertFormatPrice(80000)} đ',
+                    '${PriceUtils().convertFormatPrice(order_infomation.orderedDetails!.first.price!.toInt())} đ',
                     style: const TextStyle(
                       color: kPrimaryColor,
                       fontWeight: FontWeight.bold,
@@ -72,9 +71,7 @@ class DetailItemCard extends StatelessWidget {
                       height: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20)),
-                            backgroundColor: kPrimaryColor),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
                         onPressed: () {
                           showDialog(
                               context: context,
@@ -94,91 +91,62 @@ class DetailItemCard extends StatelessWidget {
                                             color: textColor,
                                           ),
                                           decoration: InputDecoration(
-                                            labelText:
-                                                'Số lượng/Khối lượng mới',
-                                            labelStyle: const TextStyle(
-                                                color: textBoldColor,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
+                                            labelText: 'Số lượng/Khối lượng mới',
+                                            labelStyle: const TextStyle(color: textBoldColor, fontSize: 18, fontWeight: FontWeight.w500),
                                             hintStyle: TextStyle(
                                               fontSize: 16,
                                               color: Colors.grey.shade500,
                                             ),
-                                            contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 5),
-                                            hintText:
-                                                'Nhập Số lượng/Khối lượng mới',
-                                            floatingLabelBehavior:
-                                                FloatingLabelBehavior.always,
+                                            contentPadding: EdgeInsets.symmetric(vertical: 5),
+                                            hintText: 'Nhập Số lượng/Khối lượng mới',
+                                            floatingLabelBehavior: FloatingLabelBehavior.always,
                                           ),
-                                          cursorColor:
-                                              textColor.withOpacity(.8),
+                                          cursorColor: textColor.withOpacity(.8),
                                           onSaved: (newValue) {},
                                         ),
                                         const SizedBox(height: 20),
                                         SizedBox(
-                                            width: MediaQuery.of(context).size.width,
-                                            child: ElevatedButton(
-                                              onPressed: () {},
-                                              style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsetsDirectional
-                                                              .symmetric(
-                                                          horizontal: 19,
-                                                          vertical: 10),
-                                                  foregroundColor: kPrimaryColor
-                                                      .withOpacity(.7),
-                                                  elevation: 0,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    side: BorderSide(
-                                                        color: kPrimaryColor,
-                                                        width: 1),
-                                                  ),
-                                                  backgroundColor:
-                                                      Colors.white),
-                                              child: const Text(
-                                                'Cập nhật trạng thái',
-                                                style: TextStyle(
-                                                  color: kPrimaryColor,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500,
+                                          width: MediaQuery.of(context).size.width,
+                                          child: ElevatedButton(
+                                            onPressed: () {},
+                                            style: ElevatedButton.styleFrom(
+                                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                foregroundColor: kPrimaryColor.withOpacity(.7),
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20),
+                                                  side: BorderSide(color: kPrimaryColor, width: 1),
                                                 ),
+                                                backgroundColor: Colors.white),
+                                            child: const Text(
+                                              'Cập nhật trạng thái',
+                                              style: TextStyle(
+                                                color: kPrimaryColor,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
                                               ),
                                             ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                     actions: [
                                       Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                         children: [
                                           SizedBox(
                                             width: 120,
                                             child: ElevatedButton(
                                               onPressed: () {},
                                               style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsetsDirectional
-                                                              .symmetric(
-                                                          horizontal: 19,
-                                                          vertical: 10),
+                                                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                                                   elevation: 0,
                                                   foregroundColor: cancelledColor.withOpacity(.5),
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    side: BorderSide(
-                                                        color: cancelledColor,
-                                                        width: 1),
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    side: BorderSide(color: cancelledColor, width: 1),
                                                   ),
-                                                  backgroundColor:
-                                                      cancelledColor),
+                                                  backgroundColor: cancelledColor),
                                               child: const Text(
                                                 'Hủy',
                                                 style: TextStyle(
@@ -194,24 +162,14 @@ class DetailItemCard extends StatelessWidget {
                                             child: ElevatedButton(
                                               onPressed: () {},
                                               style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsetsDirectional
-                                                              .symmetric(
-                                                          horizontal: 19,
-                                                          vertical: 10),
-                                                  foregroundColor: kPrimaryColor
-                                                      .withOpacity(.7),
+                                                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                  foregroundColor: kPrimaryColor.withOpacity(.7),
                                                   elevation: 0,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    side: BorderSide(
-                                                        color: kPrimaryColor,
-                                                        width: 1),
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    side: BorderSide(color: kPrimaryColor, width: 1),
                                                   ),
-                                                  backgroundColor:
-                                                      kPrimaryColor),
+                                                  backgroundColor: kPrimaryColor),
                                               child: const Text(
                                                 'Lưu',
                                                 style: TextStyle(

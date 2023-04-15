@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:washouse_staff/resource/model/order.dart';
 
 import 'package:washouse_staff/screen/order/order_detail_screen.dart';
 
@@ -13,9 +14,11 @@ import 'card_heading.dart';
 
 class OrderCard extends StatelessWidget {
   final String status;
+  final Order order;
   const OrderCard({
     Key? key,
     required this.status,
+    required this.order,
   }) : super(key: key);
 
   @override
@@ -33,8 +36,8 @@ class OrderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const CardHeading(),
-              const CardBody(),
+              CardHeading(order: this.order, status: this.status),
+              CardBody(order: this.order, status: this.status),
               Divider(thickness: 1, color: Colors.grey.shade300),
               const SizedBox(height: 1),
               SizedBox(
@@ -42,26 +45,17 @@ class OrderCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     status == 'Đã hủy'
-                        ? Navigator.push(
-                            context,
-                            PageTransition(
-                                child: const CancelledDetailScreen(),
-                                type: PageTransitionType.fade))
+                        ? Navigator.push(context, PageTransition(child: const CancelledDetailScreen(), type: PageTransitionType.fade))
                         : Navigator.push(
-                            context,
-                            PageTransition(
-                                child: OrderDetailScreen(status: status),
-                                type: PageTransitionType.fade));
+                            context, PageTransition(child: OrderDetailScreen(status: status, order: order), type: PageTransitionType.fade));
                   },
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 19, vertical: 10),
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                       foregroundColor: kPrimaryColor.withOpacity(.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                            color: kPrimaryColor.withOpacity(.5), width: 1),
+                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
                       ),
                       backgroundColor: kPrimaryColor),
                   child: const Text(

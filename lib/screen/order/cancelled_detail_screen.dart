@@ -26,17 +26,12 @@ class CancelledDetailScreen extends StatelessWidget {
         ),
         title: const Align(
           alignment: Alignment.center,
-          child: Text('Chi tiết đơn hủy',
-              style: TextStyle(color: textColor, fontSize: 27)),
+          child: Text('Chi tiết đơn hủy', style: TextStyle(color: textColor, fontSize: 27)),
         ),
         actions: [
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      child: const SearchOrderScreen(),
-                      type: PageTransitionType.fade));
+              Navigator.push(context, PageTransition(child: const SearchOrderScreen(), type: PageTransitionType.fade));
             },
             child: const Padding(
               padding: EdgeInsets.only(right: 16),
@@ -69,8 +64,7 @@ class CancelledDetailScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       'vào 06-03-2023 12:23',
-                      style:
-                          TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                      style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                     ),
                   ],
                 ),
@@ -85,14 +79,16 @@ class CancelledDetailScreen extends StatelessWidget {
           const SizedBox(height: 10),
           Divider(thickness: 8, color: Colors.grey.shade200),
           const SizedBox(height: 10),
-          DetailService(status: 'Đã hủy'),
+          // DetailService(
+          //   status: 'Đã hủy',
+          //   order_infomation: ,
+          // ),
           const SizedBox(height: 10),
           Column(
             children: const [
               CancelDetailFooter(from: 'Yêu cầu bởi', to: 'Người mua'),
               CancelDetailFooter(from: 'Yêu cầu vào', to: '06-03-2023 12:23'),
-              CancelDetailFooter(
-                  from: 'Lý do', to: 'Muốn thay địa chỉ giao hàng'),
+              CancelDetailFooter(from: 'Lý do', to: 'Muốn thay địa chỉ giao hàng'),
               CancelDetailFooter(from: 'Phương thức thanh toán', to: 'COD'),
             ],
           ),

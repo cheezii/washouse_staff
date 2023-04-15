@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:washouse_staff/resource/model/order.dart';
+import 'package:washouse_staff/utils/price_util.dart';
 
 import '../../../../components/constants/color_constants.dart';
 
 class CardBody extends StatelessWidget {
+  final Order order;
+  final String status;
   const CardBody({
     super.key,
+    required this.order,
+    required this.status,
   });
 
   @override
@@ -23,8 +29,7 @@ class CardBody extends StatelessWidget {
                     color: const Color(0xfff5f6f9),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Image.asset(
-                      'assets/images/placeholder.png'), //ảnh dịch vụ
+                  child: Image.asset('assets/images/placeholder.png'), //ảnh dịch vụ
                 ),
               ),
             ),
@@ -36,11 +41,8 @@ class CardBody extends StatelessWidget {
                   SizedBox(
                     width: 200,
                     child: Text(
-                      'Tên dịch vụ',
-                      style: const TextStyle(
-                          fontSize: 17,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500),
+                      '${order.orderedServices!.first.serviceName}',
+                      style: const TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.w500),
                       maxLines: 2,
                     ),
                   ),
@@ -48,14 +50,14 @@ class CardBody extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'Phân loại: Loại dịch vụ',
+                        'Phân loại: ${order.orderedServices!.first.serviceCategory}',
                         style: TextStyle(
                           fontSize: 16,
                         ),
                       ),
                       const Spacer(),
                       Text(
-                        'SL: x1',
+                        'SL: ${order.orderedServices!.first.measurement}',
                         style: const TextStyle(color: textColor, fontSize: 16),
                       )
                     ],
@@ -87,11 +89,11 @@ class CardBody extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Ngày đặt',
+              'Thời gian đặt hàng:',
               style: TextStyle(color: textColor, fontSize: 15),
             ),
             Text(
-              'Ngày',
+              '${order.orderDate}',
               style: TextStyle(color: textColor, fontSize: 15),
             ),
           ],
@@ -105,11 +107,8 @@ class CardBody extends StatelessWidget {
               style: TextStyle(color: textColor, fontSize: 15),
             ),
             Text(
-              'Tiền đ',
-              style: TextStyle(
-                  color: kPrimaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15),
+              '${PriceUtils().convertFormatPrice(order.totalOrderPayment!.toInt())} đ',
+              style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500, fontSize: 15),
             ),
           ],
         ),

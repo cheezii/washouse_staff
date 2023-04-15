@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:washouse_staff/resource/model/order_infomation.dart';
 
 import 'package:washouse_staff/screen/order/components/details_widget/detail_item_card.dart';
 
@@ -7,10 +8,8 @@ import '../../../../components/constants/color_constants.dart';
 
 class DetailService extends StatelessWidget {
   final String status;
-  const DetailService({
-    Key? key,
-    required this.status,
-  }) : super(key: key);
+  final Order_Infomation order_infomation;
+  const DetailService({Key? key, required this.status, required this.order_infomation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class DetailService extends StatelessWidget {
               ),
               SizedBox(width: 6),
               Text(
-                'The Clean House',
+                'Dịch vụ của đơn hàng',
                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
               )
             ],
@@ -42,7 +41,7 @@ class DetailService extends StatelessWidget {
             itemBuilder: (context, index) {
               return DetailItemCard(
                 status: status,
-                //cart: cartItems[index],
+                order_infomation: order_infomation,
               );
             },
           ),
