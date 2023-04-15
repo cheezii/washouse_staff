@@ -36,23 +36,28 @@ class _ScanQRCodeScreenState extends State<ScanQRCodeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: const Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: CircleAvatar(
+              backgroundColor: Colors.white,
+              child:
+                  Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+            ),
+          ),
+        ),
+      ),
       body: Stack(
         alignment: Alignment.center,
         children: [
           _buildQrView(context),
-          Positioned(
-            child: _buildResult(),
-            bottom: 10,
-          )
+          
         ],
       ),
     );
   }
-
-  Widget _buildResult() => Text(
-        'Scan a code',
-        maxLines: 3,
-      );
 
   Widget _buildQrView(BuildContext context) {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.

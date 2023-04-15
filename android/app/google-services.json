@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "982047497895",
+    "project_id": "washouse-customer-8086f",
+    "storage_bucket": "washouse-customer-8086f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982047497895:android:fb67586943923bc8a40582",
+        "android_client_info": {
+          "package_name": "com.example.washouse_customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "982047497895-vv3mdr5lgh9l0hblftnisvsa02h019ka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.washouse_customer",
+            "certificate_hash": "ddf317086adcb18d0ceab8a04ecf90ba13ddd6c7"
+          }
+        },
+        {
+          "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZf3y-2xyT5JcF_N2FqYlLU9NJh68MKYk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982047497895:android:3af9d0979f28d2cda40582",
+        "android_client_info": {
+          "package_name": "com.example.washouse_staff"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZf3y-2xyT5JcF_N2FqYlLU9NJh68MKYk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

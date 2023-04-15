@@ -10,7 +10,7 @@ import '../../components/constants/color_constants.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
 import '../notification/list_notification_screen.dart';
-import '../order/add_item_to_cart.dart';
+import '../order/create_order_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final centerId;
@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
               showDialog(
                   context: context,
                   builder: (context) {
-                    return AddToCartScreen(categoryData: centerDetails.centerServices);
+                    return CreateOrderScreen(categoryData: centerDetails.centerServices);
                   });
             },
           )

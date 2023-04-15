@@ -37,6 +37,10 @@ dependencies:
   flutter_switch: ^0.3.2
   flutter_form_builder: ^7.8.0
   timelines: ^0.1.0
+  firebase_core: ^2.9.0
+  firebase_messaging: ^14.4.0
+  cloud_firestore: ^4.5.1
+  firebase_storage: ^11.1.0
 
 dev_dependencies:
   flutter_test:
