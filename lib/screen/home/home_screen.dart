@@ -10,6 +10,7 @@ import '../../components/constants/color_constants.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
 import '../notification/list_notification_screen.dart';
+import '../order/add_item_to_cart.dart';
 
 class HomeScreen extends StatefulWidget {
   final centerId;
@@ -63,16 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Trang chủ',
-            style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Trang chủ', style: TextStyle(color: textColor, fontSize: 24)),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      child: const ListNotificationScreen(),
-                      type: PageTransitionType.rightToLeftWithFade));
+              Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
             },
             icon: const Icon(
               Icons.notifications,
@@ -88,10 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Quản lý đơn hàng',
-              style: TextStyle(
-                  fontSize: 20,
-                  color: textBoldColor,
-                  fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -119,10 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Quét mã qr',
             backgroundColor: kPrimaryColor,
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ScanQRCodeScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanQRCodeScreen()));
             },
           ),
           SpeedDialChild(
@@ -133,11 +123,11 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Tạo đơn mới',
             backgroundColor: kPrimaryColor,
             onTap: () {
+              print(centerDetails.centerServices);
               showDialog(
                   context: context,
                   builder: (context) {
-                    return CreateOrderScreen(
-                        categoryData: centerDetails.centerServices);
+                    return AddToCartScreen(categoryData: centerDetails.centerServices);
                   });
             },
           )

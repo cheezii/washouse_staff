@@ -9,19 +9,22 @@ import 'package:washouse_staff/resource/model/center.dart';
 import 'package:washouse_staff/resource/model/service.dart';
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/text_constants.dart';
+import '../../resource/model/cart_item.dart';
+import '../../resource/model/cart_item_view.dart';
 
-class CreateOrderScreen extends StatefulWidget {
+class AddToCartScreen extends StatefulWidget {
   final categoryData;
-  const CreateOrderScreen({super.key, this.categoryData});
+  const AddToCartScreen({super.key, this.categoryData});
 
   @override
-  State<CreateOrderScreen> createState() => _CreateOrderScreenState();
+  State<AddToCartScreen> createState() => _AddToCartScreenState();
 }
 
-class _CreateOrderScreenState extends State<CreateOrderScreen> {
+class _AddToCartScreenState extends State<AddToCartScreen> {
   final _dropDownServiceKey = GlobalKey<FormBuilderFieldState>();
   final _dropDownWardKey = GlobalKey<FormBuilderFieldState>();
   List<CenterServices> catetList = [];
+  List<OrderDetailItem> addedItems = [];
   int? shippingMethod;
   int lengthAddCate = 1;
   bool checkReceiveOrder = false;
@@ -33,6 +36,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   //List<CenterServices>? cateChoosen;
   CenterServices? cateChoosen;
   ServiceCenter? serviceChoosen;
+  double priceOfService = 0;
+  double measurementOfService = 0;
+  double unitPriceOfService = 0;
+  String? noteServiceOfCustomer;
 
   List districtList = [];
   List wardList = [];
@@ -99,145 +106,6 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                'Chọn loại dịch vụ:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 5),
-              // ListView.builder(
-              //     shrinkWrap: true,
-              //     itemCount: lengthAddCate,
-              //     itemBuilder: ((context, index) {
-
-              //       return Padding(
-              //         padding: const EdgeInsets.only(bottom: 8),
-              //         child:
-              DropdownButtonFormField(
-                items: catetList.map((item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item.serviceCategoryName!),
-                  );
-                }).toList(),
-                value: cateChoosen,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(8),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  ),
-                ),
-                hint: const Text(
-                  'Chọn loại dịch vụ',
-                  style: TextStyle(fontSize: 16, color: textNoteColor),
-                ),
-                style: const TextStyle(fontSize: 16, color: textColor),
-                onChanged: (value) {
-                  int index = catetList.indexOf(value as CenterServices);
-                  setState(() {
-                    cateChoosen = value;
-                    serviceList = catetList[index].services as List<ServiceCenter>;
-                    _dropDownServiceKey.currentState!.reset();
-                    _dropDownServiceKey.currentState!.setValue(null);
-                  });
-                },
-              ),
-              //       );
-              //     })),
-              // const SizedBox(height: 5),
-              // ListTile(
-              //   title: Text('Thêm loại dịch vụ'),
-              //   leading: Icon(
-              //     Icons.add_box_rounded,
-              //     color: kPrimaryColor,
-              //   ),
-              //   onTap: () {
-              //     setState(() {
-              //       if (lengthAddCate < catetList.length) lengthAddCate++;
-              //     });
-              //   },
-              // ),
-              const SizedBox(height: 15),
-              const Text(
-                'Chọn dịch vụ:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 5),
-              FormBuilderDropdown(
-                key: _dropDownServiceKey,
-                name: 'Dịch vụ',
-                items: serviceList.map((item) {
-                  return DropdownMenuItem(
-                    value: item,
-                    child: Text(item.serviceName!),
-                  );
-                }).toList(),
-                //value: serviceChoosen,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(8),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  ),
-                ),
-                hint: const Text(
-                  'Chọn dịch vụ',
-                  style: TextStyle(fontSize: 16, color: textNoteColor),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    serviceChoosen = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Số lượng/Khối lượng:',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(
-                    width: 100,
-                    height: 50,
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.all(8),
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(width: 1),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                'Ghi chú:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 5),
-              SizedBox(
-                width: double.infinity,
-                child: TextFormField(
-                  maxLines: 3,
-                  decoration: const InputDecoration(
-                    contentPadding: EdgeInsets.all(8),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(width: 1),
-                    ),
-                    hintText: 'Nhập ghi chú',
-                    hintStyle: TextStyle(
-                      color: textNoteColor,
-                    ),
-                  ),
-                  style: const TextStyle(
-                    color: textColor,
-                    fontSize: 16,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              const Text(
                 'Thông tin khách hàng:',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
@@ -286,6 +154,32 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 style: const TextStyle(
                   color: textColor,
                   fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                'Giỏ hàng:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: addedItems.length,
+                itemBuilder: (context, index) {
+                  final item = addedItems[index];
+                  return ListTile(
+                    title: Text('${item.serviceName}'),
+                    subtitle: Text('${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                  );
+                },
+              ),
+
+              Center(
+                child: FloatingActionButton(
+                  onPressed: () {
+                    _showAddOrderDialog(context);
+                  },
+                  child: const Icon(Icons.add),
+                  backgroundColor: kPrimaryColor,
                 ),
               ),
               const SizedBox(height: 15),
@@ -631,6 +525,174 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ],
                     )
                   : Container(),
+
+              // const Text(
+              //   'Chọn loại dịch vụ:',
+              //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              // ),
+              // const SizedBox(height: 5),
+              // // ListView.builder(
+              // //     shrinkWrap: true,
+              // //     itemCount: lengthAddCate,
+              // //     itemBuilder: ((context, index) {
+
+              // //       return Padding(
+              // //         padding: const EdgeInsets.only(bottom: 8),
+              // //         child:
+              // DropdownButtonFormField(
+              //   items: catetList.map((item) {
+              //     return DropdownMenuItem(
+              //       value: item,
+              //       child: Text(item.serviceCategoryName!),
+              //     );
+              //   }).toList(),
+              //   value: cateChoosen,
+              //   decoration: const InputDecoration(
+              //     contentPadding: EdgeInsets.all(8),
+              //     border: OutlineInputBorder(
+              //       borderSide: BorderSide(width: 1),
+              //     ),
+              //   ),
+              //   hint: const Text(
+              //     'Chọn loại dịch vụ',
+              //     style: TextStyle(fontSize: 16, color: textNoteColor),
+              //   ),
+              //   style: const TextStyle(fontSize: 16, color: textColor),
+              //   onChanged: (value) {
+              //     int index = catetList.indexOf(value as CenterServices);
+              //     setState(() {
+              //       cateChoosen = value;
+              //       serviceList = catetList[index].services as List<ServiceCenter>;
+              //       _dropDownServiceKey.currentState!.reset();
+              //       _dropDownServiceKey.currentState!.setValue(null);
+              //     });
+              //   },
+              // ),
+              // //       );
+              // //     })),
+              // // const SizedBox(height: 5),
+              // // ListTile(
+              // //   title: Text('Thêm loại dịch vụ'),
+              // //   leading: Icon(
+              // //     Icons.add_box_rounded,
+              // //     color: kPrimaryColor,
+              // //   ),
+              // //   onTap: () {
+              // //     setState(() {
+              // //       if (lengthAddCate < catetList.length) lengthAddCate++;
+              // //     });
+              // //   },
+              // // ),
+              // const SizedBox(height: 15),
+              // const Text(
+              //   'Chọn dịch vụ:',
+              //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              // ),
+              // const SizedBox(height: 5),
+              // FormBuilderDropdown(
+              //   key: _dropDownServiceKey,
+              //   name: 'Dịch vụ',
+              //   items: serviceList.map((item) {
+              //     return DropdownMenuItem(
+              //       value: item,
+              //       child: Text(item.serviceName!),
+              //     );
+              //   }).toList(),
+              //   //value: serviceChoosen,
+              //   decoration: const InputDecoration(
+              //     contentPadding: EdgeInsets.all(8),
+              //     border: OutlineInputBorder(
+              //       borderSide: BorderSide(width: 1),
+              //     ),
+              //   ),
+              //   hint: const Text(
+              //     'Chọn dịch vụ',
+              //     style: TextStyle(fontSize: 16, color: textNoteColor),
+              //   ),
+              //   onChanged: (value) {
+              //     setState(() {
+              //       serviceChoosen = value;
+              //     });
+              //   },
+              // ),
+              // const SizedBox(height: 15),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     const Text(
+              //       'Số lượng/Khối lượng:',
+              //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              //     ),
+              //     SizedBox(
+              //       width: 100,
+              //       height: 50,
+              //       child: TextFormField(
+              //         keyboardType: TextInputType.number,
+              //         decoration: const InputDecoration(
+              //           contentPadding: EdgeInsets.all(8),
+              //           border: OutlineInputBorder(
+              //             borderSide: BorderSide(width: 1),
+              //           ),
+              //         ),
+              //       ),
+              //     )
+              //   ],
+              // ),
+              // const SizedBox(height: 15),
+              // const Text(
+              //   'Ghi chú:',
+              //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              // ),
+              // const SizedBox(height: 5),
+              // SizedBox(
+              //   width: double.infinity,
+              //   child: TextFormField(
+              //     maxLines: 3,
+              //     decoration: const InputDecoration(
+              //       contentPadding: EdgeInsets.all(8),
+              //       border: OutlineInputBorder(
+              //         borderSide: BorderSide(width: 1),
+              //       ),
+              //       hintText: 'Nhập ghi chú',
+              //       hintStyle: TextStyle(
+              //         color: textNoteColor,
+              //       ),
+              //     ),
+              //     style: const TextStyle(
+              //       color: textColor,
+              //       fontSize: 16,
+              //     ),
+              //   ),
+              // ),
+              // const SizedBox(height: 15),
+              // SizedBox(
+              //   height: 40,
+              //   width: MediaQuery.of(context).size.width,
+              //   child: ElevatedButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         addedItems.add(serviceChoosen!);
+              //       });
+              //     },
+              //     style: ElevatedButton.styleFrom(
+              //         padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+              //         foregroundColor: kPrimaryColor.withOpacity(.7),
+              //         elevation: 0,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(20),
+              //           side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+              //         ),
+              //         backgroundColor: kPrimaryColor),
+              //     child: const Text(
+              //       'Thêm vào đơn hàng',
+              //       style: TextStyle(
+              //         color: Colors.white,
+              //         fontSize: 17,
+              //         fontWeight: FontWeight.w500,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -673,7 +735,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                 ),
                 Text(
-                  'Tiền đ',
+                  '${addedItems.fold(0.0, (sum, item) => sum + item.price!)}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: kPrimaryColor),
                 ),
               ],
@@ -712,6 +774,285 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showAddOrderDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // Return the AlertDialog widget
+        return AlertDialog(
+          title: const Text('Add Order'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Chọn loại dịch vụ:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 5),
+                // ListView.builder(
+                //     shrinkWrap: true,
+                //     itemCount: lengthAddCate,
+                //     itemBuilder: ((context, index) {
+
+                //       return Padding(
+                //         padding: const EdgeInsets.only(bottom: 8),
+                //         child:
+                DropdownButtonFormField(
+                  items: catetList.map((item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item.serviceCategoryName!),
+                    );
+                  }).toList(),
+                  value: cateChoosen,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(8),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1),
+                    ),
+                  ),
+                  hint: const Text(
+                    'Chọn loại dịch vụ',
+                    style: TextStyle(fontSize: 16, color: textNoteColor),
+                  ),
+                  style: const TextStyle(fontSize: 16, color: textColor),
+                  onChanged: (value) {
+                    int index = catetList.indexOf(value as CenterServices);
+                    setState(() {
+                      cateChoosen = value;
+                      serviceList = catetList[index].services as List<ServiceCenter>;
+                      _dropDownServiceKey.currentState!.reset();
+                      _dropDownServiceKey.currentState!.setValue(null);
+                    });
+                  },
+                ),
+                //       );
+                //     })),
+                // const SizedBox(height: 5),
+                // ListTile(
+                //   title: Text('Thêm loại dịch vụ'),
+                //   leading: Icon(
+                //     Icons.add_box_rounded,
+                //     color: kPrimaryColor,
+                //   ),
+                //   onTap: () {
+                //     setState(() {
+                //       if (lengthAddCate < catetList.length) lengthAddCate++;
+                //     });
+                //   },
+                // ),
+                const SizedBox(height: 15),
+                const Text(
+                  'Chọn dịch vụ:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 5),
+                FormBuilderDropdown(
+                  key: _dropDownServiceKey,
+                  name: 'Dịch vụ',
+                  items: serviceList.map((item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item.serviceName!),
+                    );
+                  }).toList(),
+                  //value: serviceChoosen,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(8),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1),
+                    ),
+                  ),
+                  hint: const Text(
+                    'Chọn dịch vụ',
+                    style: TextStyle(fontSize: 16, color: textNoteColor),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      serviceChoosen = value;
+                    });
+                  },
+                ),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Số lượng/Khối lượng:',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 50,
+                      child: TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.all(8),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(width: 1),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          if (serviceChoosen != null) {
+                            //Kiểm tra unit Price nằm trong khoảng nào
+                            double currentPrice = 0;
+                            double totalCurrentPrice = 0;
+                            var measurementInput = double.parse(value);
+
+                            print(measurementInput);
+                            if (serviceChoosen!.priceType!) {
+                              bool check = false;
+                              for (var itemPrice in serviceChoosen!.prices!) {
+                                if (measurementInput <= itemPrice.maxValue! && !check) {
+                                  currentPrice = itemPrice.price!.toDouble();
+                                }
+                                if (currentPrice > 0) {
+                                  check = true;
+                                }
+                              }
+                              if (serviceChoosen!.minPrice != null && currentPrice * measurementInput < serviceChoosen!.minPrice!) {
+                                totalCurrentPrice = serviceChoosen!.minPrice!.toDouble();
+                              } else {
+                                totalCurrentPrice = currentPrice * measurementInput;
+                              }
+                            } else {
+                              totalCurrentPrice = serviceChoosen!.price! * measurementInput.toDouble();
+                              currentPrice = serviceChoosen!.price!.toDouble();
+                            }
+                            setState(() {
+                              measurementOfService = measurementInput;
+                              priceOfService = totalCurrentPrice;
+                              unitPriceOfService = currentPrice;
+                              print(priceOfService);
+                            });
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 15),
+                const Text(
+                  'Ghi chú:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 5),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextFormField(
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(8),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(width: 1),
+                      ),
+                      hintText: 'Nhập ghi chú',
+                      hintStyle: TextStyle(
+                        color: textNoteColor,
+                      ),
+                    ),
+                    style: const TextStyle(
+                      color: textColor,
+                      fontSize: 16,
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        noteServiceOfCustomer = value;
+                        print(noteServiceOfCustomer);
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(height: 15),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   children: [
+                //     const Text(
+                //       'Tổng giá tiền dịch vụ:',
+                //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                //     ),
+                //     Text(
+                //       '$priceOfService',
+                //       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                //     )
+                //   ],
+                // ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  measurementOfService = 0;
+                  priceOfService = 0;
+                  unitPriceOfService = 0;
+                  noteServiceOfCustomer = null;
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                  foregroundColor: kPrimaryColor.withOpacity(.7),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                  ),
+                  backgroundColor: Colors.lightBlue),
+              child: const Text(
+                'Hủy bỏ',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  addedItems.add(OrderDetailItem(
+                    serviceId: serviceChoosen!.serviceId!.toInt(),
+                    serviceName: serviceChoosen!.serviceName,
+                    measurement: measurementOfService,
+                    unitPrice: unitPriceOfService,
+                    price: priceOfService,
+                    customerNote: noteServiceOfCustomer,
+                  ));
+                  measurementOfService = 0;
+                  priceOfService = 0;
+                  unitPriceOfService = 0;
+                  noteServiceOfCustomer = null;
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                  foregroundColor: kPrimaryColor.withOpacity(.7),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                  ),
+                  backgroundColor: kPrimaryColor),
+              child: const Text(
+                'Thêm vào đơn hàng',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

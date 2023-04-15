@@ -63,8 +63,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Danh sách dịch vụ',
-            style: TextStyle(color: textColor, fontSize: 25)),
+        title: const Text('Danh sách dịch vụ', style: TextStyle(color: textColor, fontSize: 25)),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -74,8 +73,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
               controller: searchController,
               decoration: InputDecoration(
                 hintText: 'Tìm kiếm',
-                hintStyle: TextStyle(
-                    color: Colors.grey.shade500, height: 1, fontSize: 15),
+                hintStyle: TextStyle(color: Colors.grey.shade500, height: 1, fontSize: 15),
                 prefixIcon: Icon(
                   Icons.search_rounded,
                   color: Colors.grey.shade500,
@@ -97,8 +95,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                   ),
                 ),
               ),
-              style: TextStyle(
-                  color: Colors.grey.shade700, height: 1, fontSize: 15),
+              style: TextStyle(color: Colors.grey.shade700, height: 1, fontSize: 15),
             ),
             const SizedBox(height: 10),
             Expanded(
@@ -108,16 +105,14 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                   itemBuilder: (context, cateIndex) {
                     return ExpansionTile(
                       leading: Icon(Icons.category_rounded),
-                      title:
-                          Text('${catetList[cateIndex].serviceCategoryName}'),
+                      title: Text('${catetList[cateIndex].serviceCategoryName}'),
                       trailing: Icon(Icons.keyboard_arrow_down_rounded),
                       children: [
                         ListView.builder(
                             shrinkWrap: true,
                             itemCount: catetList[cateIndex].services?.length,
                             itemBuilder: (context, serviceIndex) {
-                              var serviceList = catetList[cateIndex].services
-                                  as List<ServiceCenter>;
+                              var serviceList = catetList[cateIndex].services as List<ServiceCenter>;
                               return Padding(
                                 padding: const EdgeInsets.only(left: 55),
                                 child: ListTile(
