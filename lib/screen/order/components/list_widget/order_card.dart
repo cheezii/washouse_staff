@@ -45,7 +45,13 @@ class OrderCard extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: () {
                     status == 'Đã hủy'
-                        ? Navigator.push(context, PageTransition(child: const CancelledDetailScreen(), type: PageTransitionType.fade))
+                        ? Navigator.push(
+                            context,
+                            PageTransition(
+                              child: CancelledDetailScreen(order: order),
+                              type: PageTransitionType.fade,
+                            ),
+                          )
                         : Navigator.push(
                             context, PageTransition(child: OrderDetailScreen(status: status, order: order), type: PageTransitionType.fade));
                   },

@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:washouse_staff/resource/controller/tracking_controller.dart';
 import 'package:washouse_staff/resource/model/order_infomation.dart';
 
 import '../../../../components/constants/color_constants.dart';
 import '../../../../utils/price_util.dart';
+import '../../order_detail_screen.dart';
 
 class DetailItemCard extends StatelessWidget {
   final String status;
   final Order_Infomation order_infomation;
-  const DetailItemCard({super.key, required this.status, required this.order_infomation});
+  final int index;
+  DetailItemCard({super.key, required this.status, required this.order_infomation, required this.index});
+  TrackingController trackingController = TrackingController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,21 +46,21 @@ class DetailItemCard extends StatelessWidget {
                     width: 150,
                     child: Text(
                       //cart.service.name!,
-                      '${order_infomation.orderedDetails!.first.serviceName}',
+                      '${order_infomation.orderedDetails![index].serviceName}',
                       style: const TextStyle(fontSize: 17, color: Colors.black, fontWeight: FontWeight.bold),
                       maxLines: 2,
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'SL: ${order_infomation.orderedDetails!.first.measurement}',
+                    'SL: ${order_infomation.orderedDetails![index].measurement}',
                     style: const TextStyle(color: textColor, fontSize: 16),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     //'${PriceUtils().convertFormatPrice(cart.service.price!.round() * cart.measurement)} đ',
                     //'${PriceUtils().convertFormatPrice(cart.price!.round())} đ',
-                    '${PriceUtils().convertFormatPrice(order_infomation.orderedDetails!.first.price!.toInt())} đ',
+                    '${PriceUtils().convertFormatPrice(order_infomation.orderedDetails![index].price!.toInt())} đ',
                     style: const TextStyle(
                       color: kPrimaryColor,
                       fontWeight: FontWeight.bold,
@@ -108,7 +113,58 @@ class DetailItemCard extends StatelessWidget {
                                         SizedBox(
                                           width: MediaQuery.of(context).size.width,
                                           child: ElevatedButton(
-                                            onPressed: () {},
+                                            onPressed: () async {
+                                              String result = await trackingController.trackingOrderDetail(
+                                                  order_infomation.id!, order_infomation.orderedDetails![index].orderDetailId!);
+                                              if (result.compareTo("success") == 0) {
+                                                //var order =
+                                                Navigator.of(context).pop();
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Thông báo'),
+                                                      content: Text('Dịch vụ đã được cập nhật trạng thái thành công!'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                            // Navigator.push(
+                                                            //     context,
+                                                            //     PageTransition(
+                                                            //         child: OrderDetailScreen(
+                                                            //           status: 'Xử lý',
+                                                            //           order: order_infomation,
+                                                            //         ),
+                                                            //         type: PageTransitionType.rightToLeftWithFade));
+                                                          },
+                                                          child: Text('OK'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              } else {
+                                                Navigator.of(context).pop();
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: const Text('Thông báo'),
+                                                      content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                      actions: [
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: Text('OK'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            },
                                             style: ElevatedButton.styleFrom(
                                                 padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                                                 foregroundColor: kPrimaryColor.withOpacity(.7),

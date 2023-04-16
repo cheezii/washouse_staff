@@ -37,12 +37,9 @@ class DetailService extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             //itemCount: demoCarts.length,
-            itemCount: 2,
+            itemCount: order_infomation.orderedDetails!.length,
             itemBuilder: (context, index) {
-              return DetailItemCard(
-                status: status,
-                order_infomation: order_infomation,
-              );
+              return DetailItemCard(status: status, order_infomation: order_infomation, index: index);
             },
           ),
         ],

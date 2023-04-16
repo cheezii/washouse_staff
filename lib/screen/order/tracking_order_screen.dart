@@ -7,13 +7,12 @@ import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:timelines/timelines.dart';
 
 import '../../components/constants/color_constants.dart';
+import '../../resource/model/order_infomation.dart';
 
 class TrackingOrderScreen extends StatefulWidget {
   final String status;
-  const TrackingOrderScreen({
-    Key? key,
-    required this.status,
-  }) : super(key: key);
+  final Order_Infomation order_infomation;
+  const TrackingOrderScreen({Key? key, required this.status, required this.order_infomation}) : super(key: key);
 
   @override
   State<TrackingOrderScreen> createState() => _TrackingOrderScreenState();
@@ -21,6 +20,7 @@ class TrackingOrderScreen extends StatefulWidget {
 
 class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
   late int _processIndex;
+  late Order_Infomation _orderinfo;
 
   Color getColor(int index) {
     if (index == _processIndex) {
@@ -46,6 +46,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
     } else if (widget.status == 'Hoàn tất') {
       _processIndex = 4;
     }
+    _orderinfo = widget.order_infomation;
   }
 
   @override
@@ -65,8 +66,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Theo dõi đơn hàng',
-            style: TextStyle(color: textColor, fontSize: 27)),
+        title: const Text('Theo dõi đơn hàng', style: TextStyle(color: textColor, fontSize: 27)),
       ),
       body: Timeline.tileBuilder(
         theme: TimelineThemeData(
@@ -152,10 +152,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
                 if (type == ConnectorType.start) {
                   gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
                 } else {
-                  gradientColors = [
-                    prevColor,
-                    Color.lerp(prevColor, color, 0.5)!
-                  ];
+                  gradientColors = [prevColor, Color.lerp(prevColor, color, 0.5)!];
                 }
                 return DecoratedLineConnector(
                   decoration: BoxDecoration(
@@ -189,7 +186,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
             return Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: Text(
-                'ngày cập nhật\ngiờ cập nhật',
+                (index <= _processIndex) ? '${_orderinfo.orderTrackings![index].createdDate}' : 'Chờ cập nhật',
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: getColor(index),
@@ -198,8 +195,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
             );
           },
           connectionDirection: ConnectionDirection.before,
-          itemExtentBuilder: (_, __) =>
-              MediaQuery.of(context).size.width / _processes.length,
+          itemExtentBuilder: (_, __) => MediaQuery.of(context).size.width / _processes.length,
           itemCount: _processes.length,
         ),
       ),
@@ -272,8 +268,7 @@ class _BezierPainter extends CustomPainter {
 
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(
-            size.width, size.height / 2, size.width + radius, radius)
+        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius, radius)
         ..quadraticBezierTo(size.width, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -283,9 +278,7 @@ class _BezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BezierPainter oldDelegate) {
-    return oldDelegate.color != color ||
-        oldDelegate.drawStart != drawStart ||
-        oldDelegate.drawEnd != drawEnd;
+    return oldDelegate.color != color || oldDelegate.drawStart != drawStart || oldDelegate.drawEnd != drawEnd;
   }
 }
 

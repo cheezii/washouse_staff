@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:washouse_staff/screen/order/components/list_widget/order_card.dart';
+import 'package:washouse_staff/utils/order_util.dart';
 
 import '../../../../resource/controller/order_controller.dart';
 import '../../../../resource/model/order.dart';
@@ -73,7 +74,7 @@ class _AllOrderScreenState extends State<AllOrderScreen> {
               itemBuilder: ((context, index) {
                 return Column(
                   children: [
-                    OrderCard(order: orderList[index], status: 'Đang chờ'),
+                    OrderCard(order: orderList[index], status: OrderUtils().mapVietnameseOrderStatus(orderList[index].status!)),
                   ],
                 );
               }),

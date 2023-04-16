@@ -27,7 +27,8 @@ class _NotificationListState extends State<NotificationList> {
   late FontWeight fontWeight;
   @override
   Widget build(BuildContext context) {
-    bool checkOver24h = TimeUtils().checkOver24Hours(widget.time);
+    //bool checkOver24h = TimeUtils().checkOver24Hours(widget.time);
+    bool checkOver24h = true;
     Color containerColor = Colors.white;
     if (!widget.isNotiRead)
       fontWeight = FontWeight.bold;

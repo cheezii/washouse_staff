@@ -9,6 +9,7 @@ import 'package:washouse_staff/resource/model/order.dart';
 import 'package:washouse_staff/resource/model/order_infomation.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../../components/constants/color_constants.dart';
+import '../../resource/controller/tracking_controller.dart';
 import '../../utils/price_util.dart';
 import 'components/details_widget/service_details.dart';
 import 'tracking_order_screen.dart';
@@ -30,6 +31,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   late int _processIndex;
   bool isLoading = false;
   OrderController orderController = OrderController();
+  TrackingController trackingController = TrackingController();
   late Order_Infomation order_infomation;
 
   Color getColor(int index) {
@@ -155,8 +157,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ),
                         IconButton(
                           onPressed: () {
-                            Navigator.push(context,
-                                PageTransition(child: TrackingOrderScreen(status: widget.status), type: PageTransitionType.rightToLeftWithFade));
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    child: TrackingOrderScreen(order_infomation: order_infomation, status: widget.status),
+                                    type: PageTransitionType.rightToLeftWithFade));
                           },
                           icon: const Icon(
                             Icons.arrow_forward_ios_rounded,
@@ -545,7 +550,79 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: cancelledColor),
-                        onPressed: () {},
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Thông báo'),
+                                content: Text('Bạn có chắn chắn muốn hủy đơn hàng ${widget.order.orderId}?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () async {
+                                      String result = await trackingController.cancelledOrder(widget.order.orderId!);
+                                      if (result.compareTo("success") == 0) {
+                                        Navigator.of(context).pop();
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Thông báo'),
+                                              content: Text('Đơn hàng đã được hủy thành công!'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    Navigator.push(
+                                                        context,
+                                                        PageTransition(
+                                                            child: OrderDetailScreen(
+                                                              status: 'Đã huỷ',
+                                                              order: widget.order,
+                                                            ),
+                                                            type: PageTransitionType.rightToLeftWithFade));
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      } else {
+                                        Navigator.of(context).pop();
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Thông báo'),
+                                              content:
+                                                  Text('Có lỗi xảy ra trong quá trình xử lý hoặc đơn hàng không thể hủy! Bạn vui lòng thử lại sau'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text('OK'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        );
+                                      }
+                                    },
+                                    child: Text('Xác nhận hủy'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Giữ lại'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         child: const Text(
                           'Từ chối',
                           style: TextStyle(fontSize: 17),
@@ -558,10 +635,58 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             _processIndex = (_processIndex + 1) % _processes.length;
                           });
+                          String result = await trackingController.trackingOrder(widget.order.orderId!);
+                          if (result.compareTo("success") == 0) {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: Text('Đơn hàng đã được xác nhận thành công!'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                child: OrderDetailScreen(
+                                                  status: 'Xác nhận',
+                                                  order: widget.order,
+                                                ),
+                                                type: PageTransitionType.rightToLeftWithFade));
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
                         },
                         child: const Text(
                           'Chấp nhận',
@@ -593,10 +718,58 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
-                        onPressed: () {
+                        onPressed: () async {
                           setState(() {
                             _processIndex = (_processIndex + 1) % _processes.length;
                           });
+                          String result = await trackingController.trackingOrder(widget.order.orderId!);
+                          if (result.compareTo("success") == 0) {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: Text('Đơn hàng đã được chuyển sang trạng thái xử lý!'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                child: OrderDetailScreen(
+                                                  status: 'Xử lý',
+                                                  order: widget.order,
+                                                ),
+                                                type: PageTransitionType.rightToLeftWithFade));
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Navigator.of(context).pop();
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Thông báo'),
+                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('OK'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
                         },
                         child: const Text(
                           'Cập nhật',
@@ -626,10 +799,81 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: kPrimaryColor),
-                            onPressed: () {
-                              setState(() {
-                                _processIndex = (_processIndex + 1) % _processes.length;
-                              });
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Text('Thông báo'),
+                                    content: Text('Bạn có chắn chắn muốn hoàn thành đơn hàng ${widget.order.orderId}?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () async {
+                                          String result = await trackingController.completeOrder(widget.order.orderId!);
+                                          if (result.compareTo("success") == 0) {
+                                            Navigator.of(context).pop();
+
+                                            setState(() {
+                                              _processIndex = (_processIndex + 1) % _processes.length;
+                                            });
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Đơn hàng đã hoàn thành!'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                        Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                                child: OrderDetailScreen(
+                                                                  status: 'Hoàn tất',
+                                                                  order: widget.order,
+                                                                ),
+                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            Navigator.of(context).pop();
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        child: Text('Xác nhận hoàn thành'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Hủy bỏ'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
                             child: const Text(
                               'Hoàn tất đơn hàng',
