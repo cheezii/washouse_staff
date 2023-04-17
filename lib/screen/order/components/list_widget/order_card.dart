@@ -52,8 +52,7 @@ class OrderCard extends StatelessWidget {
                               type: PageTransitionType.fade,
                             ),
                           )
-                        : Navigator.push(
-                            context, PageTransition(child: OrderDetailScreen(status: status, order: order), type: PageTransitionType.fade));
+                        : Navigator.push(context, PageTransition(child: OrderDetailScreen(orderId: order.orderId!), type: PageTransitionType.fade));
                   },
                   style: ElevatedButton.styleFrom(
                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),

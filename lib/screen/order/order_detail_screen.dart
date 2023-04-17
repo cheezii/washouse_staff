@@ -8,6 +8,7 @@ import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/order.dart';
 import 'package:washouse_staff/resource/model/order_infomation.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:washouse_staff/utils/order_util.dart';
 import '../../components/constants/color_constants.dart';
 import '../../resource/controller/tracking_controller.dart';
 import '../../utils/price_util.dart';
@@ -15,12 +16,14 @@ import 'components/details_widget/service_details.dart';
 import 'tracking_order_screen.dart';
 
 class OrderDetailScreen extends StatefulWidget {
-  final String status;
-  final Order order;
+  //final String status;
+  //final Order order;
+  final String orderId;
   const OrderDetailScreen({
     Key? key,
-    required this.status,
-    required this.order,
+    //required this.status,
+    //required this.order,
+    required this.orderId,
   }) : super(key: key);
 
   @override
@@ -47,17 +50,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.status == 'Đang chờ') {
-      _processIndex = 0;
-    } else if (widget.status == 'Xác nhận') {
-      _processIndex = 1;
-    } else if (widget.status == 'Xử lý') {
-      _processIndex = 2;
-    } else if (widget.status == 'Sẵn sàng') {
-      _processIndex = 3;
-    } else if (widget.status == 'Hoàn tất') {
-      _processIndex = 4;
-    }
+    // if (widget.status == 'Đang chờ') {
+    //   _processIndex = 0;
+    // } else if (widget.status == 'Xác nhận') {
+    //   _processIndex = 1;
+    // } else if (widget.status == 'Xử lý') {
+    //   _processIndex = 2;
+    // } else if (widget.status == 'Sẵn sàng') {
+    //   _processIndex = 3;
+    // } else if (widget.status == 'Hoàn tất') {
+    //   _processIndex = 4;
+    // }
     getOrderInfomation();
   }
 
@@ -69,7 +72,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     try {
       // Wait for getOrderInformation to complete
-      Order_Infomation result = await orderController.getOrderInformation(widget.order.orderId!);
+      Order_Infomation result = await orderController.getOrderInformation(widget.orderId);
       setState(() {
         // Update state with loaded data
         order_infomation = result;
@@ -94,6 +97,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         size: 200,
       ));
     } else {
+      String status = order_infomation.status!;
+      if (status.toLowerCase().trim() == 'pending') {
+        _processIndex = 0;
+      } else if (status.toLowerCase().trim() == 'confirmed') {
+        _processIndex = 1;
+      } else if (status.toLowerCase().trim() == 'processing') {
+        _processIndex = 2;
+      } else if (status.toLowerCase().trim() == 'ready') {
+        _processIndex = 3;
+      } else if (status.toLowerCase().trim() == 'completed') {
+        _processIndex = 4;
+      }
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -125,18 +140,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '#${widget.order.orderId}',
+                          '#${order_infomation.id}',
                           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          '${widget.order.orderDate}',
+                          '${order_infomation.orderTrackings!.first.createdDate}',
                           style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
                         ),
                       ],
                     ),
                     Text(
-                      '${widget.status}',
+                      '${OrderUtils().mapVietnameseOrderStatus(status)}',
                       style: TextStyle(color: kPrimaryColor, fontSize: 17, fontWeight: FontWeight.w600),
                     )
                   ],
@@ -160,7 +175,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             Navigator.push(
                                 context,
                                 PageTransition(
-                                    child: TrackingOrderScreen(order_infomation: order_infomation, status: widget.status),
+                                    child: TrackingOrderScreen(order_infomation: order_infomation, status: status),
                                     type: PageTransitionType.rightToLeftWithFade));
                           },
                           icon: const Icon(
@@ -309,7 +324,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Tên khách hàng: ${widget.order.customerName}',
+                      'Tên khách hàng: ${order_infomation.customerName}',
                       style: const TextStyle(fontSize: 16, color: textColor),
                     ),
                     const SizedBox(height: 6),
@@ -345,7 +360,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
               ),
               separateLine(),
-              DetailService(status: widget.status, order_infomation: order_infomation),
+              DetailService(status: OrderUtils().mapVietnameseOrderStatus(status), order_infomation: order_infomation),
               separateLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -526,7 +541,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ],
           ),
         ),
-        bottomNavigationBar: widget.status == 'Đang chờ'
+        bottomNavigationBar: OrderUtils().mapVietnameseOrderStatus(status) == 'Đang chờ'
             ? Container(
                 padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                 height: 70,
@@ -556,11 +571,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Thông báo'),
-                                content: Text('Bạn có chắn chắn muốn hủy đơn hàng ${widget.order.orderId}?'),
+                                content: Text('Bạn có chắn chắn muốn hủy đơn hàng ${order_infomation.id!}?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () async {
-                                      String result = await trackingController.cancelledOrder(widget.order.orderId!);
+                                      String result = await trackingController.cancelledOrder(order_infomation.id!);
                                       if (result.compareTo("success") == 0) {
                                         Navigator.of(context).pop();
                                         showDialog(
@@ -577,8 +592,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                         context,
                                                         PageTransition(
                                                             child: OrderDetailScreen(
-                                                              status: 'Đã huỷ',
-                                                              order: widget.order,
+                                                              orderId: order_infomation.id!,
                                                             ),
                                                             type: PageTransitionType.rightToLeftWithFade));
                                                   },
@@ -639,7 +653,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           setState(() {
                             _processIndex = (_processIndex + 1) % _processes.length;
                           });
-                          String result = await trackingController.trackingOrder(widget.order.orderId!);
+                          String result = await trackingController.trackingOrder(order_infomation.id!);
                           if (result.compareTo("success") == 0) {
                             Navigator.of(context).pop();
                             showDialog(
@@ -656,8 +670,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             context,
                                             PageTransition(
                                                 child: OrderDetailScreen(
-                                                  status: 'Xác nhận',
-                                                  order: widget.order,
+                                                  orderId: order_infomation.id!,
                                                 ),
                                                 type: PageTransitionType.rightToLeftWithFade));
                                       },
@@ -697,7 +710,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ],
                 ),
               )
-            : widget.status == 'Xác nhận' || widget.status == 'Xử lý'
+            : OrderUtils().mapVietnameseOrderStatus(status) == 'Xác nhận' || OrderUtils().mapVietnameseOrderStatus(status) == 'Xử lý'
                 ? Container(
                     padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                     height: 70,
@@ -722,7 +735,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           setState(() {
                             _processIndex = (_processIndex + 1) % _processes.length;
                           });
-                          String result = await trackingController.trackingOrder(widget.order.orderId!);
+                          String result = await trackingController.trackingOrder(order_infomation.id!);
                           if (result.compareTo("success") == 0) {
                             Navigator.of(context).pop();
                             showDialog(
@@ -739,8 +752,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             context,
                                             PageTransition(
                                                 child: OrderDetailScreen(
-                                                  status: 'Xử lý',
-                                                  order: widget.order,
+                                                  orderId: order_infomation.id!,
                                                 ),
                                                 type: PageTransitionType.rightToLeftWithFade));
                                       },
@@ -778,7 +790,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ),
                     ),
                   )
-                : widget.status == 'Sẵn sàng'
+                : OrderUtils().mapVietnameseOrderStatus(status) == 'Sẵn sàng'
                     ? Container(
                         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                         height: 70,
@@ -805,11 +817,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: const Text('Thông báo'),
-                                    content: Text('Bạn có chắn chắn muốn hoàn thành đơn hàng ${widget.order.orderId}?'),
+                                    content: Text('Bạn có chắn chắn muốn hoàn thành đơn hàng ${order_infomation.id!}?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () async {
-                                          String result = await trackingController.completeOrder(widget.order.orderId!);
+                                          String result = await trackingController.completeOrder(order_infomation.id!);
                                           if (result.compareTo("success") == 0) {
                                             Navigator.of(context).pop();
 
@@ -830,8 +842,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                             context,
                                                             PageTransition(
                                                                 child: OrderDetailScreen(
-                                                                  status: 'Hoàn tất',
-                                                                  order: widget.order,
+                                                                  orderId: order_infomation.id!,
                                                                 ),
                                                                 type: PageTransitionType.rightToLeftWithFade));
                                                       },
@@ -882,7 +893,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           ),
                         ),
                       )
-                    : widget.status == 'Hoàn tất'
+                    : OrderUtils().mapVietnameseOrderStatus(status) == 'Hoàn tất'
                         ? Container(
                             padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                             height: 70,
