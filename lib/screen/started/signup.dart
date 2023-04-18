@@ -9,7 +9,6 @@ import '../../components/constants/color_constants.dart';
 import '../../components/constants/size.dart';
 import '../../components/constants/text_constants.dart';
 import '../../resource/controller/account_controller.dart';
-import '../../resource/controller/google_controller.dart';
 import '../reset_password/send_otp.dart';
 import 'login.dart';
 
@@ -233,7 +232,7 @@ class _SignUpState extends State<SignUp> {
                   //   ),
                   // ),
                   GestureDetector(
-                    onTap: signUp,
+                    onTap: () {},
                     child: Container(
                       width: size.width,
                       decoration: BoxDecoration(
@@ -301,48 +300,6 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
-  }
-
-  Future signUp() async {
-    final user = await GoogleControler.login();
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: const EdgeInsets.all(16),
-            height: 90,
-            decoration: const BoxDecoration(
-              color: Color(0xffc72c41),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Oops',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  Text(
-                    "Đăng ký không thành công",
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                    maxLines: 2,
-                    overflow: TextOverflow.clip,
-                  )
-                ],
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-      );
-      //}
-    } else {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomeScreen()));
-    }
   }
 
   void displayDialog(context, title, text) => showDialog(

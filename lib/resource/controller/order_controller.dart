@@ -36,7 +36,12 @@ class OrderController {
   // }
 
   Future<double> calculateDeliveryPrice(
-      double totalWeight, String? DropoffAddress, int? DropoffWardId, String? DeliverAddress, int? DeliverWardId, int DeliveryType) async {
+      double totalWeight,
+      String? DropoffAddress,
+      int? DropoffWardId,
+      String? DeliverAddress,
+      int? DeliverWardId,
+      int DeliveryType) async {
     String url = '$baseUrl/orders/delivery-price';
     late Map<String, dynamic> queryParams;
     if (DeliveryType == 3) {
@@ -68,8 +73,11 @@ class OrderController {
     }
 
     print(queryParams.toString());
-    final response =
-        await http.get(Uri.parse(url + '?' + Uri(queryParameters: queryParams.map((key, value) => MapEntry(key, value.toString()))).query));
+    final response = await http.get(Uri.parse(url +
+        '?' +
+        Uri(
+            queryParameters: queryParams
+                .map((key, value) => MapEntry(key, value.toString()))).query));
     dynamic responseData = json.decode(response.body);
     print(responseData["message"]);
     // Make the authenticated POST requests
@@ -91,7 +99,13 @@ class OrderController {
   }
 
   Future<List<Order>> getOrderList(
-      int? Page, int? PageSize, String? SearchString, String? FromDate, String? ToDate, String? Status, String? OrderType) async {
+      int? Page,
+      int? PageSize,
+      String? SearchString,
+      String? FromDate,
+      String? ToDate,
+      String? Status,
+      String? OrderType) async {
     List<Order> orderItems = [];
     try {
       String url = '$baseUrl/manager/my-center/orders';
@@ -109,7 +123,8 @@ class OrderController {
       // print(queryParams.toString());
       // queryParams.removeWhere((key, value) => value.value == 1);
       // print(queryParams.toString());
-      Response response = await baseController.makeAuthenticatedRequest(url, queryParams);
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, queryParams);
       print(response.body);
       if (response.statusCode == 200) {
         // Handle successful response
@@ -126,15 +141,36 @@ class OrderController {
     return orderItems;
   }
 
+  Future<Order> getOrderById(String? orderId) async {
+    var order = Order();
+    try {
+      String url = '$baseUrl/manager/my-center/orders?SearchString=$orderId';
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)["data"]['items'][0];
+        order = Order.fromJson(data);
+        print('order Id in controller: ${order.orderId}');
+      } else {
+        // Handle error response
+        throw Exception('Error fetching order data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getOrderById-$e');
+    }
+    return order;
+  }
+
   Future<Order_Infomation> getOrderInformation(String orderId) async {
     var order_Infomation = new Order_Infomation();
     try {
       String url = '$baseUrl/manager/my-center/orders/$orderId';
-      Response response = await baseController.makeAuthenticatedRequest(url, {});
-      print(response.body);
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
       if (response.statusCode == 200) {
         // Handle successful response
-        order_Infomation = Order_Infomation?.fromJson(jsonDecode(response.body)["data"]);
+        order_Infomation =
+            Order_Infomation?.fromJson(jsonDecode(response.body)["data"]);
         print(order_Infomation.orderTrackings != null);
         // Do something with the user data...
       } else {
