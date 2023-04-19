@@ -187,7 +187,7 @@ class _LoginState extends State<Login> {
                             if (currentLaundry != null) {
                               baseController.saveInttoSharedPreference(
                                   "CENTER_ID", currentLaundry.id!);
-                                  Navigator.of(context).pop();
+                              Navigator.of(context).pop();
                               Navigator.pushNamed(context, '/home',
                                   arguments: currentLaundry.id);
                             } else {
@@ -204,6 +204,7 @@ class _LoginState extends State<Login> {
                       }
                       if (_responseMessage != null && _responseMessage != "") {
                         // ignore: use_build_context_synchronously
+                        Navigator.of(context).pop();
                         showDialog(
                           context: context,
                           builder: (context) {

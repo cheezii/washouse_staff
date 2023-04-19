@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:washouse_staff/components/constants/color_constants.dart';
+import 'package:washouse_staff/screen/started/login.dart';
 
 import '../../category/list_category.dart';
 import '../../order/order_list_screen.dart';
@@ -137,6 +138,12 @@ class _SideMenuState extends State<SideMenu> {
             PageTransition(
                 child: const InfomationScreen(),
                 type: PageTransitionType.fade));
+        break;
+      case 5:
+        Navigator.push(
+            context,
+            PageTransition(
+                child: const Login(), type: PageTransitionType.fade));
         break;
     }
   }
