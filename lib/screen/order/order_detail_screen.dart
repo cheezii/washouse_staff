@@ -363,24 +363,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                     const SizedBox(height: 6),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         (order_infomation.deliveryType == 1 ||
                                 order_infomation.deliveryType == 3)
-                            ? Text(
+                            ? order_infomation.orderDeliveries!
+                                        .firstWhere((element) =>
+                                            element.deliveryType == true)
+                                        .deliveryDate !=
+                                    null
+                                ? Text(
                                 'Giờ khách giao hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == false).deliveryDate}',
-                                style:
-                                    TextStyle(fontSize: 16, color: textColor),
+                                style: const TextStyle(
+                                    fontSize: 16, color: textColor),
                               )
-                            : const SizedBox(height: 0),
+                            : const SizedBox(height: 0) : const SizedBox(height: 0, width: 0),
                         (order_infomation.deliveryType == 2 ||
                                 order_infomation.deliveryType == 3)
-                            ? Text(
-                                'Giờ khách nhận hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == true).deliveryDate}',
-                                style:
-                                    TextStyle(fontSize: 16, color: textColor),
-                              )
-                            : const SizedBox(height: 0),
+                            ? order_infomation.orderDeliveries!
+                                        .firstWhere((element) =>
+                                            element.deliveryType == true)
+                                        .deliveryDate !=
+                                    null
+                                ? Text(
+                                    'Giờ khách nhận hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == true).deliveryDate}',
+                                    style: const TextStyle(
+                                        fontSize: 16, color: textColor),
+                                  )
+                                : const SizedBox(height: 0)
+                            : const SizedBox(height: 0, width: 0),
                       ],
                     ),
                   ],

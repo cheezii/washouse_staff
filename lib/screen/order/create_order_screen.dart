@@ -28,33 +28,69 @@ class CreateOrderScreen extends StatefulWidget {
 }
 
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
+  final GlobalKey<FormBuilderFieldState> _dropDownWardKey =
+      GlobalKey<FormBuilderFieldState>();
   BaseController baseController = BaseController();
-  final _dropDownServiceKey = GlobalKey<FormBuilderFieldState>();
   TextEditingController measurementController = TextEditingController();
-  List<OrderDetailItem> addedItems = [];
+
   int? shippingMethod;
   int lengthAddCate = 1;
   bool checkReceiveOrder = false;
+  bool isLoadingWard = true;
   num measurement = 1;
 
-  String? receiveOrderDate;
-  String receiveOrderTime = 'Chọn giờ';
   //List<CenterServices>? cateChoosen;
   CenterServices? cateChoosen;
   ServiceCenter? serviceChoosen;
+
   double priceOfService = 0;
   double measurementOfService = 0;
   double unitPriceOfService = 0;
-  String? noteServiceOfCustomer;
 
+  String? noteServiceOfCustomer;
+  String? receiveOrderDate;
+  String receiveOrderTime = 'Chọn giờ';
   String? chooseDate;
   String? sendOrderTimeSave;
+  String? cusDistrict;
+  String? cusWard;
 
   List<ServiceCenter> serviceList = [];
+  List districtList = [];
+  List wardList = [];
+  List<OrderDetailItem> addedItems = [];
+
+  Future getDistrictList() async {
+    Response response = await get(Uri.parse('$baseUrl/districts'));
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      setState(() {
+        districtList = data['data'];
+      });
+    } else {
+      throw Exception("Lỗi khi load Json");
+    }
+  }
+
+  Future getWardsList(String district) async {
+    int districtId = int.parse(district);
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    if (response.statusCode == 200) {
+      var data = json.decode(response.body);
+      setState(() {
+        wardList = data['data'];
+        isLoadingWard = true;
+      });
+    } else {
+      throw Exception("Lỗi khi load Json");
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    getDistrictList();
   }
 
   @override
@@ -76,7 +112,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               size: 27,
             )),
         centerTitle: true,
-        title: const Text('Tạo đơn mới', style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Tạo đơn mới',
+            style: TextStyle(color: textColor, fontSize: 24)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -136,6 +173,167 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   fontSize: 16,
                 ),
               ),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  contentPadding: EdgeInsets.all(8),
+                  labelText: 'Địa chỉ',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                  hintText: 'Nhập địa chỉ của khách hàng',
+                  hintStyle: TextStyle(
+                    color: textNoteColor,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                keyboardType: TextInputType.number,
+                style: const TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Tỉnh / thành phố',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 5),
+              DropdownButtonFormField(
+                isDense: true,
+                isExpanded: true,
+                items: <String>[
+                  'Thành phố Hồ Chí Minh',
+                  'Chọn tỉnh / thành phố'
+                ].map((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(item),
+                  );
+                }).toList(),
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  contentPadding: EdgeInsets.all(2),
+                ),
+                icon: const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 20,
+                ),
+                iconSize: 30,
+                hint: const Text('Thành phố Hồ Chí Minh'),
+                style: const TextStyle(color: textColor),
+                onChanged: null,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Quận / huyện',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      SizedBox(
+                        height: 40,
+                        width: 150,
+                        child: DropdownButtonFormField(
+                          items: districtList.map((item) {
+                            return DropdownMenuItem(
+                              value: item['districtId'].toString(),
+                              child: Text(item['districtName']),
+                            );
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(width: 1),
+                            ),
+                            contentPadding: EdgeInsets.all(2),
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                          ),
+                          iconSize: 30,
+                          value: cusDistrict,
+                          hint: const Text('Chọn quận/huyện'),
+                          style: const TextStyle(color: textColor),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              cusDistrict = newValue!;
+                              getWardsList(newValue);
+                              _dropDownWardKey.currentState!.reset();
+                              _dropDownWardKey.currentState!.setValue(null);
+                              isLoadingWard = false;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Phường / xã',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      SizedBox(
+                        height: 40,
+                        width: 200,
+                        child: FormBuilderDropdown(
+                          key: _dropDownWardKey,
+                          name: 'Phường/xã',
+                          enabled: isLoadingWard,
+                          items: wardList.map((item) {
+                            return DropdownMenuItem(
+                              value: item['wardId'].toString(),
+                              child: Text(item['wardName']),
+                            );
+                          }).toList(),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(width: 1),
+                            ),
+                            contentPadding: EdgeInsets.all(2),
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                          ),
+                          iconSize: 30,
+                          //initialValue: sendWard,
+                          hint: const Text('Chọn phường/xã'),
+                          style: const TextStyle(color: textColor),
+                          onChanged: (newValue) {
+                            setState(() {
+                              cusWard = newValue!;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
               const SizedBox(height: 15),
               const Text(
                 'Giỏ hàng:',
@@ -145,144 +343,169 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               Consumer<CartProvider>(builder: (context, value, child) {
                 //var cart = value.getCart(); //lấy cart để hiện thị ở đây
                 //print(provider.list.first.);
-                return provider.list.length > 0
-                    ? Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: value.list.length,
-                            itemBuilder: (context, index) {
-                              final item = value.list[index];
-                              measurementController = TextEditingController(text: item.measurement.toString());
-                              return ListTile(
-                                title: Text('${item.serviceName}'),
-                                subtitle: SizedBox(
-                                  width: 100,
-                                  child: Row(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            //measurement--;
-                                            provider.updateOrderDetailItemToCart(item, -1);
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 25,
-                                          height: 25,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.shade300,
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: const Icon(Icons.remove, color: Colors.white, size: 15),
-                                        ),
-                                      ),
-                                      Flexible(
-                                        child: SizedBox(
-                                          height: 40,
-                                          width: 50,
-                                          child: TextField(
-                                            controller: measurementController,
-                                            textAlign: TextAlign.center,
-                                            keyboardType: TextInputType.number,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                measurementController.text = value;
-                                              });
-                                            },
-                                            decoration: const InputDecoration(
-                                              enabledBorder: InputBorder.none,
-                                              contentPadding: EdgeInsets.all(0),
-                                            ),
-                                            style: const TextStyle(
-                                              height: 0,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            //measurement++;
-                                            provider.updateOrderDetailItemToCart(item, 1);
-                                          });
-                                        },
-                                        child: Container(
-                                          width: 20,
-                                          height: 20,
-                                          decoration: BoxDecoration(
-                                            color: kPrimaryColor.withOpacity(.8),
-                                            borderRadius: BorderRadius.circular(4),
-                                          ),
-                                          child: const Icon(Icons.add, color: Colors.white, size: 15),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 7),
-                                      Text(
-                                        '${item.unit}', //check uint để hiện kg hay cái
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      const SizedBox(width: 7),
-                                      Text(
-                                        'x  ${item.price! / item.measurement}', //check uint để hiện kg hay cái
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      const Text("="),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        '${item.price} đ',
-                                        style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
-                                      ),
-                                    ],
+                return
+                    // provider.list.length > 0
+                    //     ?
+                    Column(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: value.list.length,
+                      itemBuilder: (context, index) {
+                        final item = value.list[index];
+                        measurementController = TextEditingController(
+                            text: item.measurement.toString());
+                        return ListTile(
+                          title: Text('${item.serviceName}'),
+                          subtitle: SizedBox(
+                            width: 100,
+                            child: Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      //measurement--;
+                                      provider.updateOrderDetailItemToCart(
+                                          item, -1);
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 25,
+                                    height: 25,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.shade300,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Icon(Icons.remove,
+                                        color: Colors.white, size: 15),
                                   ),
                                 ),
-                                // Text(
-                                //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
-                              );
-                            },
-                          ),
-                        ],
-                      )
-                    : Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(height: 200, width: 200, child: Image.asset('assets/images/empty/empty-cart.png')),
-                            const SizedBox(height: 30),
-                            const Text(
-                              "Giỏ hàng trống",
-                              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+                                Flexible(
+                                  child: SizedBox(
+                                    height: 40,
+                                    width: 50,
+                                    child: TextField(
+                                      controller: measurementController,
+                                      textAlign: TextAlign.center,
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          measurementController.text = value;
+                                        });
+                                      },
+                                      decoration: const InputDecoration(
+                                        enabledBorder: InputBorder.none,
+                                        contentPadding: EdgeInsets.all(0),
+                                      ),
+                                      style: const TextStyle(
+                                        height: 0,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      //measurement++;
+                                      provider.updateOrderDetailItemToCart(
+                                          item, 1);
+                                    });
+                                  },
+                                  child: Container(
+                                    width: 20,
+                                    height: 20,
+                                    decoration: BoxDecoration(
+                                      color: kPrimaryColor.withOpacity(.8),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Icon(Icons.add,
+                                        color: Colors.white, size: 15),
+                                  ),
+                                ),
+                                const SizedBox(width: 7),
+                                Text(
+                                  '${item.unit}', //check uint để hiện kg hay cái
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 7),
+                                Text(
+                                  'x  ${item.price! / item.measurement}', //check uint để hiện kg hay cái
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                const SizedBox(width: 10),
+                                const Text("="),
+                                const SizedBox(width: 10),
+                                Text(
+                                  '${item.price} đ',
+                                  style: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
+                          ),
+                          // Text(
+                          //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                        );
+                      },
+                    ),
+                  ],
+                );
+                // :
+                // Center(
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       children: [
+                //         SizedBox(
+                //             height: 200,
+                //             width: 200,
+                //             child: Image.asset(
+                //                 'assets/images/empty/empty-cart.png')),
+                //         const SizedBox(height: 30),
+                //         const Text(
+                //           "Giỏ hàng trống",
+                //           style: TextStyle(
+                //               fontSize: 19, fontWeight: FontWeight.w500),
+                //         ),
+                //       ],
+                //     ),
+                //   );
               }),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    //_showAddOrderDialog(context);
-                    showDialog(
-                        context: context,
-                        builder: ((context) {
-                          return AddToCartDialog(cateList: widget.categoryData);
-                        }));
-                  },
-                  style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                      foregroundColor: kPrimaryColor.withOpacity(.7),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
-                      ),
-                      backgroundColor: kPrimaryColor),
-                  child: Text(
-                    'Thêm dịch vụ',
-                    style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w500),
-                  ),
+              TextButton(
+                onPressed: () {
+                  //_showAddOrderDialog(context);
+                  showDialog(
+                      context: context,
+                      builder: ((context) {
+                        return AddToCartDialog(cateList: widget.categoryData);
+                      }));
+                },
+                // style: ElevatedButton.styleFrom(
+                //     padding: const EdgeInsetsDirectional.symmetric(
+                //         horizontal: 19, vertical: 10),
+                //     foregroundColor: kPrimaryColor.withOpacity(.7),
+                //     elevation: 0,
+                //     shape: RoundedRectangleBorder(
+                //       borderRadius: BorderRadius.circular(20),
+                //       side: BorderSide(
+                //           color: kPrimaryColor.withOpacity(.5), width: 1),
+                //     ),
+                //     backgroundColor: kPrimaryColor),
+                child: Row(
+                  children: const [
+                    Icon(Icons.add, color: kPrimaryColor),
+                    SizedBox(width: 5),
+                    Text(
+                      'Thêm dịch vụ',
+                      style: TextStyle(
+                          color: kPrimaryColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 15),
@@ -295,7 +518,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               // const SizedBox(height: 5),
               const Text(
                 'Thời gian gửi đơn',
-                style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    fontSize: 18,
+                    color: textBoldColor,
+                    fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 10),
               Row(
@@ -307,12 +533,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     child: DropdownButtonFormField(
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: textColor, width: 1),
+                          borderSide:
+                              const BorderSide(color: textColor, width: 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+                        contentPadding: const EdgeInsets.only(
+                            left: 8, right: 8, top: 0, bottom: 0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: textColor, width: 1),
+                          borderSide:
+                              const BorderSide(color: textColor, width: 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -338,9 +567,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         });
 
                         if (newValue!.compareTo("Hôm nay") == 0) {
-                          chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
-                        } else if (newValue!.compareTo("Ngày mai") == 0) {
-                          chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now().add(Duration(days: 1)));
+                          chooseDate =
+                              DateFormat('dd-MM-yyyy').format(DateTime.now());
+                        } else if (newValue.compareTo("Ngày mai") == 0) {
+                          chooseDate = DateFormat('dd-MM-yyyy')
+                              .format(DateTime.now().add(Duration(days: 1)));
                         }
                         //print(await baseController.getStringtoSharedPreference("preferredDropoffTime_Date"));
                       },
@@ -351,19 +582,25 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () async {
-                        TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                        TimeOfDay? orderTime = await showTimePicker(
+                            context: context, initialTime: TimeOfDay.now());
                         if (orderTime != null) {
                           setState(() {
-                            receiveOrderTime = '${orderTime.hour}:${orderTime.minute}';
+                            receiveOrderTime =
+                                '${orderTime.hour}:${orderTime.minute}';
                           });
-                          String hourSave = orderTime.hour.toString().padLeft(2, '0');
-                          String minuteSave = orderTime.minute.toString().padLeft(2, '0');
+                          String hourSave =
+                              orderTime.hour.toString().padLeft(2, '0');
+                          String minuteSave =
+                              orderTime.minute.toString().padLeft(2, '0');
                           String secondSave = '00';
-                          String sendOrderTimeSave = '$hourSave:$minuteSave:$secondSave';
+                          String sendOrderTimeSave =
+                              '$hourSave:$minuteSave:$secondSave';
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                        padding: const EdgeInsetsDirectional.symmetric(
+                            horizontal: 19, vertical: 10),
                         foregroundColor: kPrimaryColor.withOpacity(.7),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -569,7 +806,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         height: 140,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           boxShadow: [
             BoxShadow(
               offset: const Offset(0, -15),
@@ -590,7 +828,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                   Text(
                     '${value.deliveryPrice}',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: kPrimaryColor),
+                    style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                        color: kPrimaryColor),
                   ),
                 ],
               );
@@ -606,7 +847,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                   Text(
                     '${value.list.fold(0.0, (sum, item) => sum + item.price!) + value.deliveryPrice}',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: kPrimaryColor),
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: kPrimaryColor),
                   ),
                 ],
               );
@@ -618,7 +862,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   List<OrderDetailRequest> orderDetailRequests = [];
-                  var centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+                  var centerId = await baseController
+                      .getInttoSharedPreference("CENTER_ID");
                   for (var element in provider.list) {
                     orderDetailRequests.add(new OrderDetailRequest(
                         serviceId: element.serviceId,
@@ -629,19 +874,27 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   }
                   List<DeliveryRequest> deliveries = [];
                   if (shippingMethod == 1 || shippingMethod == 3) {
-                    String? dropoff = await baseController.getStringtoSharedPreference("dropoff");
+                    String? dropoff = await baseController
+                        .getStringtoSharedPreference("dropoff");
                     dynamic dropoffDynamic = jsonDecode(dropoff!);
-                    var dropoffModel = dropoffDynamic.map((item) => DeliveryRequest.fromJson(item));
+                    var dropoffModel = dropoffDynamic
+                        .map((item) => DeliveryRequest.fromJson(item));
                     deliveries.add(dropoffModel);
                   } else if (shippingMethod == 2 || shippingMethod == 3) {
-                    String? deliver = await baseController.getStringtoSharedPreference("deliver");
+                    String? deliver = await baseController
+                        .getStringtoSharedPreference("deliver");
                     dynamic deliverDynamic = jsonDecode(deliver!);
-                    var deliverModel = deliverDynamic.map((item) => DeliveryRequest.fromJson(item));
+                    var deliverModel = deliverDynamic
+                        .map((item) => DeliveryRequest.fromJson(item));
                     deliveries.add(deliverModel);
                   }
                   String? preferredDropoffTime;
-                  if (chooseDate != null && sendOrderTimeSave != null && chooseDate != "" && sendOrderTimeSave != "") {
-                    preferredDropoffTime = chooseDate! + " " + sendOrderTimeSave!;
+                  if (chooseDate != null &&
+                      sendOrderTimeSave != null &&
+                      chooseDate != "" &&
+                      sendOrderTimeSave != "") {
+                    preferredDropoffTime =
+                        chooseDate! + " " + sendOrderTimeSave!;
                   }
                   CartItem cartItem = CartItem(
                       centerId: centerId,
@@ -666,12 +919,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   //             const CustomerInformationcreen()));
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                    padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 19, vertical: 10),
                     foregroundColor: kPrimaryColor.withOpacity(.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                      side: BorderSide(
+                          color: kPrimaryColor.withOpacity(.5), width: 1),
                     ),
                     backgroundColor: kPrimaryColor),
                 child: const Text(
