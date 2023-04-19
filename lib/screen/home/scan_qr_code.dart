@@ -105,6 +105,7 @@ class _ScanQRCodeScreenState extends State<ScanQRCodeScreen> {
   Widget _buildResultView(BuildContext context) {
     // navigate to details page on barcode scan
     Future.delayed(Duration.zero, () {
+      Navigator.pop(context);
       Navigator.push(
         context,
         MaterialPageRoute(
