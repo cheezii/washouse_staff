@@ -6,10 +6,13 @@ import 'package:flutter_switch/flutter_switch.dart';
 import 'package:http/http.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:washouse_staff/resource/controller/base_controller.dart';
+import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/center.dart';
 import 'package:washouse_staff/resource/model/service.dart';
+import 'package:washouse_staff/screen/order/order_detail_screen.dart';
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/text_constants.dart';
 import '../../resource/model/cart_item.dart';
@@ -28,16 +31,26 @@ class CreateOrderScreen extends StatefulWidget {
 }
 
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
-  final GlobalKey<FormBuilderFieldState> _dropDownWardKey =
-      GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownWardKey = GlobalKey<FormBuilderFieldState>();
   BaseController baseController = BaseController();
+  OrderController orderController = OrderController();
   TextEditingController measurementController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController noteController = TextEditingController();
+  GlobalKey<FormState> _formNameKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formPhoneNumberKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formAddressKey = GlobalKey<FormState>();
+  final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
 
   int? shippingMethod;
   int lengthAddCate = 1;
   bool checkReceiveOrder = false;
   bool isLoadingWard = true;
   num measurement = 1;
+  int? payment;
 
   //List<CenterServices>? cateChoosen;
   CenterServices? cateChoosen;
@@ -74,8 +87,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   Future getWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response =
-        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
@@ -87,10 +99,18 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     }
   }
 
+  Future loadData() async {
+    var data = await baseController.getInttoSharedPreference("paymentMethod");
+    setState(() {
+      payment = data;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     getDistrictList();
+    loadData();
   }
 
   @override
@@ -112,8 +132,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               size: 27,
             )),
         centerTitle: true,
-        title: const Text('Tạo đơn mới',
-            style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Tạo đơn mới', style: TextStyle(color: textColor, fontSize: 24)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -128,6 +147,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               ),
               const SizedBox(height: 15),
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Không được để trống trường này';
+                  }
+                },
+                onSaved: (newValue) {
+                  nameController.text = newValue!;
+                },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1),
@@ -148,9 +175,21 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   color: textColor,
                   fontSize: 16,
                 ),
+                controller: nameController,
               ),
               const SizedBox(height: 20),
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Không được để trống trường này';
+                  }
+                  if (!typePhoneNum.hasMatch(value)) {
+                    return 'Số điện thoại phải có mười số';
+                  }
+                },
+                onSaved: (newValue) {
+                  phoneController.text = newValue!;
+                },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1),
@@ -172,9 +211,50 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   color: textColor,
                   fontSize: 16,
                 ),
+                controller: phoneController,
+              ),
+              const SizedBox(height: 15),
+              TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Không được để trống trường này';
+                  }
+                },
+                onSaved: (newValue) {
+                  emailController.text = newValue!;
+                },
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 1),
+                  ),
+                  contentPadding: EdgeInsets.all(8),
+                  labelText: 'Email',
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                  ),
+                  hintText: 'Nhập email khách hàng',
+                  hintStyle: TextStyle(
+                    color: textNoteColor,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                ),
+                style: const TextStyle(
+                  color: textColor,
+                  fontSize: 16,
+                ),
+                controller: emailController,
               ),
               const SizedBox(height: 20),
               TextFormField(
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Không được để trống trường này';
+                  }
+                },
+                onSaved: (newValue) {
+                  addressController.text = newValue!;
+                },
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(width: 1),
@@ -196,6 +276,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   color: textColor,
                   fontSize: 16,
                 ),
+                controller: addressController,
               ),
               const SizedBox(height: 20),
               const Text(
@@ -209,10 +290,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               DropdownButtonFormField(
                 isDense: true,
                 isExpanded: true,
-                items: <String>[
-                  'Thành phố Hồ Chí Minh',
-                  'Chọn tỉnh / thành phố'
-                ].map((String item) {
+                items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
                   return DropdownMenuItem<String>(
                     value: item,
                     child: Text(item),
@@ -353,8 +431,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       itemCount: value.list.length,
                       itemBuilder: (context, index) {
                         final item = value.list[index];
-                        measurementController = TextEditingController(
-                            text: item.measurement.toString());
+                        measurementController = TextEditingController(text: item.measurement.toString());
                         return ListTile(
                           title: Text('${item.serviceName}'),
                           subtitle: SizedBox(
@@ -365,8 +442,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   onTap: () {
                                     setState(() {
                                       //measurement--;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, -1);
+                                      provider.updateOrderDetailItemToCart(item, -1);
                                     });
                                   },
                                   child: Container(
@@ -376,8 +452,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                       color: Colors.grey.shade300,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: const Icon(Icons.remove,
-                                        color: Colors.white, size: 15),
+                                    child: const Icon(Icons.remove, color: Colors.white, size: 15),
                                   ),
                                 ),
                                 Flexible(
@@ -409,8 +484,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   onTap: () {
                                     setState(() {
                                       //measurement++;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, 1);
+                                      provider.updateOrderDetailItemToCart(item, 1);
                                     });
                                   },
                                   child: Container(
@@ -420,8 +494,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                       color: kPrimaryColor.withOpacity(.8),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
-                                    child: const Icon(Icons.add,
-                                        color: Colors.white, size: 15),
+                                    child: const Icon(Icons.add, color: Colors.white, size: 15),
                                   ),
                                 ),
                                 const SizedBox(width: 7),
@@ -439,10 +512,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 const SizedBox(width: 10),
                                 Text(
                                   '${item.price} đ',
-                                  style: TextStyle(
-                                      color: kPrimaryColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
+                                  style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
                                 ),
                               ],
                             ),
@@ -500,28 +570,145 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     SizedBox(width: 5),
                     Text(
                       'Thêm dịch vụ',
-                      style: TextStyle(
-                          color: kPrimaryColor,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w500),
+                      style: TextStyle(color: kPrimaryColor, fontSize: 17, fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 15),
+              TextField(
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  prefixIcon: Icon(
+                    Icons.note_alt_outlined,
+                    color: textColor.withOpacity(.5),
+                  ),
+                  hintText: 'Có ghi chú cho trung tâm?',
+                ),
+                controller: noteController,
+                onSubmitted: (String value) async {
+                  setState(() {
+                    noteController.text = value;
+                  });
+                  await baseController.saveStringtoSharedPreference("customerMessage", value);
+                  print(value);
+                },
+              ),
+              const SizedBox(height: 15),
               const ShippingMethod(),
               const SizedBox(height: 15),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        const Text(
+                          'Phương thức thanh toán',
+                          style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      height: 50,
+                      width: double.infinity,
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey.shade400,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 35,
+                                child: Image.asset('assets/images/shipping/cash-on-delivery.png'),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Thanh toán bằng tiền mặt',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                          Radio(
+                            activeColor: kPrimaryColor,
+                            value: 0,
+                            groupValue: payment,
+                            onChanged: (newVal) {
+                              setState(() {
+                                payment = newVal;
+                                baseController.saveInttoSharedPreference("paymentMethod", 0);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.only(left: 16, right: 16),
+                      height: 50,
+                      width: double.infinity,
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey.shade400,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 35,
+                                child: Image.asset('assets/images/shipping/vnpay-icon.png'),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Thanh toán bằng ví Washouse',
+                                style: TextStyle(fontSize: 15),
+                              ),
+                            ],
+                          ),
+                          Radio(
+                            value: 1,
+                            groupValue: payment,
+                            onChanged: (newVal) {
+                              setState(() {
+                                payment = newVal;
+                                print(newVal);
+                                baseController.saveInttoSharedPreference("paymentMethod", 1);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               // const Text(
               //   'Thông tin vận chuyển:',
               //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               // ),
               // const SizedBox(height: 5),
+              const SizedBox(height: 15),
               const Text(
                 'Thời gian gửi đơn',
-                style: TextStyle(
-                    fontSize: 18,
-                    color: textBoldColor,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 10),
               Row(
@@ -533,15 +720,12 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     child: DropdownButtonFormField(
                       decoration: InputDecoration(
                         enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: textColor, width: 1),
+                          borderSide: const BorderSide(color: textColor, width: 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        contentPadding: const EdgeInsets.only(
-                            left: 8, right: 8, top: 0, bottom: 0),
+                        contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
                         focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: textColor, width: 1),
+                          borderSide: const BorderSide(color: textColor, width: 1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
@@ -567,11 +751,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         });
 
                         if (newValue!.compareTo("Hôm nay") == 0) {
-                          chooseDate =
-                              DateFormat('dd-MM-yyyy').format(DateTime.now());
+                          chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
                         } else if (newValue.compareTo("Ngày mai") == 0) {
-                          chooseDate = DateFormat('dd-MM-yyyy')
-                              .format(DateTime.now().add(Duration(days: 1)));
+                          chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now().add(Duration(days: 1)));
                         }
                         //print(await baseController.getStringtoSharedPreference("preferredDropoffTime_Date"));
                       },
@@ -582,25 +764,19 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () async {
-                        TimeOfDay? orderTime = await showTimePicker(
-                            context: context, initialTime: TimeOfDay.now());
+                        TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
                         if (orderTime != null) {
                           setState(() {
-                            receiveOrderTime =
-                                '${orderTime.hour}:${orderTime.minute}';
+                            receiveOrderTime = '${orderTime.hour}:${orderTime.minute}';
                           });
-                          String hourSave =
-                              orderTime.hour.toString().padLeft(2, '0');
-                          String minuteSave =
-                              orderTime.minute.toString().padLeft(2, '0');
+                          String hourSave = orderTime.hour.toString().padLeft(2, '0');
+                          String minuteSave = orderTime.minute.toString().padLeft(2, '0');
                           String secondSave = '00';
-                          String sendOrderTimeSave =
-                              '$hourSave:$minuteSave:$secondSave';
+                          sendOrderTimeSave = '$hourSave:$minuteSave:$secondSave';
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 19, vertical: 10),
+                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                         foregroundColor: kPrimaryColor.withOpacity(.7),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
@@ -806,8 +982,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
         height: 140,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           boxShadow: [
             BoxShadow(
               offset: const Offset(0, -15),
@@ -828,10 +1003,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                   Text(
                     '${value.deliveryPrice}',
-                    style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                        color: kPrimaryColor),
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: kPrimaryColor),
                   ),
                 ],
               );
@@ -847,10 +1019,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   ),
                   Text(
                     '${value.list.fold(0.0, (sum, item) => sum + item.price!) + value.deliveryPrice}',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: kPrimaryColor),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: kPrimaryColor),
                   ),
                 ],
               );
@@ -862,8 +1031,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   List<OrderDetailRequest> orderDetailRequests = [];
-                  var centerId = await baseController
-                      .getInttoSharedPreference("CENTER_ID");
+                  var centerId = await baseController.getInttoSharedPreference("CENTER_ID");
                   for (var element in provider.list) {
                     orderDetailRequests.add(new OrderDetailRequest(
                         serviceId: element.serviceId,
@@ -873,60 +1041,78 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         staffNote: element.staffNote));
                   }
                   List<DeliveryRequest> deliveries = [];
+                  shippingMethod = await baseController.getInttoSharedPreference("shippingMethod");
                   if (shippingMethod == 1 || shippingMethod == 3) {
-                    String? dropoff = await baseController
-                        .getStringtoSharedPreference("dropoff");
+                    String? dropoff = await baseController.getStringtoSharedPreference("dropoff");
                     dynamic dropoffDynamic = jsonDecode(dropoff!);
-                    var dropoffModel = dropoffDynamic
-                        .map((item) => DeliveryRequest.fromJson(item));
+                    var dropoffModel = dropoffDynamic.map((item) => DeliveryRequest.fromJson(item));
                     deliveries.add(dropoffModel);
                   } else if (shippingMethod == 2 || shippingMethod == 3) {
-                    String? deliver = await baseController
-                        .getStringtoSharedPreference("deliver");
+                    String? deliver = await baseController.getStringtoSharedPreference("deliver");
                     dynamic deliverDynamic = jsonDecode(deliver!);
-                    var deliverModel = deliverDynamic
-                        .map((item) => DeliveryRequest.fromJson(item));
+                    var deliverModel = deliverDynamic.map((item) => DeliveryRequest.fromJson(item));
                     deliveries.add(deliverModel);
                   }
                   String? preferredDropoffTime;
-                  if (chooseDate != null &&
-                      sendOrderTimeSave != null &&
-                      chooseDate != "" &&
-                      sendOrderTimeSave != "") {
-                    preferredDropoffTime =
-                        chooseDate! + " " + sendOrderTimeSave!;
+                  if (chooseDate != null && sendOrderTimeSave != null && chooseDate != "" && sendOrderTimeSave != "") {
+                    preferredDropoffTime = chooseDate! + " " + sendOrderTimeSave!;
                   }
                   CartItem cartItem = CartItem(
                       centerId: centerId,
                       order: new OrderRequest(
-                          // customerName: ,
-                          // customerAddressString: ,
-                          // customerEmail: ,
-                          // customerWardId: ,
-                          // customerMobile: ,
-                          // customerMessage: ,
-                          // deliveryType: ,
-                          // deliveryPrice: ,
-                          // preferredDropoffTime: preferredDropoffTime == null ? DateTime.now() : preferredDropoffTime!
-                          ),
+                          customerName: nameController.text,
+                          customerAddressString: addressController.text,
+                          customerEmail: emailController.text,
+                          customerWardId: int.parse(cusWard!),
+                          customerMobile: phoneController.text,
+                          customerMessage: noteController.text,
+                          deliveryType: shippingMethod,
+                          deliveryPrice: await baseController.getDoubletoSharedPreference("deliveryPrice"),
+                          preferredDropoffTime: preferredDropoffTime == null ? DateTime.now().toString() : preferredDropoffTime!),
                       orderDetails: orderDetailRequests,
                       deliveries: deliveries,
-                      paymentMethod: shippingMethod);
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             const CustomerInformationcreen()));
+                      paymentMethod: payment);
+                  print(cartItem.toJson());
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      });
+                  String? orderId = await orderController.createOrder(cartItem);
+                  print(orderId);
+                  if (orderId != null && orderId.length == 16) {
+                    Navigator.of(context).pop();
+                    Navigator.push(context, PageTransition(child: OrderDetailScreen(orderId: orderId), type: PageTransitionType.rightToLeftWithFade));
+                  } else {
+                    Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Thông báo'),
+                          content: Text('Có lỗi xảy ra trong quá trình đặt hàng'),
+                          actions: <Widget>[
+                            ElevatedButton(
+                              child: Text('Đóng'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsetsDirectional.symmetric(
-                        horizontal: 19, vertical: 10),
+                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                     foregroundColor: kPrimaryColor.withOpacity(.7),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(
-                          color: kPrimaryColor.withOpacity(.5), width: 1),
+                      side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
                     ),
                     backgroundColor: kPrimaryColor),
                 child: const Text(

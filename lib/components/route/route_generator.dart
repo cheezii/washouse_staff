@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:washouse_staff/screen/home/home_screen.dart';
 import 'package:washouse_staff/screen/order/create_order_screen.dart';
 
-import '../../screen/category/list_category.dart';
-
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
@@ -29,10 +27,10 @@ class RouteGenerator {
     return MaterialPageRoute(builder: (context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('ERROR'),
+          title: const Text('ERROR'),
           centerTitle: true,
         ),
-        body: Center(
+        body: const Center(
           child: Text('Không tìm thấy trang!'),
         ),
       );

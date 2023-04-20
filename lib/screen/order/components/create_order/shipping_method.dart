@@ -12,10 +12,7 @@ class ShippingMethod extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: ((context) => const ChooseShippingMethod())));
+        Navigator.push(context, MaterialPageRoute(builder: ((context) => const ChooseShippingMethod())));
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -25,10 +22,7 @@ class ShippingMethod extends StatelessWidget {
             children: [
               const Text(
                 'Phương thức vận chuyển',
-                style: TextStyle(
-                    color: textColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 16),
               Padding(
@@ -37,8 +31,7 @@ class ShippingMethod extends StatelessWidget {
                   children: [
                     SizedBox(
                       width: 35,
-                      child:
-                          Image.asset('assets/images/shipping/ship-di.png'),
+                      child: Image.asset('assets/images/shipping/ship-di.png'),
                     ),
                     const SizedBox(width: 8),
                     Text(
