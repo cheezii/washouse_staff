@@ -52,26 +52,24 @@ class OrderCard extends StatelessWidget {
                               type: PageTransitionType.fade,
                             ),
                           )
-<<<<<<< Updated upstream
+// <<<<<<< Updated upstream
                         : Navigator.push(context, PageTransition(child: OrderDetailScreen(orderId: order.orderId!), type: PageTransitionType.fade));
-=======
-                        : Navigator.push(
-                            context,
-                            PageTransition(
-                                child: OrderDetailScreen(
-                                    status: status, order: order),
-                                type: PageTransitionType.fade));
->>>>>>> Stashed changes
+// =======
+//                         : Navigator.push(
+//                             context,
+//                             PageTransition(
+//                                 child: OrderDetailScreen(
+//                                     status: status, order: order),
+//                                 type: PageTransitionType.fade));
+// >>>>>>> Stashed changes
                   },
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                          horizontal: 19, vertical: 10),
+                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                       foregroundColor: kPrimaryColor.withOpacity(.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(
-                            color: kPrimaryColor.withOpacity(.5), width: 1),
+                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
                       ),
                       backgroundColor: kPrimaryColor),
                   child: const Text(

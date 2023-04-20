@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:washouse_staff/resource/controller/base_controller.dart';
@@ -17,6 +18,7 @@ import '../../resource/model/center.dart';
 import '../../resource/model/chat_message.dart';
 import '../notification/list_notification_screen.dart';
 import '../order/create_order_screen.dart';
+import '../../components/constants/color_constants.dart';
 
 class HomeScreen extends StatefulWidget {
   final centerId;
@@ -54,6 +56,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  final List<ChartData> data = [
+    ChartData('Đang chờ', 6, pendingdColor),
+    ChartData('Xác nhận', 14, confirmedColor),
+    ChartData('Đã nhận hàng', 22, completeColor),
+    ChartData('Xử lý', 28, processingColor),
+    ChartData('Sẵn sàng', 15, readyColor),
+    ChartData('Hoàn tất', 30, completeColor),
+    ChartData('Đã hủy', 5, cancelledColor),
+  ];
+
   @override
   Widget build(BuildContext context) {
     print('center id: ${widget.centerId}');
@@ -73,16 +85,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Trang chủ',
-            style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Trang chủ', style: TextStyle(color: textColor, fontSize: 24)),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(
-                  context,
-                  PageTransition(
-                      child: const ListNotificationScreen(),
-                      type: PageTransitionType.rightToLeftWithFade));
+              Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
             },
             icon: const Icon(
               Icons.notifications,
@@ -98,10 +105,25 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Text(
               'Quản lý đơn hàng',
-              style: TextStyle(
-                  fontSize: 20,
-                  color: textBoldColor,
-                  fontWeight: FontWeight.w600),
+              style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+            ),
+            Container(
+              width: 400, // Set the width of the chart
+              height: 200, // Set the height of the chart
+              child: charts.BarChart(
+                [
+                  charts.Series<ChartData, String>(
+                    id: 'chartData',
+                    domainFn: (ChartData data, _) => data.category,
+                    measureFn: (ChartData data, _) => data.value,
+                    data: data,
+                    labelAccessorFn: (ChartData data, _) => '${data.value}',
+                    colorFn: (ChartData data, _) => charts.ColorUtil.fromDartColor(data.colorCode),
+                  )
+                ],
+                animate: true,
+                vertical: false,
+              ),
             ),
           ],
         ),
@@ -120,8 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Tin nhắn',
             backgroundColor: kPrimaryColor,
             onTap: () async {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ChatScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailPage(arguments: ChatPageArguments(peerId: '3', peerAvatar: 'abc', peerNickname: 'Đoàn Trọng Kim'),)));
 
               // String groupChatId = "";
@@ -235,10 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Quét mã qr',
             backgroundColor: kPrimaryColor,
             onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ScanQRCodeScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanQRCodeScreen()));
             },
           ),
           SpeedDialChild(
@@ -253,8 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
               showDialog(
                   context: context,
                   builder: (context) {
-                    return CreateOrderScreen(
-                        categoryData: centerDetails.centerServices);
+                    return CreateOrderScreen(categoryData: centerDetails.centerServices);
                   });
             },
           )
@@ -262,4 +279,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class ChartData {
+  final String category;
+  final int value;
+  final Color colorCode;
+
+  ChartData(this.category, this.value, this.colorCode);
 }
