@@ -9,7 +9,9 @@ import '../../../../components/constants/color_constants.dart';
 class DetailService extends StatelessWidget {
   final String status;
   final Order_Infomation order_infomation;
-  const DetailService({Key? key, required this.status, required this.order_infomation}) : super(key: key);
+  const DetailService(
+      {Key? key, required this.status, required this.order_infomation})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +41,10 @@ class DetailService extends StatelessWidget {
             //itemCount: demoCarts.length,
             itemCount: order_infomation.orderedDetails!.length,
             itemBuilder: (context, index) {
-              return DetailItemCard(status: status, order_infomation: order_infomation, index: index);
+              return DetailItemCard(
+                  status: status,
+                  order_infomation: order_infomation,
+                  index: index);
             },
           ),
         ],

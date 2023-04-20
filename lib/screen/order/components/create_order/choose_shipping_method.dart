@@ -23,12 +23,14 @@ class ChooseShippingMethod extends StatefulWidget {
 
 class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
   int? shippingMethod;
-  GlobalKey<FormBuilderFieldState> _dropDownSendWardKey = GlobalKey<FormBuilderFieldState>();
-  GlobalKey<FormBuilderFieldState> _dropDownReceiveWardKey = GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownSendWardKey =
+      GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownReceiveWardKey =
+      GlobalKey<FormBuilderFieldState>();
   TextEditingController sendAdressController = TextEditingController();
   TextEditingController receiveAdressController = TextEditingController();
-  GlobalKey<FormState> _formSendAddressKey = GlobalKey<FormState>();
-  GlobalKey<FormState> _formReceiveAddressKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formSendAddressKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formReceiveAddressKey = GlobalKey<FormState>();
 
   String? sendOrderDate;
   String? receiveOrderDate;
@@ -36,6 +38,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
   String? sendWard;
   String? receiveDistrict;
   String? receiveWard;
+  bool isLoadingSendWard = true;
+  bool isLoadingReceiveWard = true;
 
   List sendDistrictList = [];
   List sendWardList = [];
@@ -50,6 +54,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
       var data = jsonDecode(response.body);
       setState(() {
         sendDistrictList = data['data'];
+        isLoadingSendWard = true;
       });
     } else {
       throw Exception("Lỗi khi load Json");
@@ -58,11 +63,13 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
 
   Future getSendWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
         sendWardList = data['data'];
+        isLoadingSendWard = true;
       });
     } else {
       throw Exception("Lỗi khi load Json");
@@ -83,11 +90,13 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
 
   Future getReceiveWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
         receiveWardList = data['data'];
+        isLoadingReceiveWard = true;
       });
     } else {
       throw Exception("Lỗi khi load Json");
@@ -119,7 +128,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
               size: 27,
             )),
         centerTitle: true,
-        title: const Text('Phương thức vận chuyển', style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Phương thức vận chuyển',
+            style: TextStyle(color: textColor, fontSize: 24)),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 16, right: 8),
@@ -135,7 +145,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                     children: [
                       SizedBox(
                         width: 35,
-                        child: Image.asset('assets/images/shipping/ship-di.png'),
+                        child:
+                            Image.asset('assets/images/shipping/ship-di.png'),
                       ),
                       const SizedBox(width: 10),
                       const Text(
@@ -163,7 +174,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                     children: [
                       SizedBox(
                         width: 35,
-                        child: Image.asset('assets/images/shipping/dua-den.png'),
+                        child:
+                            Image.asset('assets/images/shipping/dua-den.png'),
                       ),
                       const SizedBox(width: 10),
                       const Text(
@@ -191,7 +203,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                     children: [
                       SizedBox(
                         width: 35,
-                        child: Image.asset('assets/images/shipping/giao-den.png'),
+                        child:
+                            Image.asset('assets/images/shipping/giao-den.png'),
                       ),
                       const SizedBox(width: 16),
                       const Text(
@@ -219,7 +232,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                     children: [
                       SizedBox(
                         width: 35,
-                        child: Image.asset('assets/images/shipping/shipper.png'),
+                        child:
+                            Image.asset('assets/images/shipping/shipper.png'),
                       ),
                       const SizedBox(width: 16),
                       const Text(
@@ -246,9 +260,20 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                       children: [
                         const Text(
                           'Địa chỉ lấy đơn',
-                          style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: textBoldColor,
+                              fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 10),
+                        const Text(
+                          'Địa chỉ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
                         Form(
                           key: _formSendAddressKey,
                           child: FillingShippingInfo(
@@ -269,7 +294,10 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                         DropdownButtonFormField(
                           isDense: true,
                           isExpanded: true,
-                          items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
+                          items: <String>[
+                            'Thành phố Hồ Chí Minh',
+                            'Chọn tỉnh / thành phố'
+                          ].map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
                               child: Text(item),
@@ -279,7 +307,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                             border: OutlineInputBorder(
                               borderSide: BorderSide(width: 1),
                             ),
-                            contentPadding: EdgeInsets.all(2),
+                            contentPadding: EdgeInsets.only(left: 5),
                           ),
                           icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,
@@ -318,7 +346,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(width: 1),
                                       ),
-                                      contentPadding: EdgeInsets.all(2),
+                                      contentPadding: EdgeInsets.only(left: 5),
                                     ),
                                     icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
@@ -332,8 +360,11 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       setState(() {
                                         sendDistrict = newValue!;
                                         getSendWardsList(newValue);
-                                        _dropDownSendWardKey.currentState!.reset();
-                                        _dropDownSendWardKey.currentState!.setValue(null);
+                                        _dropDownSendWardKey.currentState!
+                                            .reset();
+                                        _dropDownSendWardKey.currentState!
+                                            .setValue(null);
+                                        isLoadingSendWard = false;
                                       });
                                     },
                                   ),
@@ -358,6 +389,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                   child: FormBuilderDropdown(
                                     key: _dropDownSendWardKey,
                                     name: 'Phường/xã',
+                                    enabled: isLoadingSendWard,
                                     items: sendWardList.map((item) {
                                       return DropdownMenuItem(
                                         value: item['wardId'].toString(),
@@ -368,7 +400,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(width: 1),
                                       ),
-                                      contentPadding: EdgeInsets.all(2),
+                                      contentPadding: EdgeInsets.only(left: 5),
                                     ),
                                     icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
@@ -402,9 +434,20 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                       children: [
                         const Text(
                           'Địa chỉ trả đơn',
-                          style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: textBoldColor,
+                              fontWeight: FontWeight.w500),
                         ),
                         const SizedBox(height: 10),
+                        const Text(
+                          'Địa chỉ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
                         Form(
                           key: _formReceiveAddressKey,
                           child: FillingShippingInfo(
@@ -425,7 +468,10 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                         DropdownButtonFormField(
                           isDense: true,
                           isExpanded: true,
-                          items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
+                          items: <String>[
+                            'Thành phố Hồ Chí Minh',
+                            'Chọn tỉnh / thành phố'
+                          ].map((String item) {
                             return DropdownMenuItem<String>(
                               value: item,
                               child: Text(item),
@@ -435,7 +481,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                             border: OutlineInputBorder(
                               borderSide: BorderSide(width: 1),
                             ),
-                            contentPadding: EdgeInsets.all(2),
+                            contentPadding: EdgeInsets.only(left: 5),
                           ),
                           icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,
@@ -474,7 +520,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(width: 1),
                                       ),
-                                      contentPadding: EdgeInsets.all(2),
+                                      contentPadding: EdgeInsets.only(left: 5),
                                     ),
                                     icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
@@ -487,9 +533,12 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                     onChanged: (String? newValue) {
                                       setState(() {
                                         receiveDistrict = newValue!;
-                                        _dropDownReceiveWardKey.currentState!.reset();
-                                        _dropDownReceiveWardKey.currentState!.setValue(null);
+                                        _dropDownReceiveWardKey.currentState!
+                                            .reset();
+                                        _dropDownReceiveWardKey.currentState!
+                                            .setValue(null);
                                         getReceiveWardsList(newValue);
+                                        isLoadingReceiveWard = false;
                                       });
                                     },
                                   ),
@@ -514,6 +563,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                   child: FormBuilderDropdown(
                                     key: _dropDownReceiveWardKey,
                                     name: 'Phường/xã',
+                                    enabled: isLoadingReceiveWard,
                                     items: receiveWardList.map((item) {
                                       return DropdownMenuItem(
                                         value: item['wardId'].toString(),
@@ -524,7 +574,7 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                                       border: OutlineInputBorder(
                                         borderSide: BorderSide(width: 1),
                                       ),
-                                      contentPadding: EdgeInsets.all(2),
+                                      contentPadding: EdgeInsets.only(left: 5),
                                     ),
                                     icon: const Icon(
                                       Icons.keyboard_arrow_down_rounded,
@@ -560,7 +610,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
         height: 70,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30), topRight: Radius.circular(30)),
           boxShadow: [
             BoxShadow(
               offset: const Offset(0, -15),
@@ -573,13 +624,21 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
           width: 190,
           height: 40,
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)), backgroundColor: kPrimaryColor),
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0)),
+                backgroundColor: kPrimaryColor),
             onPressed: () async {
               if (shippingMethod == 0) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateOrderScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CreateOrderScreen()));
               }
-              bool checkValidateFormSend = (shippingMethod == 1 || shippingMethod == 3);
-              bool checkValidateFormReceive = (shippingMethod == 2 || shippingMethod == 3);
+              bool checkValidateFormSend =
+                  (shippingMethod == 1 || shippingMethod == 3);
+              bool checkValidateFormReceive =
+                  (shippingMethod == 2 || shippingMethod == 3);
               bool check = false;
               String? DropoffAddress;
               int? DropoffWardId;
@@ -590,7 +649,8 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
               } else if (!checkValidateFormReceive) {
                 check = _formSendAddressKey.currentState!.validate();
               } else {
-                check = (_formSendAddressKey.currentState!.validate() || _formReceiveAddressKey.currentState!.validate());
+                check = (_formSendAddressKey.currentState!.validate() ||
+                    _formReceiveAddressKey.currentState!.validate());
               }
               // print('sendAdressController.value.text${checkReceiveOrder}');
               // print('sendAdressController.value.te---xt${checkSendOrder}');
@@ -607,36 +667,57 @@ class _ChooseShippingMethodState extends State<ChooseShippingMethod> {
                 //CartItem cartItem = await CartProvider().loadCartItemsFromPrefs();
                 DeliveryRequest dropoff = DeliveryRequest();
                 DeliveryRequest deliver = DeliveryRequest();
-                if (checkValidateFormSend && (shippingMethod == 1 || shippingMethod == 3)) {
+                if (checkValidateFormSend &&
+                    (shippingMethod == 1 || shippingMethod == 3)) {
                   DropoffAddress = sendAdressController.value.text;
                   DropoffWardId = int.parse(sendWard!);
-                  dropoff = DeliveryRequest(deliveryType: false, wardId: DropoffWardId, addressString: DropoffAddress);
+                  dropoff = DeliveryRequest(
+                      deliveryType: false,
+                      wardId: DropoffWardId,
+                      addressString: DropoffAddress);
                   dynamic dropoffDynamic = dropoff.toJson();
                   String dropoffJson = jsonEncode(dropoffDynamic);
-                  baseController.saveStringtoSharedPreference("dropoff", dropoffJson);
+                  baseController.saveStringtoSharedPreference(
+                      "dropoff", dropoffJson);
                 }
-                if (checkValidateFormReceive && (shippingMethod == 2 || shippingMethod == 3)) {
+                if (checkValidateFormReceive &&
+                    (shippingMethod == 2 || shippingMethod == 3)) {
                   DeliverAddress = receiveAdressController.value.text;
                   DeliverWardId = int.parse(receiveWard!);
-                  deliver = DeliveryRequest(deliveryType: true, wardId: DeliverWardId, addressString: DeliverAddress);
+                  deliver = DeliveryRequest(
+                      deliveryType: true,
+                      wardId: DeliverWardId,
+                      addressString: DeliverAddress);
                   dynamic deliverDynamic = deliver.toJson();
                   String deliverJson = jsonEncode(deliverDynamic);
-                  baseController.saveStringtoSharedPreference("deliver", deliverJson);
+                  baseController.saveStringtoSharedPreference(
+                      "deliver", deliverJson);
                 }
                 //double totalWeight = ;
 
                 double totalWeight = 0;
                 for (var element in provider.list) {
                   if (element.weight != null) {
-                    totalWeight = totalWeight + element.measurement * element.weight!;
+                    totalWeight =
+                        totalWeight + element.measurement * element.weight!;
                   }
                 }
-                var totalDeliveryPrice = await orderController.calculateDeliveryPrice(
-                    totalWeight, DropoffAddress, DropoffWardId, DeliverAddress, DeliverWardId, shippingMethod!);
-                baseController.saveDoubletoSharedPreference("deliveryPrice", totalDeliveryPrice);
+                var totalDeliveryPrice =
+                    await orderController.calculateDeliveryPrice(
+                        totalWeight,
+                        DropoffAddress,
+                        DropoffWardId,
+                        DeliverAddress,
+                        DeliverWardId,
+                        shippingMethod!);
+                baseController.saveDoubletoSharedPreference(
+                    "deliveryPrice", totalDeliveryPrice);
                 provider.updateDeliveryPrice();
                 //baseController.printAllSharedPreferences();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CreateOrderScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CreateOrderScreen()));
               }
             },
             child: const Text(
@@ -676,7 +757,7 @@ class FillingShippingInfo extends StatelessWidget {
         border: const OutlineInputBorder(
           borderSide: BorderSide(width: 1),
         ),
-        contentPadding: EdgeInsets.all(2),
+        contentPadding: const EdgeInsets.only(left: 5),
         // labelText: lableText,
         // labelStyle: const TextStyle(
         //   color: Colors.black,
@@ -685,13 +766,14 @@ class FillingShippingInfo extends StatelessWidget {
         hintText: hintText,
         hintStyle: const TextStyle(
           color: textNoteColor,
+          fontSize: 15,
         ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
       controller: controller,
       style: const TextStyle(
         color: textColor,
-        fontSize: 16,
+        fontSize: 15,
       ),
     );
   }
