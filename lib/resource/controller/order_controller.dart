@@ -166,10 +166,18 @@ class OrderController {
   }
 
   Future<String?> createOrder(CartItem cart) async {
-    String url = '$baseUrl/orders';
+    String url = '$baseUrl/staffs/orders';
     Map<String, dynamic> queryParams = {};
-    final headers = {'Content-Type': 'application/json'};
-    http.Response response = await http.post(Uri.parse('$baseUrl/orders'), headers: headers, body: json.encode(cart.toJson()));
+    String? accessToken = await baseController.getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    };
+    //final headers = {'Content-Type': 'application/json'};
+    http.Response response = await http.post(Uri.parse('$baseUrl/staffs/orders'), headers: headers, body: json.encode(cart.toJson()));
+    print(json.encode(cart.toJson()));
+    //http.Response response = await baseController.makeAuthenticatedPostRequest(url, queryParams, json.encode(cart));
+    print(response.body.toString());
     dynamic responseData = json.decode(response.body);
     print(responseData);
     // Make the authenticated POST requests
