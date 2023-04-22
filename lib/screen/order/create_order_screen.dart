@@ -32,7 +32,8 @@ class CreateOrderScreen extends StatefulWidget {
 }
 
 class _CreateOrderScreenState extends State<CreateOrderScreen> {
-  final GlobalKey<FormBuilderFieldState> _dropDownWardKey = GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownWardKey =
+      GlobalKey<FormBuilderFieldState>();
   BaseController baseController = BaseController();
   OrderController orderController = OrderController();
   TextEditingController measurementController = TextEditingController();
@@ -80,8 +81,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   List wardList = [];
   List<OrderDetailItem> addedItems = [];
 
-  final GlobalKey<FormBuilderFieldState> _dropDownSendWardKey = GlobalKey<FormBuilderFieldState>();
-  final GlobalKey<FormBuilderFieldState> _dropDownReceiveWardKey = GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownSendWardKey =
+      GlobalKey<FormBuilderFieldState>();
+  final GlobalKey<FormBuilderFieldState> _dropDownReceiveWardKey =
+      GlobalKey<FormBuilderFieldState>();
   TextEditingController sendAdressController = TextEditingController();
   TextEditingController receiveAdressController = TextEditingController();
   final GlobalKey<FormState> _formSendAddressKey = GlobalKey<FormState>();
@@ -119,7 +122,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   Future getSendWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
@@ -145,7 +149,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   Future getReceiveWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
@@ -171,7 +176,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
   Future getWardsList(String district) async {
     int districtId = int.parse(district);
-    Response response = await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
+    Response response =
+        await get(Uri.parse('$baseUrl/districts/$districtId/wards'));
     if (response.statusCode == 200) {
       var data = json.decode(response.body);
       setState(() {
@@ -222,7 +228,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 size: 27,
               )),
           centerTitle: true,
-          title: const Text('Tạo đơn mới', style: TextStyle(color: textColor, fontSize: 24)),
+          title: const Text('Tạo đơn mới',
+              style: TextStyle(color: textColor, fontSize: 24)),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -380,7 +387,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 DropdownButtonFormField(
                   isDense: true,
                   isExpanded: true,
-                  items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
+                  items: <String>[
+                    'Thành phố Hồ Chí Minh',
+                    'Chọn tỉnh / thành phố'
+                  ].map((String item) {
                     return DropdownMenuItem<String>(
                       value: item,
                       child: Text(item),
@@ -390,7 +400,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     border: OutlineInputBorder(
                       borderSide: BorderSide(width: 1),
                     ),
-                    contentPadding: EdgeInsets.all(2),
+                    contentPadding: EdgeInsets.only(left: 5),
                   ),
                   icon: const Icon(
                     Icons.keyboard_arrow_down_rounded,
@@ -429,7 +439,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1),
                               ),
-                              contentPadding: EdgeInsets.all(2),
+                              contentPadding: EdgeInsets.only(left: 5),
                             ),
                             icon: const Icon(
                               Icons.keyboard_arrow_down_rounded,
@@ -481,7 +491,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(width: 1),
                               ),
-                              contentPadding: EdgeInsets.all(2),
+                              contentPadding: EdgeInsets.only(left: 5),
                             ),
                             icon: const Icon(
                               Icons.keyboard_arrow_down_rounded,
@@ -521,7 +531,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         itemCount: value.list.length,
                         itemBuilder: (context, index) {
                           final item = value.list[index];
-                          measurementController = TextEditingController(text: item.measurement.toString());
+                          measurementController = TextEditingController(
+                              text: item.measurement.toString());
                           return ListTile(
                             title: Text('${item.serviceName}'),
                             subtitle: SizedBox(
@@ -532,7 +543,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                     onTap: () {
                                       setState(() {
                                         //measurement--;
-                                        provider.updateOrderDetailItemToCart(item, -1);
+                                        provider.updateOrderDetailItemToCart(
+                                            item, -1);
                                       });
                                     },
                                     child: Container(
@@ -542,7 +554,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         color: Colors.grey.shade300,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: const Icon(Icons.remove, color: Colors.white, size: 15),
+                                      child: const Icon(Icons.remove,
+                                          color: Colors.white, size: 15),
                                     ),
                                   ),
                                   Flexible(
@@ -574,7 +587,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                     onTap: () {
                                       setState(() {
                                         //measurement++;
-                                        provider.updateOrderDetailItemToCart(item, 1);
+                                        provider.updateOrderDetailItemToCart(
+                                            item, 1);
                                       });
                                     },
                                     child: Container(
@@ -584,7 +598,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         color: kPrimaryColor.withOpacity(.8),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
-                                      child: const Icon(Icons.add, color: Colors.white, size: 15),
+                                      child: const Icon(Icons.add,
+                                          color: Colors.white, size: 15),
                                     ),
                                   ),
                                   const SizedBox(width: 7),
@@ -602,7 +617,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   const SizedBox(width: 10),
                                   Text(
                                     '${item.price} đ',
-                                    style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
+                                    style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
@@ -660,7 +678,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       SizedBox(width: 5),
                       Text(
                         'Thêm dịch vụ',
-                        style: TextStyle(color: kPrimaryColor, fontSize: 17, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                            color: kPrimaryColor,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -680,7 +701,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                     setState(() {
                       noteController.text = value;
                     });
-                    await baseController.saveStringtoSharedPreference("customerMessage", value);
+                    await baseController.saveStringtoSharedPreference(
+                        "customerMessage", value);
                     print(value);
                   },
                 ),
@@ -697,7 +719,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       children: [
                         SizedBox(
                           width: 35,
-                          child: Image.asset('assets/images/shipping/ship-di.png'),
+                          child:
+                              Image.asset('assets/images/shipping/ship-di.png'),
                         ),
                         const SizedBox(width: 10),
                         const Text(
@@ -713,7 +736,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         setState(() async {
                           shippingMethod = newVal;
                           isCalculateShipFee = true;
-                          await baseController.saveDoubletoSharedPreference("deliveryPrice", 0);
+                          await baseController.saveDoubletoSharedPreference(
+                              "deliveryPrice", 0);
                           provider.updateDeliveryPrice();
                         });
                       },
@@ -728,7 +752,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       children: [
                         SizedBox(
                           width: 35,
-                          child: Image.asset('assets/images/shipping/dua-den.png'),
+                          child:
+                              Image.asset('assets/images/shipping/dua-den.png'),
                         ),
                         const SizedBox(width: 10),
                         const Text(
@@ -757,7 +782,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       children: [
                         SizedBox(
                           width: 35,
-                          child: Image.asset('assets/images/shipping/giao-den.png'),
+                          child: Image.asset(
+                              'assets/images/shipping/giao-den.png'),
                         ),
                         const SizedBox(width: 16),
                         const Text(
@@ -786,7 +812,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       children: [
                         SizedBox(
                           width: 35,
-                          child: Image.asset('assets/images/shipping/shipper.png'),
+                          child:
+                              Image.asset('assets/images/shipping/shipper.png'),
                         ),
                         const SizedBox(width: 16),
                         const Text(
@@ -814,7 +841,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         children: [
                           const Text(
                             'Địa chỉ lấy đơn',
-                            style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: textBoldColor,
+                                fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 10),
                           const Text(
@@ -845,7 +875,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           DropdownButtonFormField(
                             isDense: true,
                             isExpanded: true,
-                            items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
+                            items: <String>[
+                              'Thành phố Hồ Chí Minh',
+                              'Chọn tỉnh / thành phố'
+                            ].map((String item) {
                               return DropdownMenuItem<String>(
                                 value: item,
                                 child: Text(item),
@@ -894,7 +927,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide(width: 1),
                                         ),
-                                        contentPadding: EdgeInsets.only(left: 5),
+                                        contentPadding:
+                                            EdgeInsets.only(left: 5),
                                       ),
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down_rounded,
@@ -908,8 +942,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         setState(() {
                                           sendDistrict = newValue!;
                                           getSendWardsList(newValue);
-                                          _dropDownSendWardKey.currentState!.reset();
-                                          _dropDownSendWardKey.currentState!.setValue(null);
+                                          _dropDownSendWardKey.currentState!
+                                              .reset();
+                                          _dropDownSendWardKey.currentState!
+                                              .setValue(null);
                                           isLoadingSendWard = false;
                                         });
                                       },
@@ -946,7 +982,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide(width: 1),
                                         ),
-                                        contentPadding: EdgeInsets.only(left: 5),
+                                        contentPadding:
+                                            EdgeInsets.only(left: 5),
                                       ),
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down_rounded,
@@ -980,7 +1017,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         children: [
                           const Text(
                             'Địa chỉ trả đơn',
-                            style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: textBoldColor,
+                                fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 10),
                           const Text(
@@ -1011,7 +1051,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           DropdownButtonFormField(
                             isDense: true,
                             isExpanded: true,
-                            items: <String>['Thành phố Hồ Chí Minh', 'Chọn tỉnh / thành phố'].map((String item) {
+                            items: <String>[
+                              'Thành phố Hồ Chí Minh',
+                              'Chọn tỉnh / thành phố'
+                            ].map((String item) {
                               return DropdownMenuItem<String>(
                                 value: item,
                                 child: Text(item),
@@ -1060,7 +1103,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide(width: 1),
                                         ),
-                                        contentPadding: EdgeInsets.only(left: 5),
+                                        contentPadding:
+                                            EdgeInsets.only(left: 5),
                                       ),
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down_rounded,
@@ -1073,8 +1117,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                       onChanged: (String? newValue) {
                                         setState(() {
                                           receiveDistrict = newValue!;
-                                          _dropDownReceiveWardKey.currentState!.reset();
-                                          _dropDownReceiveWardKey.currentState!.setValue(null);
+                                          _dropDownReceiveWardKey.currentState!
+                                              .reset();
+                                          _dropDownReceiveWardKey.currentState!
+                                              .setValue(null);
                                           getReceiveWardsList(newValue);
                                           isLoadingReceiveWard = false;
                                         });
@@ -1112,7 +1158,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide(width: 1),
                                         ),
-                                        contentPadding: EdgeInsets.only(left: 5),
+                                        contentPadding:
+                                            EdgeInsets.only(left: 5),
                                       ),
                                       icon: const Icon(
                                         Icons.keyboard_arrow_down_rounded,
@@ -1154,20 +1201,28 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
 
                               //print("shippingMethod $shippingMethod");
                               if (shippingMethod == 0) {
-                                baseController.saveDoubletoSharedPreference("deliveryPrice", 0);
+                                baseController.saveDoubletoSharedPreference(
+                                    "deliveryPrice", 0);
                                 provider.updateDeliveryPrice();
                                 //Navigator.push(context, MaterialPageRoute(builder: (context) => const CreateOrderScreen()));
                                 return;
                               }
-                              bool checkValidateFormSend = (shippingMethod == 1 || shippingMethod == 3);
-                              bool checkValidateFormReceive = (shippingMethod == 2 || shippingMethod == 3);
+                              bool checkValidateFormSend =
+                                  (shippingMethod == 1 || shippingMethod == 3);
+                              bool checkValidateFormReceive =
+                                  (shippingMethod == 2 || shippingMethod == 3);
                               bool check = false;
                               if (!checkValidateFormSend) {
-                                check = _formReceiveAddressKey.currentState!.validate();
+                                check = _formReceiveAddressKey.currentState!
+                                    .validate();
                               } else if (!checkValidateFormReceive) {
-                                check = _formSendAddressKey.currentState!.validate();
+                                check = _formSendAddressKey.currentState!
+                                    .validate();
                               } else {
-                                check = (_formSendAddressKey.currentState!.validate() || _formReceiveAddressKey.currentState!.validate());
+                                check = (_formSendAddressKey.currentState!
+                                        .validate() ||
+                                    _formReceiveAddressKey.currentState!
+                                        .validate());
                               }
                               // print('sendAdressController.value.text${checkReceiveOrder}');
                               // print('sendAdressController.value.te---xt${checkSendOrder}');
@@ -1184,18 +1239,30 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 //CartItem cartItem = await CartProvider().loadCartItemsFromPrefs();
                                 DeliveryRequest dropoff = DeliveryRequest();
                                 DeliveryRequest deliver = DeliveryRequest();
-                                if (checkValidateFormSend && (shippingMethod == 1 || shippingMethod == 3)) {
-                                  DropoffAddress = sendAdressController.value.text;
+                                if (checkValidateFormSend &&
+                                    (shippingMethod == 1 ||
+                                        shippingMethod == 3)) {
+                                  DropoffAddress =
+                                      sendAdressController.value.text;
                                   DropoffWardId = int.parse(sendWard!);
-                                  dropoff = DeliveryRequest(deliveryType: false, wardId: DropoffWardId, addressString: DropoffAddress);
+                                  dropoff = DeliveryRequest(
+                                      deliveryType: false,
+                                      wardId: DropoffWardId,
+                                      addressString: DropoffAddress);
                                   dynamic dropoffDynamic = dropoff.toJson();
                                   dropoffJson = jsonEncode(dropoffDynamic);
                                   //baseController.saveStringtoSharedPreference("dropoff", dropoffJson);
                                 }
-                                if (checkValidateFormReceive && (shippingMethod == 2 || shippingMethod == 3)) {
-                                  DeliverAddress = receiveAdressController.value.text;
+                                if (checkValidateFormReceive &&
+                                    (shippingMethod == 2 ||
+                                        shippingMethod == 3)) {
+                                  DeliverAddress =
+                                      receiveAdressController.value.text;
                                   DeliverWardId = int.parse(receiveWard!);
-                                  deliver = DeliveryRequest(deliveryType: true, wardId: DeliverWardId, addressString: DeliverAddress);
+                                  deliver = DeliveryRequest(
+                                      deliveryType: true,
+                                      wardId: DeliverWardId,
+                                      addressString: DeliverAddress);
                                   dynamic deliverDynamic = deliver.toJson();
                                   deliverJson = jsonEncode(deliverDynamic);
                                   //baseController.saveStringtoSharedPreference("deliver", deliverJson);
@@ -1205,15 +1272,23 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 double totalWeight = 0;
                                 for (var element in provider.list) {
                                   if (element.weight != null) {
-                                    totalWeight = totalWeight + element.measurement * element.weight!;
+                                    totalWeight = totalWeight +
+                                        element.measurement * element.weight!;
                                   }
                                 }
                                 setState(() {
                                   isLoadingDeliveryPrice = true;
                                 });
-                                totalDeliveryPrice = await orderController.calculateDeliveryPrice(
-                                    totalWeight, DropoffAddress, DropoffWardId, DeliverAddress, DeliverWardId, shippingMethod!);
-                                baseController.saveDoubletoSharedPreference("deliveryPrice", totalDeliveryPrice);
+                                totalDeliveryPrice = await orderController
+                                    .calculateDeliveryPrice(
+                                        totalWeight,
+                                        DropoffAddress,
+                                        DropoffWardId,
+                                        DeliverAddress,
+                                        DeliverWardId,
+                                        shippingMethod!);
+                                baseController.saveDoubletoSharedPreference(
+                                    "deliveryPrice", totalDeliveryPrice);
                                 setState(() {
                                   isLoadingDeliveryPrice = false;
                                 });
@@ -1226,12 +1301,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                padding: const EdgeInsetsDirectional.symmetric(
+                                    horizontal: 19, vertical: 10),
                                 foregroundColor: kPrimaryColor.withOpacity(.7),
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
-                                  side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                  side: BorderSide(
+                                      color: kPrimaryColor.withOpacity(.5),
+                                      width: 1),
                                 ),
                                 backgroundColor: kPrimaryColor),
                             child: const Text(
@@ -1259,7 +1337,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         children: const [
                           const Text(
                             'Phương thức thanh toán',
-                            style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                                color: textColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500),
                           ),
                           const SizedBox(height: 16),
                         ],
@@ -1284,7 +1365,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               children: [
                                 SizedBox(
                                   width: 35,
-                                  child: Image.asset('assets/images/shipping/cash-on-delivery.png'),
+                                  child: Image.asset(
+                                      'assets/images/shipping/cash-on-delivery.png'),
                                 ),
                                 const SizedBox(width: 8),
                                 const Text(
@@ -1300,7 +1382,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               onChanged: (newVal) {
                                 setState(() {
                                   payment = newVal;
-                                  baseController.saveInttoSharedPreference("paymentMethod", 0);
+                                  baseController.saveInttoSharedPreference(
+                                      "paymentMethod", 0);
                                 });
                               },
                             ),
@@ -1327,7 +1410,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               children: [
                                 SizedBox(
                                   width: 35,
-                                  child: Image.asset('assets/images/shipping/vnpay-icon.png'),
+                                  child: Image.asset(
+                                      'assets/images/shipping/vnpay-icon.png'),
                                 ),
                                 const SizedBox(width: 8),
                                 const Text(
@@ -1343,7 +1427,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 setState(() {
                                   payment = newVal;
                                   print(newVal);
-                                  baseController.saveInttoSharedPreference("paymentMethod", 1);
+                                  baseController.saveInttoSharedPreference(
+                                      "paymentMethod", 1);
                                 });
                               },
                             ),
@@ -1361,7 +1446,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 const SizedBox(height: 15),
                 const Text(
                   'Thời gian gửi đơn',
-                  style: TextStyle(fontSize: 18, color: textBoldColor, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: textBoldColor,
+                      fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -1373,18 +1461,22 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       child: DropdownButtonFormField(
                         decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: textColor, width: 1),
+                            borderSide:
+                                const BorderSide(color: textColor, width: 1),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+                          contentPadding: const EdgeInsets.only(
+                              left: 8, right: 8, top: 0, bottom: 0),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: textColor, width: 1),
+                            borderSide:
+                                const BorderSide(color: textColor, width: 1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         isDense: true,
                         isExpanded: true,
-                        items: <String>['Hôm nay', 'Ngày mai'].map((String item) {
+                        items:
+                            <String>['Hôm nay', 'Ngày mai'].map((String item) {
                           return DropdownMenuItem<String>(
                             value: item,
                             child: Text(item),
@@ -1404,9 +1496,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           });
 
                           if (newValue!.compareTo("Hôm nay") == 0) {
-                            chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
+                            chooseDate =
+                                DateFormat('dd-MM-yyyy').format(DateTime.now());
                           } else if (newValue.compareTo("Ngày mai") == 0) {
-                            chooseDate = DateFormat('dd-MM-yyyy').format(DateTime.now().add(Duration(days: 1)));
+                            chooseDate = DateFormat('dd-MM-yyyy')
+                                .format(DateTime.now().add(Duration(days: 1)));
                           }
                           //print(await baseController.getStringtoSharedPreference("preferredDropoffTime_Date"));
                         },
@@ -1417,19 +1511,25 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       height: 40,
                       child: ElevatedButton(
                         onPressed: () async {
-                          TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                          TimeOfDay? orderTime = await showTimePicker(
+                              context: context, initialTime: TimeOfDay.now());
                           if (orderTime != null) {
                             setState(() {
-                              receiveOrderTime = '${orderTime.hour}:${orderTime.minute}';
+                              receiveOrderTime =
+                                  '${orderTime.hour}:${orderTime.minute}';
                             });
-                            String hourSave = orderTime.hour.toString().padLeft(2, '0');
-                            String minuteSave = orderTime.minute.toString().padLeft(2, '0');
+                            String hourSave =
+                                orderTime.hour.toString().padLeft(2, '0');
+                            String minuteSave =
+                                orderTime.minute.toString().padLeft(2, '0');
                             String secondSave = '00';
-                            sendOrderTimeSave = '$hourSave:$minuteSave:$secondSave';
+                            sendOrderTimeSave =
+                                '$hourSave:$minuteSave:$secondSave';
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                          padding: const EdgeInsetsDirectional.symmetric(
+                              horizontal: 19, vertical: 10),
                           foregroundColor: kPrimaryColor.withOpacity(.7),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
@@ -1467,7 +1567,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
           height: 140,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30), topRight: Radius.circular(30)),
             boxShadow: [
               BoxShadow(
                 offset: const Offset(0, -15),
@@ -1484,11 +1585,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   children: [
                     const Text(
                       'Phí ship:',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
                     ),
                     Text(
                       '${value.deliveryPrice}',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: kPrimaryColor),
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                          color: kPrimaryColor),
                     ),
                   ],
                 );
@@ -1500,11 +1605,15 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                   children: [
                     const Text(
                       'Tổng cộng dự kiến:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       '${value.list.fold(0.0, (sum, item) => sum + item.price!) + value.deliveryPrice}',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: kPrimaryColor),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: kPrimaryColor),
                     ),
                   ],
                 );
@@ -1514,11 +1623,13 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                 height: 40,
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                  onPressed: (isCalculateShipFee == false && shippingMethod != 0)
+                  onPressed: (isCalculateShipFee == false &&
+                          shippingMethod != 0)
                       ? null
                       : () async {
                           List<OrderDetailRequest> orderDetailRequests = [];
-                          var centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+                          var centerId = await baseController
+                              .getInttoSharedPreference("CENTER_ID");
                           for (var element in provider.list) {
                             orderDetailRequests.add(new OrderDetailRequest(
                                 serviceId: element.serviceId,
@@ -1536,7 +1647,10 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             //dynamic dropoffDynamic = jsonDecode(dropoffJson);
                             //var dropoffModel = dropoffDynamic.map((item) => DeliveryRequest.fromJson(item));
                             //deliveries.add(dropoffModel);
-                            deliveries.add(new DeliveryRequest(addressString: DropoffAddress, wardId: DropoffWardId, deliveryType: false));
+                            deliveries.add(new DeliveryRequest(
+                                addressString: DropoffAddress,
+                                wardId: DropoffWardId,
+                                deliveryType: false));
                           }
                           if (shippingMethod == 2 || shippingMethod == 3) {
                             //String? deliver = await baseController.getStringtoSharedPreference("deliver");
@@ -1544,11 +1658,18 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                             // dynamic deliverDynamic = jsonDecode(deliverJson);
                             // var deliverModel = deliverDynamic.map((item) => DeliveryRequest.fromJson(item));
                             // deliveries.add(deliverModel);
-                            deliveries.add(new DeliveryRequest(addressString: DeliverAddress, wardId: DeliverWardId, deliveryType: true));
+                            deliveries.add(new DeliveryRequest(
+                                addressString: DeliverAddress,
+                                wardId: DeliverWardId,
+                                deliveryType: true));
                           }
                           String? preferredDropoffTime;
-                          if (chooseDate != null && sendOrderTimeSave != null && chooseDate != "" && sendOrderTimeSave != "") {
-                            preferredDropoffTime = chooseDate! + " " + sendOrderTimeSave!;
+                          if (chooseDate != null &&
+                              sendOrderTimeSave != null &&
+                              chooseDate != "" &&
+                              sendOrderTimeSave != "") {
+                            preferredDropoffTime =
+                                chooseDate! + " " + sendOrderTimeSave!;
                           }
                           CartItem cartItem = CartItem(
                               centerId: centerId,
@@ -1562,9 +1683,11 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   deliveryType: shippingMethod,
                                   //deliveryPrice: await baseController.getDoubletoSharedPreference("deliveryPrice"),
                                   deliveryPrice: totalDeliveryPrice,
-                                  preferredDropoffTime: preferredDropoffTime == null
-                                      ? DateFormat('dd-MM-yyyy HH:mm:ss').format(DateTime.now())
-                                      : preferredDropoffTime!),
+                                  preferredDropoffTime:
+                                      preferredDropoffTime == null
+                                          ? DateFormat('dd-MM-yyyy HH:mm:ss')
+                                              .format(DateTime.now())
+                                          : preferredDropoffTime),
                               orderDetails: orderDetailRequests,
                               deliveries: deliveries,
                               paymentMethod: payment);
@@ -1576,12 +1699,17 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                   child: CircularProgressIndicator(),
                                 );
                               });
-                          String? orderId = await orderController.createOrder(cartItem);
+                          String? orderId =
+                              await orderController.createOrder(cartItem);
                           print(orderId);
                           if (orderId != null && orderId.length == 16) {
                             Navigator.of(context).pop();
                             Navigator.push(
-                                context, PageTransition(child: OrderDetailScreen(orderId: orderId), type: PageTransitionType.rightToLeftWithFade));
+                                context,
+                                PageTransition(
+                                    child: OrderDetailScreen(orderId: orderId),
+                                    type: PageTransitionType
+                                        .rightToLeftWithFade));
                           } else {
                             Navigator.of(context).pop();
                             showDialog(
@@ -1589,7 +1717,8 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text('Thông báo'),
-                                  content: Text('Có lỗi xảy ra trong quá trình đặt hàng'),
+                                  content: Text(
+                                      'Có lỗi xảy ra trong quá trình đặt hàng'),
                                   actions: <Widget>[
                                     ElevatedButton(
                                       child: Text('Đóng'),
@@ -1604,12 +1733,14 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           }
                         },
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                      padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 19, vertical: 10),
                       foregroundColor: kPrimaryColor.withOpacity(.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                        side: BorderSide(
+                            color: kPrimaryColor.withOpacity(.5), width: 1),
                       ),
                       backgroundColor: kPrimaryColor),
                   child: const Text(

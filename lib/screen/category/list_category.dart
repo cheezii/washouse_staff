@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:washouse_staff/resource/model/service.dart';
+import 'package:washouse_staff/utils/price_util.dart';
 
 import '../../components/constants/color_constants.dart';
 import '../../resource/controller/base_controller.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
 import '../notification/list_notification_screen.dart';
+import 'components/list_categories_skeleton.dart';
 
 class ListCategoryScreen extends StatefulWidget {
   const ListCategoryScreen({super.key});
@@ -23,6 +26,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
   List<CenterServices> catetList = [];
   int? _centerId;
   bool _categoryTileExpanded = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
       (result) {
         setState(() {
           catetList = result.centerServices!;
+          isLoading = false;
         });
       },
     );
@@ -50,6 +55,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('length: ${catetList.length}');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -84,76 +90,147 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          children: [
-            TextField(
-              controller: searchController,
-              decoration: InputDecoration(
-                hintText: 'Tìm kiếm',
-                hintStyle: TextStyle(
-                    color: Colors.grey.shade500, height: 1, fontSize: 15),
-                prefixIcon: Icon(
-                  Icons.search_rounded,
-                  color: Colors.grey.shade500,
-                  size: 20,
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade200,
-                contentPadding: const EdgeInsets.all(8),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade200,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            children: [
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm',
+                  hintStyle: TextStyle(
+                      color: Colors.grey.shade500, height: 1, fontSize: 15),
+                  prefixIcon: Icon(
+                    Icons.search_rounded,
+                    color: Colors.grey.shade500,
+                    size: 20,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey.shade200,
+                  contentPadding: const EdgeInsets.all(8),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(
+                      color: Colors.grey.shade200,
+                    ),
                   ),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade200,
-                  ),
-                ),
+                style: TextStyle(
+                    color: Colors.grey.shade700, height: 1, fontSize: 15),
               ),
-              style: TextStyle(
-                  color: Colors.grey.shade700, height: 1, fontSize: 15),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: catetList.length,
-                  itemBuilder: (context, cateIndex) {
-                    return ExpansionTile(
-                      leading: Icon(Icons.category_rounded),
-                      title:
-                          Text('${catetList[cateIndex].serviceCategoryName}'),
-                      trailing: Icon(Icons.keyboard_arrow_down_rounded),
-                      children: [
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: catetList[cateIndex].services?.length,
-                            itemBuilder: (context, serviceIndex) {
-                              var serviceList = catetList[cateIndex].services
-                                  as List<ServiceCenter>;
-                              return Padding(
-                                padding: const EdgeInsets.only(left: 55),
-                                child: ListTile(
-                                  title: Text(
-                                    '${serviceList[serviceIndex].serviceName}',
-                                    maxLines: 2,
+              const SizedBox(height: 10),
+              Skeleton(
+                isLoading: isLoading,
+                skeleton: const ListCategoriesSkeleton(),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: catetList.length,
+                    itemBuilder: (context, cateIndex) {
+                      return ExpansionTile(
+                        leading: Icon(Icons.category_rounded),
+                        title:
+                            Text('${catetList[cateIndex].serviceCategoryName}'),
+                        trailing: Icon(Icons.keyboard_arrow_down_rounded),
+                        children: [
+                          ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: catetList[cateIndex].services?.length,
+                              itemBuilder: (context, serviceIndex) {
+                                var serviceList = catetList[cateIndex].services
+                                    as List<ServiceCenter>;
+                                var priceList = serviceList[serviceIndex].prices
+                                    as List<Prices>;
+                                return Padding(
+                                  padding: const EdgeInsets.only(left: 55),
+                                  child: ListTile(
+                                    title: Text(
+                                      '${serviceList[serviceIndex].serviceName}',
+                                      maxLines: 2,
+                                    ),
+                                    trailing: priceList.isEmpty
+                                        ? Text(
+                                            '${PriceUtils().convertFormatPrice(serviceList[serviceIndex].price!.round())} đ/${serviceList[serviceIndex].unit!.toLowerCase()}',
+                                            style: const TextStyle(
+                                                color: kPrimaryColor,
+                                                fontWeight: FontWeight.w500),
+                                          )
+                                        : IconButton(
+                                            onPressed: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: ((context) {
+                                                  return AlertDialog(
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
+                                                    title: const Align(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text('Bảng giá'),
+                                                    ),
+                                                    content: DataTable(
+                                                      columns: const <
+                                                          DataColumn>[
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Tối đa',
+                                                            style: TextStyle(
+                                                                fontStyle:
+                                                                    FontStyle
+                                                                        .italic),
+                                                          ),
+                                                        ),
+                                                        DataColumn(
+                                                          label: Text(
+                                                            'Giá thành',
+                                                            style: TextStyle(
+                                                                fontStyle:
+                                                                    FontStyle
+                                                                        .italic),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                      rows: priceList
+                                                          .map<DataRow>(
+                                                              (e) => DataRow(
+                                                                      cells: [
+                                                                        DataCell(Text(e.maxValue.toString() +
+                                                                            ' ${serviceList[serviceIndex].unit!.toLowerCase()}')),
+                                                                        DataCell(
+                                                                            Text('${PriceUtils().convertFormatPrice(e.price?.round() as num)} đ/${serviceList[serviceIndex].unit!.toLowerCase()}')),
+                                                                      ]))
+                                                          .toList(),
+                                                    ),
+                                                  );
+                                                }),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.info_outline_rounded,
+                                              color: kPrimaryColor,
+                                            )),
                                   ),
-                                ),
-                              );
-                            }),
-                      ],
-                      // onExpansionChanged: (bool expanded) {
-                      //   setState(() => _categoryTileExpanded = expanded);
-                      // },
-                    );
-                  }),
-            )
-          ],
+                                );
+                              }),
+                        ],
+                        // onExpansionChanged: (bool expanded) {
+                        //   setState(() => _categoryTileExpanded = expanded);
+                        // },
+                      );
+                    }),
+              )
+            ],
+          ),
         ),
       ),
     );
