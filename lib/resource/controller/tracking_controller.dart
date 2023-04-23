@@ -54,6 +54,9 @@ class TrackingController {
 
   Future<String> trackingOrderDetail(String orderId, int orderDetailId) async {
     try {
+      print(orderId);
+      print(orderDetailId);
+
       String url = '$baseUrl/tracking/orders/$orderId/order-details/$orderDetailId/tracking';
       Map<String, dynamic> queryParams = {};
       Map<String, dynamic> requestBody = {};

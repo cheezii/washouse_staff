@@ -24,4 +24,18 @@ class OrderUtils {
       return 'Not match status';
     }
   }
+
+  String mapVietnameseOrderDetailStatus(String status) {
+    if (status.trim().toLowerCase().compareTo("pending") == 0) {
+      return 'Đang chờ';
+    } else if (status.trim().toLowerCase().compareTo("processing") == 0) {
+      return 'Xử lý';
+    } else if (status.trim().toLowerCase().compareTo("completed") == 0) {
+      return 'Hoàn tất';
+    } else if (status.trim().toLowerCase().compareTo("cancelled") == 0) {
+      return 'Đã hủy';
+    } else {
+      return 'Not match status';
+    }
+  }
 }

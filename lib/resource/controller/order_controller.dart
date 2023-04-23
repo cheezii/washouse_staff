@@ -202,4 +202,31 @@ class OrderController {
       print(responseData);
     }
   }
+
+  Future<String> updateMeasurementOrderDetail(String orderId, int orderDetailId, double? measurement, String? staffNote) async {
+    try {
+      String url = '$baseUrl/manager/my-center/orders/$orderId/details/$orderDetailId';
+      Map<String, dynamic> queryParams = {};
+      Map<String, dynamic> requestBody = {};
+      if (measurement != null) {
+        requestBody["measurement"] = measurement;
+      }
+      if (staffNote != null) {
+        requestBody["staffNote"] = staffNote;
+      }
+      Response response = await baseController.makeAuthenticatedPutRequest(url, queryParams, requestBody);
+      var data = jsonDecode(response.body)["message"];
+      if (response.statusCode == 200) {
+        // Handle successful response
+        return data;
+        // Do something with the user data...
+      } else {
+        // Handle error response
+        throw Exception('Error fetching updateMeasurementOrderDetail: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: updateMeasurementOrderDetail-$e');
+      return 'error_fetch';
+    }
+  }
 }
