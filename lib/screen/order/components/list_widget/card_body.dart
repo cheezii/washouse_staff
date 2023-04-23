@@ -69,21 +69,30 @@ class CardBody extends StatelessWidget {
         ),
         const SizedBox(height: 5),
         Divider(thickness: 1, color: Colors.grey.shade300),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Xem thêm',
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-            ),
-            Icon(
-              Icons.keyboard_arrow_down_rounded,
-              size: 18,
-              color: Colors.grey.shade500,
-            )
-          ],
-        ),
-        Divider(thickness: 1, color: Colors.grey.shade300),
+        (order.orderedServices!.length > 1)
+            ? Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Và thêm ${order.orderedServices!.length - 1}  sản phẩm nữa',
+                        style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: Colors.grey.shade500,
+                      )
+                    ],
+                  ),
+                  Divider(thickness: 1, color: Colors.grey.shade300),
+                ],
+              )
+            : const SizedBox(
+                height: 0,
+                width: 0,
+              ),
         const SizedBox(height: 4),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

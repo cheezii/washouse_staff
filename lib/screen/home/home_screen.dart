@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<ChartData> data = [
     ChartData('Đang chờ', 6, pendingdColor),
     ChartData('Xác nhận', 14, confirmedColor),
-    ChartData('Đã nhận hàng', 22, completeColor),
+    ChartData('Đã nhận', 22, completeColor),
     ChartData('Xử lý', 28, processingColor),
     ChartData('Sẵn sàng', 15, readyColor),
     ChartData('Hoàn tất', 30, completeColor),
