@@ -214,7 +214,9 @@ class OrderController {
       if (staffNote != null) {
         requestBody["staffNote"] = staffNote;
       }
+      print(requestBody);
       Response response = await baseController.makeAuthenticatedPutRequest(url, queryParams, requestBody);
+      print(response.body);
       var data = jsonDecode(response.body)["message"];
       if (response.statusCode == 200) {
         // Handle successful response

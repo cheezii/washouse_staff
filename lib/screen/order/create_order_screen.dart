@@ -1527,6 +1527,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                 customerNote: element.customerNote,
                                 staffNote: element.staffNote));
                           }
+                          print(1);
                           List<DeliveryRequest> deliveries = [];
                           //shippingMethod = await baseController.getInttoSharedPreference("shippingMethod");
                           shippingMethod = shippingMethod;
@@ -1579,6 +1580,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                           print(orderId);
                           if (orderId != null && orderId.length == 16) {
                             Navigator.of(context).pop();
+                            Navigator.of(context).pop();
+                            await provider.removeCart();
+                            await baseController.printAllSharedPreferences();
                             Navigator.push(
                                 context, PageTransition(child: OrderDetailScreen(orderId: orderId), type: PageTransitionType.rightToLeftWithFade));
                           } else {

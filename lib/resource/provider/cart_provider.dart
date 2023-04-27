@@ -145,44 +145,44 @@ class CartProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  // void _clearIfCartEmpty() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   //prefs.setInt('cart_item', _counter);
-  //   prefs.remove('centerId');
-  //   prefs.setDouble('total_price', 0);
-  //   prefs.remove('discount');
-  //   prefs.remove('customerName');
-  //   prefs.remove('customerAddressString');
-  //   prefs.remove('customerMessage');
-  //   prefs.remove('customerWardId');
-  //   prefs.remove('paymentMethod');
-  //   prefs.remove('deliveryType');
-  //   prefs.remove('preferredDropoffTime');
-  //   prefs.remove('preferredDropoffTime_Date');
-  //   prefs.remove('preferredDropoffTime_Time');
-  //   prefs.remove('preferredDeliverTime_Time');
-  //   prefs.remove('preferredDeliverTime_Date');
-  //   prefs.remove('addressString_Dropoff');
-  //   prefs.remove('addressString_Delivery');
-  //   prefs.remove('wardId_Dropoff');
-  //   prefs.remove('wardId_Delivery');
-  //   prefs.remove('promoCode');
-  //   prefs.remove('customerPhone');
-  //   prefs.remove('customerNote');
-  //   prefs.remove('cartItems');
-  //   prefs.remove('deliveryPrice');
-  //   prefs.remove('total_price');
-  //   prefs.remove('customerNote');
-  //   prefs.remove('centerId');
-  //   prefs.remove('customerName');
-  //   prefs.remove('customerPhone');
-  //   prefs.remove('customerWardId');
-  //   prefs.remove('deliveryType');
-  //   prefs.remove('addressString_Dropoff');
-  //   prefs.remove('customerMessage');
-  //   prefs.remove('paymentMethod');
-  //   notifyListeners();
-  // }
+  void _clearIfCartEmpty() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //prefs.setInt('cart_item', _counter);
+    prefs.remove('centerId');
+    prefs.setDouble('total_price', 0);
+    prefs.remove('discount');
+    prefs.remove('customerName');
+    prefs.remove('customerAddressString');
+    prefs.remove('customerMessage');
+    prefs.remove('customerWardId');
+    prefs.remove('paymentMethod');
+    prefs.remove('deliveryType');
+    prefs.remove('preferredDropoffTime');
+    prefs.remove('preferredDropoffTime_Date');
+    prefs.remove('preferredDropoffTime_Time');
+    prefs.remove('preferredDeliverTime_Time');
+    prefs.remove('preferredDeliverTime_Date');
+    prefs.remove('addressString_Dropoff');
+    prefs.remove('addressString_Delivery');
+    prefs.remove('wardId_Dropoff');
+    prefs.remove('wardId_Delivery');
+    prefs.remove('promoCode');
+    prefs.remove('customerPhone');
+    prefs.remove('customerNote');
+    prefs.remove('cartItems');
+    prefs.remove('deliveryPrice');
+    prefs.remove('total_price');
+    prefs.remove('customerNote');
+    prefs.remove('centerId');
+    prefs.remove('customerName');
+    prefs.remove('customerPhone');
+    prefs.remove('customerWardId');
+    prefs.remove('deliveryType');
+    prefs.remove('addressString_Dropoff');
+    prefs.remove('customerMessage');
+    prefs.remove('paymentMethod');
+    notifyListeners();
+  }
 
   // void _getPrefItems() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -211,18 +211,19 @@ class CartProvider extends ChangeNotifier {
   //   _setPromotion();
   // }
 
-  // void removeCart() async {
-  //   _cartItems.clear();
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.remove('cartItems');
-  //   _discount = 0;
-  //   _deliveryPrice = 0;
-  //   _totalPrice = 0;
-  //   _promoCode = "";
-  //   _clearIfCartEmpty();
-  //   notifyListeners();
-  //   _setCenter();
-  // }
+  Future removeCart() async {
+    _cartItem = CartItem();
+    _list.clear();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('cartItem');
+    _discount = 0;
+    _deliveryPrice = 0;
+    _deliveryType = 0;
+    _totalPrice = 0;
+    _promoCode = "";
+    _clearIfCartEmpty();
+    notifyListeners();
+  }
 
   // void _setCenter() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();

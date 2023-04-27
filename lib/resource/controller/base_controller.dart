@@ -7,6 +7,14 @@ import 'package:path/path.dart';
 import 'package:async/async.dart';
 
 class BaseController {
+  Future<void> printAllSharedPreferences() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    List<String> keys = sharedPreferences.getKeys().toList();
+    keys.forEach((key) {
+      print('SP-$key: ${sharedPreferences.get(key)}');
+    });
+  }
+
   // Define a function to get the value of a key from shared preferences
   Future<String?> getStringtoSharedPreference(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

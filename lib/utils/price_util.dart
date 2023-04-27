@@ -3,11 +3,10 @@ class PriceUtils {
     String priceString = price.toString();
     String priceConvert = '';
     int stringLength = priceString.length;
-
+    if (stringLength <= 3) return price.toString();
     String lastThreeChars = priceString.substring(stringLength - 3);
     if (stringLength <= 6) {
-      priceConvert =
-          '${priceString.substring(stringLength - stringLength, stringLength - 3)}.$lastThreeChars';
+      priceConvert = '${priceString.substring(stringLength - stringLength, stringLength - 3)}.$lastThreeChars';
     } else if (stringLength > 6 && stringLength <= 9) {
       priceConvert =
           '${priceString.substring(stringLength - stringLength, stringLength - 6)}.${priceString.substring(stringLength - 6, stringLength - 3)}.$lastThreeChars';
