@@ -8,10 +8,10 @@ import 'base_controller.dart';
 BaseController baseController = BaseController();
 
 class TrackingController {
-  Future<String> cancelledOrder(String orderId) async {
+  Future<String> cancelledOrder(String orderId, String Reason) async {
     try {
       String url = '$baseUrl/tracking/orders/$orderId/cancelled';
-      Map<String, dynamic> queryParams = {};
+      Map<String, dynamic> queryParams = {'Reason': Reason.toString()};
       Map<String, dynamic> requestBody = {};
       //print(queryParams.toString());
       Response response = await baseController.makeAuthenticatedPutRequest(url, queryParams, requestBody);

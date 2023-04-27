@@ -1,3 +1,6 @@
+import 'order_detail_tracking.dart';
+import 'order_tracking.dart';
+
 class Order_Infomation {
   String? id;
   String? customerName;
@@ -7,17 +10,19 @@ class Order_Infomation {
   String? customerMobile;
   String? customerMessage;
   int? customerOrdered;
-  num? totalOrderValue;
+  double? totalOrderValue;
   int? deliveryType;
-  num? deliveryPrice;
+  double? deliveryPrice;
   String? preferredDropoffTime;
   String? preferredDeliverTime;
+  String? cancelReasonByStaff;
+  String? cancelReasonByCustomer;
   String? status;
   List<OrderedDetails>? orderedDetails;
-  List<OrderDetailTrackings>? orderDetailTrackings;
-  List<OrderTrackings>? orderTrackings;
+  List<OrderTracking>? orderTrackings;
   List<OrderDeliveries>? orderDeliveries;
   OrderPayment? orderPayment;
+  Center? center;
 
   Order_Infomation(
       {this.id,
@@ -33,12 +38,14 @@ class Order_Infomation {
       this.deliveryPrice,
       this.preferredDropoffTime,
       this.preferredDeliverTime,
+      this.cancelReasonByStaff,
+      this.cancelReasonByCustomer,
       this.status,
       this.orderedDetails,
-      this.orderDetailTrackings,
       this.orderTrackings,
       this.orderDeliveries,
-      this.orderPayment});
+      this.orderPayment,
+      this.center});
 
   Order_Infomation.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -54,6 +61,8 @@ class Order_Infomation {
     deliveryPrice = json['deliveryPrice'];
     preferredDropoffTime = json['preferredDropoffTime'];
     preferredDeliverTime = json['preferredDeliverTime'];
+    cancelReasonByStaff = json['cancelReasonByStaff'];
+    cancelReasonByCustomer = json['cancelReasonByCustomer'];
     status = json['status'];
     if (json['orderedDetails'] != null) {
       orderedDetails = <OrderedDetails>[];
@@ -61,16 +70,10 @@ class Order_Infomation {
         orderedDetails!.add(new OrderedDetails.fromJson(v));
       });
     }
-    if (json['orderDetailTrackings'] != null) {
-      orderDetailTrackings = <OrderDetailTrackings>[];
-      json['orderDetailTrackings'].forEach((v) {
-        orderDetailTrackings!.add(new OrderDetailTrackings.fromJson(v));
-      });
-    }
     if (json['orderTrackings'] != null) {
-      orderTrackings = <OrderTrackings>[];
+      orderTrackings = <OrderTracking>[];
       json['orderTrackings'].forEach((v) {
-        orderTrackings!.add(new OrderTrackings.fromJson(v));
+        orderTrackings!.add(new OrderTracking.fromJson(v));
       });
     }
     if (json['orderDeliveries'] != null) {
@@ -80,6 +83,7 @@ class Order_Infomation {
       });
     }
     orderPayment = json['orderPayment'] != null ? new OrderPayment.fromJson(json['orderPayment']) : null;
+    center = json['center'] != null ? new Center.fromJson(json['center']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -97,12 +101,11 @@ class Order_Infomation {
     data['deliveryPrice'] = this.deliveryPrice;
     data['preferredDropoffTime'] = this.preferredDropoffTime;
     data['preferredDeliverTime'] = this.preferredDeliverTime;
+    data['cancelReasonByStaff'] = this.cancelReasonByStaff;
+    data['cancelReasonByCustomer'] = this.cancelReasonByCustomer;
     data['status'] = this.status;
     if (this.orderedDetails != null) {
       data['orderedDetails'] = this.orderedDetails!.map((v) => v.toJson()).toList();
-    }
-    if (this.orderDetailTrackings != null) {
-      data['orderDetailTrackings'] = this.orderDetailTrackings!.map((v) => v.toJson()).toList();
     }
     if (this.orderTrackings != null) {
       data['orderTrackings'] = this.orderTrackings!.map((v) => v.toJson()).toList();
@@ -113,6 +116,9 @@ class Order_Infomation {
     if (this.orderPayment != null) {
       data['orderPayment'] = this.orderPayment!.toJson();
     }
+    if (this.center != null) {
+      data['center'] = this.center!.toJson();
+    }
     return data;
   }
 }
@@ -121,14 +127,14 @@ class OrderedDetails {
   int? orderDetailId;
   String? serviceName;
   String? serviceCategory;
-  num? measurement;
+  double? measurement;
   String? unit;
   String? image;
   String? customerNote;
   String? staffNote;
   String? status;
-  num? price;
-  num? unitPrice;
+  double? price;
+  List<OrderDetailTracking>? orderDetailTrackings;
 
   OrderedDetails(
       {this.orderDetailId,
@@ -141,7 +147,7 @@ class OrderedDetails {
       this.staffNote,
       this.status,
       this.price,
-      this.unitPrice});
+      this.orderDetailTrackings});
 
   OrderedDetails.fromJson(Map<String, dynamic> json) {
     orderDetailId = json['orderDetailId'];
@@ -154,7 +160,12 @@ class OrderedDetails {
     staffNote = json['staffNote'];
     status = json['status'];
     price = json['price'];
-    unitPrice = json['unitPrice'];
+    if (json['orderDetailTrackings'] != null) {
+      orderDetailTrackings = <OrderDetailTracking>[];
+      json['orderDetailTrackings'].forEach((v) {
+        orderDetailTrackings!.add(new OrderDetailTracking.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -169,29 +180,9 @@ class OrderedDetails {
     data['staffNote'] = this.staffNote;
     data['status'] = this.status;
     data['price'] = this.price;
-    data['unitPrice'] = this.unitPrice;
-    return data;
-  }
-}
-
-class OrderDetailTrackings {
-  String? status;
-  String? createdDate;
-  String? updatedDate;
-
-  OrderDetailTrackings({this.status, this.createdDate, this.updatedDate});
-
-  OrderDetailTrackings.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    createdDate = json['createdDate'];
-    updatedDate = json['updatedDate'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['createdDate'] = this.createdDate;
-    data['updatedDate'] = this.updatedDate;
+    if (this.orderDetailTrackings != null) {
+      data['orderDetailTrackings'] = this.orderDetailTrackings!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }
@@ -231,13 +222,13 @@ class OrderDeliveries {
 }
 
 class OrderPayment {
-  num? paymentTotal;
-  num? platformFee;
+  double? paymentTotal;
+  double? platformFee;
   String? dateIssue;
   String? status;
   int? paymentMethod;
   String? promoCode;
-  num? discount;
+  double? discount;
   String? createdDate;
   String? updatedDate;
 
@@ -279,24 +270,27 @@ class OrderPayment {
   }
 }
 
-class OrderTrackings {
-  String? status;
-  String? createdDate;
-  String? updatedDate;
+class Center {
+  int? centerId;
+  String? centerName;
+  String? centerAddress;
+  String? centerPhone;
 
-  OrderTrackings({this.status, this.createdDate, this.updatedDate});
+  Center({this.centerId, this.centerName, this.centerAddress, this.centerPhone});
 
-  OrderTrackings.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    createdDate = json['createdDate'];
-    updatedDate = json['updatedDate'];
+  Center.fromJson(Map<String, dynamic> json) {
+    centerId = json['centerId'];
+    centerName = json['centerName'];
+    centerAddress = json['centerAddress'];
+    centerPhone = json['centerPhone'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['createdDate'] = this.createdDate;
-    data['updatedDate'] = this.updatedDate;
+    data['centerId'] = this.centerId;
+    data['centerName'] = this.centerName;
+    data['centerAddress'] = this.centerAddress;
+    data['centerPhone'] = this.centerPhone;
     return data;
   }
 }

@@ -48,7 +48,7 @@ class OrderCard extends StatelessWidget {
                         ? Navigator.push(
                             context,
                             PageTransition(
-                              child: CancelledDetailScreen(order: order),
+                              child: CancelledDetailScreen(orderId: order.orderId!),
                               type: PageTransitionType.fade,
                             ),
                           )

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:washouse_staff/resource/controller/order_controller.dart';
-
+import 'package:flutter/src/widgets/basic.dart' as basic;
 import '../../components/constants/color_constants.dart';
 import '../../resource/model/order.dart';
 import '../../resource/model/order_infomation.dart';
@@ -10,8 +10,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'search_order_screen.dart';
 
 class CancelledDetailScreen extends StatefulWidget {
-  final Order order;
-  const CancelledDetailScreen({super.key, required this.order});
+  final orderId;
+  const CancelledDetailScreen({super.key, required this.orderId});
 
   @override
   State<CancelledDetailScreen> createState() => _CancelledDetailScreenState();
@@ -37,7 +37,7 @@ class _CancelledDetailScreenState extends State<CancelledDetailScreen> {
 
     try {
       // Wait for getOrderInformation to complete
-      Order_Infomation result = await orderController.getOrderInformation(widget.order.orderId!);
+      Order_Infomation result = await orderController.getOrderInformation(widget.orderId!);
       setState(() {
         // Update state with loaded data
         order_infomation = result;
@@ -55,13 +55,33 @@ class _CancelledDetailScreenState extends State<CancelledDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(
+      return basic.Center(
           child: LoadingAnimationWidget.twistingDots(
         leftDotColor: const Color(0xFF1A1A3F),
         rightDotColor: const Color(0xFFEA3799),
         size: 200,
       ));
     } else {
+      String cancelledBy = "";
+      String cancelledReason = "";
+      if (order_infomation.cancelReasonByCustomer != null) {
+        cancelledBy = "bạn";
+        cancelledReason = order_infomation.cancelReasonByCustomer!;
+      } else if (order_infomation.cancelReasonByStaff != null) {
+        cancelledBy = "Trung tâm";
+        cancelledReason = order_infomation.cancelReasonByStaff!;
+      }
+      String truncatedText = cancelledReason;
+      if (cancelledReason.length > 500) {
+        // Truncate text if it exceeds maxChars
+        truncatedText = cancelledReason.substring(0, 500);
+      }
+      String paymentMethodString = "";
+      if (order_infomation.orderPayment!.paymentMethod == 0) {
+        paymentMethodString = "Thanh toán khi nhận hàng";
+      } else if (order_infomation.orderPayment!.paymentMethod == 1) {
+        paymentMethodString = "Thanh toán bằng ví Washouse";
+      }
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -115,7 +135,9 @@ class _CancelledDetailScreenState extends State<CancelledDetailScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        ' vào ${order_infomation.orderTrackings!.last.createdDate}',
+                        (order_infomation.orderTrackings != null)
+                            ? '${order_infomation.orderTrackings!.firstWhere((element) => (element.status!.trim().toLowerCase().compareTo("cancelled") == 0)).createdDate}'
+                            : '',
                         style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
                       ),
                     ],
@@ -131,19 +153,48 @@ class _CancelledDetailScreenState extends State<CancelledDetailScreen> {
             const SizedBox(height: 10),
             Divider(thickness: 8, color: Colors.grey.shade200),
             const SizedBox(height: 10),
-            // DetailService(
-            //   status: 'Đã hủy',
-            //   order_infomation: ,
-            // ),
+            DetailService(
+              status: "Đã hủy",
+              order_infomation: order_infomation,
+            ),
             const SizedBox(height: 10),
             Column(
               children: [
-                CancelDetailFooter(from: 'Yêu cầu bởi', to: 'Người mua'),
-                CancelDetailFooter(from: 'Yêu cầu vào', to: order_infomation.orderTrackings!.last.createdDate!),
-                CancelDetailFooter(from: 'Lý do', to: 'Muốn thay địa chỉ giao hàng'),
+                CancelDetailFooter(from: 'Yêu cầu bởi', to: '$cancelledBy'),
                 CancelDetailFooter(
-                    from: 'Phương thức thanh toán',
-                    to: (order_infomation.orderPayment!.paymentMethod! == 0) ? "Thanh toán bằng tiền mặt" : "Thanh toán qua ví"),
+                  from: 'Yêu cầu vào',
+                  to: (order_infomation.orderTrackings != null)
+                      ? '${order_infomation.orderTrackings!.firstWhere((element) => (element.status!.trim().toLowerCase().compareTo("cancelled") == 0)).createdDate}'
+                      : '',
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Lý do',
+                        style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+                      ),
+                      Container(
+                        alignment: Alignment.topRight,
+                        width: MediaQuery.of(context).size.width / 2,
+                        padding: const EdgeInsets.all(0.0),
+                        child: Flexible(
+                          fit: FlexFit.loose,
+                          child: Text(
+                            truncatedText,
+                            maxLines: 20,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.right,
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                CancelDetailFooter(from: 'Phương thức thanh toán', to: paymentMethodString),
               ],
             ),
           ],

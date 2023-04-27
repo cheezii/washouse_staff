@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:math';
-
+import 'package:flutter/src/widgets/basic.dart' as basic;
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:timelines/timelines.dart';
@@ -8,6 +8,7 @@ import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/order.dart';
 import 'package:washouse_staff/resource/model/order_infomation.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:washouse_staff/screen/order/cancelled_detail_screen.dart';
 import 'package:washouse_staff/utils/order_util.dart';
 import '../../components/constants/color_constants.dart';
 import '../../resource/controller/tracking_controller.dart';
@@ -36,6 +37,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   OrderController orderController = OrderController();
   TrackingController trackingController = TrackingController();
   late Order_Infomation order_infomation;
+  String CancelledReason = '';
+  TextEditingController _textEditingController = TextEditingController();
+  bool isCancelledReasonEmpty = true;
 
   Color getColor(int index) {
     if (index == _processIndex) {
@@ -90,7 +94,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Center(
+      return basic.Center(
           child: LoadingAnimationWidget.twistingDots(
         leftDotColor: const Color(0xFF1A1A3F),
         rightDotColor: const Color(0xFFEA3799),
@@ -574,11 +578,39 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Text('Thông báo'),
-                                content: Text('Bạn có chắn chắn muốn hủy đơn hàng ${order_infomation.id!}?'),
+                                content: Column(
+                                  children: [
+                                    Text('Bạn có chắn chắn muốn hủy đơn hàng ${order_infomation.id!}?'),
+                                    const Text('Lý do hủy'),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    TextFormField(
+                                      maxLines: 6,
+                                      maxLength: 500,
+                                      controller: _textEditingController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Nhập lý do hủy',
+                                        contentPadding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 8),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ),
+                                      onChanged: (value) {
+                                        setState(() {
+                                          CancelledReason = value;
+                                          isCancelledReasonEmpty = false;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
                                 actions: [
                                   TextButton(
                                     onPressed: () async {
-                                      String result = await trackingController.cancelledOrder(order_infomation.id!);
+                                      String result = await trackingController.cancelledOrder(order_infomation.id!, CancelledReason);
                                       if (result.compareTo("success") == 0) {
                                         Navigator.of(context).pop();
                                         showDialog(
@@ -594,7 +626,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                     Navigator.push(
                                                         context,
                                                         PageTransition(
-                                                            child: OrderDetailScreen(
+                                                            child: CancelledDetailScreen(
                                                               orderId: order_infomation.id!,
                                                             ),
                                                             type: PageTransitionType.rightToLeftWithFade));
