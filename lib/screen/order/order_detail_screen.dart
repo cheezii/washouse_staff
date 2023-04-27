@@ -510,8 +510,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       style: TextStyle(fontSize: 16, color: textColor, fontWeight: FontWeight.bold),
                                     )
                                   : Text(
-                                      //'${PriceUtils().convertFormatPrice(order_infomation.deliveryPrice!.round())} đ',
-                                      '${order_infomation.deliveryPrice!.toDouble().round()} đ',
+                                      '${PriceUtils().convertFormatPrice(order_infomation.deliveryPrice!.toDouble().round())} đ',
+                                      //'${order_infomation.deliveryPrice!.toDouble().round()} đ',
                                       style: TextStyle(fontSize: 16, color: textColor, fontWeight: FontWeight.bold),
                                     )
                             ],
