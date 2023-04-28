@@ -9,6 +9,7 @@ import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/order.dart';
 import 'package:washouse_staff/resource/model/order_infomation.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:washouse_staff/screen/home/home_screen.dart';
 import 'package:washouse_staff/screen/order/cancelled_detail_screen.dart';
 import 'package:washouse_staff/utils/order_util.dart';
 import '../../components/constants/color_constants.dart';
@@ -41,7 +42,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   String CancelledReason = '';
   TextEditingController _textEditingController = TextEditingController();
   bool isCancelledReasonEmpty = true;
-
+  int? centerId;
   Color getColor(int index) {
     if (index == _processIndex) {
       return kPrimaryColor;
@@ -79,8 +80,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       // Wait for getOrderInformation to complete
       Order_Infomation result =
           await orderController.getOrderInformation(widget.orderId);
+      var _centerId =
+          await baseController.getInttoSharedPreference("CENTER_ID");
+
       setState(() {
         // Update state with loaded data
+        centerId = _centerId;
         order_infomation = result;
         isLoading = false;
       });
@@ -133,6 +138,39 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         ],
       );
     } else {
+      print(order_infomation.toJson());
+      bool HasPermission = true;
+      if (order_infomation.id == null) HasPermission = false;
+
+      if (!HasPermission) {
+        return Visibility(
+          visible: HasPermission,
+          child: Scaffold(
+              // your scaffold content goes here
+              ),
+          replacement: basic.Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Bạn không có quyền truy cập đơn hàng này!',
+                  style: TextStyle(fontSize: 20),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: const HomeScreen(),
+                            type: PageTransitionType.fade));
+                  },
+                  child: Text('Quay về trang chủ'),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
       String status = order_infomation.status!;
       if (status.toLowerCase().trim() == 'pending') {
         _processIndex = 0;
