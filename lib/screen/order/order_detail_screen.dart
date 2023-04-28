@@ -43,6 +43,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   TextEditingController _textEditingController = TextEditingController();
   bool isCancelledReasonEmpty = true;
   int? centerId;
+  String? sendOrderDate;
+  String sendOrderTime = 'Chọn giờ';
+
   Color getColor(int index) {
     if (index == _processIndex) {
       return kPrimaryColor;
@@ -436,39 +439,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           TextStyle(color: Colors.grey.shade600, fontSize: 16),
                       overflow: TextOverflow.clip,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        (order_infomation.deliveryType == 1 ||
-                                order_infomation.deliveryType == 3)
-                            ? order_infomation.orderDeliveries!
-                                        .firstWhere((element) =>
-                                            element.deliveryType == false)
-                                        .deliveryDate !=
-                                    null
-                                ? Text(
-                                    'Giờ khách giao hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == false).deliveryDate}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: textColor),
-                                  )
-                                : const SizedBox(height: 0)
-                            : const SizedBox(height: 0, width: 0),
-                        (order_infomation.deliveryType == 2 ||
-                                order_infomation.deliveryType == 3)
-                            ? order_infomation.orderDeliveries!
-                                        .firstWhere((element) =>
-                                            element.deliveryType == true)
-                                        .deliveryDate !=
-                                    null
-                                ? Text(
-                                    'Giờ khách nhận hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == true).deliveryDate}',
-                                    style: const TextStyle(
-                                        fontSize: 16, color: textColor),
-                                  )
-                                : const SizedBox(height: 0)
-                            : const SizedBox(height: 0, width: 0),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -527,6 +497,315 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         ],
                       ),
                     ),
+                    basic.Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text(
+                          'Thông tin giao hàng',
+                          style: TextStyle(
+                              color: textColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        basic.Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Lấy đơn hàng',
+                              style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 8),
+                            Column(
+                              children: [
+                                DeliveryTextBox(
+                                    from: 'Nhân viên', to: 'tên nhân viên'),
+                                DeliveryTextBox(
+                                    from: 'SĐT nhân viên', to: 'số điện thoại'),
+                                DeliveryTextBox(
+                                    from: 'Ngày vận chuyển', to: 'ngày'),
+                                DeliveryTextBox(
+                                    from: 'Địa chỉ',
+                                    to: 'aiwhrpianwpfknf;nahweoihw;ena;uộtpetwre'),
+                                DeliveryTextBox(
+                                    from: 'Ước tính', to: 'số phút'),
+                                DeliveryTextBox(
+                                    from: 'Giờ khách hẹn giao hàng',
+                                    to: 'giờ phút'),
+                              ],
+                            ),
+                          ],
+                        ),
+                        basic.Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            basic.Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Trả đơn hàng',
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    showDialog(
+                                        context: context,
+                                        builder: (builder) => AlertDialog(
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                              ),
+                                              title: const Align(
+                                                alignment: Alignment.center,
+                                                child: Text('Chọn giờ hẹn'),
+                                              ),
+                                              actions: [
+                                                ElevatedButton(
+                                                  onPressed: () {},
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      19,
+                                                                  vertical: 10),
+                                                          foregroundColor:
+                                                              kPrimaryColor
+                                                                  .withOpacity(
+                                                                      .7),
+                                                          elevation: 0,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                            side: BorderSide(
+                                                                color: kPrimaryColor
+                                                                    .withOpacity(
+                                                                        .5),
+                                                                width: 1),
+                                                          ),
+                                                          backgroundColor:
+                                                              kPrimaryColor),
+                                                  child: const Text(
+                                                    'Lưu',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                              content: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  SizedBox(
+                                                    width: 110,
+                                                    height: 40,
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                      decoration:
+                                                          InputDecoration(
+                                                        enabledBorder:
+                                                            OutlineInputBorder(
+                                                          borderSide:
+                                                              const BorderSide(
+                                                                  color:
+                                                                      textColor,
+                                                                  width: 1),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 8,
+                                                                right: 8,
+                                                                top: 0,
+                                                                bottom: 0),
+                                                        focusedBorder:
+                                                            OutlineInputBorder(
+                                                          borderSide:
+                                                              const BorderSide(
+                                                                  color:
+                                                                      textColor,
+                                                                  width: 1),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      ),
+                                                      isDense: true,
+                                                      isExpanded: true,
+                                                      items: <String>[
+                                                        'Hôm nay',
+                                                        'Ngày mai'
+                                                      ].map((String item) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: item,
+                                                          child: Text(item),
+                                                        );
+                                                      }).toList(),
+                                                      icon: const Icon(
+                                                        Icons
+                                                            .keyboard_arrow_down_rounded,
+                                                        size: 25,
+                                                      ),
+                                                      iconSize: 30,
+                                                      hint: const Text(
+                                                          'Chọn ngày'),
+                                                      value: sendOrderDate,
+                                                      style: const TextStyle(
+                                                          color: textColor),
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          sendOrderDate = value;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 5),
+                                                  SizedBox(
+                                                    width: 120,
+                                                    height: 40,
+                                                    child: ElevatedButton(
+                                                      onPressed: () async {
+                                                        TimeOfDay? orderTime =
+                                                            await showTimePicker(
+                                                                context:
+                                                                    context,
+                                                                initialTime:
+                                                                    TimeOfDay
+                                                                        .now());
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        padding:
+                                                            const EdgeInsetsDirectional
+                                                                    .symmetric(
+                                                                horizontal: 19,
+                                                                vertical: 10),
+                                                        foregroundColor:
+                                                            kPrimaryColor
+                                                                .withOpacity(
+                                                                    .7),
+                                                        elevation: 0,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                          side:
+                                                              const BorderSide(
+                                                                  color:
+                                                                      textColor,
+                                                                  width: 1),
+                                                        ),
+                                                        backgroundColor:
+                                                            kBackgroundColor,
+                                                      ),
+                                                      child: Row(
+                                                        children: [
+                                                          Text(
+                                                            sendOrderTime,
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade600,
+                                                            ),
+                                                          ),
+                                                          const Spacer(),
+                                                          Icon(
+                                                            Icons
+                                                                .watch_later_outlined,
+                                                            size: 20,
+                                                            color: Colors
+                                                                .grey.shade600,
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ));
+                                  },
+                                  child: const Text(
+                                    'Chọn giờ hẹn',
+                                    style: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Column(
+                              children: [
+                                DeliveryTextBox(
+                                    from: 'Nhân viên', to: 'tên nhân viên'),
+                                DeliveryTextBox(
+                                    from: 'SĐT nhân viên', to: 'số điện thoại'),
+                                DeliveryTextBox(
+                                    from: 'Ngày vận chuyển', to: 'ngày'),
+                                DeliveryTextBox(
+                                    from: 'Địa chỉ',
+                                    to: 'aiwhrpianwpfknf;nahweoihw;ena;uộtpetwre'),
+                                DeliveryTextBox(
+                                    from: 'Ước tính', to: 'số phút'),
+                                DeliveryTextBox(
+                                    from: 'Giờ khách hẹn trả hàng',
+                                    to: 'Giờ phút'),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    // (order_infomation.deliveryType == 1 ||
+                    //         order_infomation.deliveryType == 3)
+                    //     ? order_infomation.orderDeliveries!
+                    //                 .firstWhere((element) =>
+                    //                     element.deliveryType == false)
+                    //                 .deliveryDate !=
+                    //             null
+                    //         ? Text(
+                    //             'Giờ khách hẹn giao hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == false).deliveryDate}',
+                    //             style: const TextStyle(
+                    //                 fontSize: 16, color: textColor),
+                    //           )
+                    //         : const SizedBox(height: 0)
+                    //     : const SizedBox(height: 0, width: 0),
+                    // (order_infomation.deliveryType == 2 ||
+                    //         order_infomation.deliveryType == 3)
+                    //     ? order_infomation.orderDeliveries!
+                    //                 .firstWhere((element) =>
+                    //                     element.deliveryType == true)
+                    //                 .deliveryDate !=
+                    //             null
+                    //         ? Text(
+                    //             'Giờ khách hẹn nhận hàng: ${order_infomation.orderDeliveries!.firstWhere((element) => element.deliveryType == true).deliveryDate}',
+                    //             style: const TextStyle(
+                    //                 fontSize: 16, color: textColor),
+                    //           )
+                    //         : const SizedBox(height: 0)
+                    //     : const SizedBox(height: 0, width: 0),
                   ],
                 ),
               ),
@@ -643,27 +922,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           const SizedBox(height: 15),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
+                            children: const [
+                              Text(
                                 'Phí nền tảng:',
                                 style: TextStyle(fontSize: 16),
                               ),
-                              (order_infomation.deliveryPrice == null)
-                                  ? const Text(
-                                      '0 đ',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  : Text(
-                                      '${PriceUtils().convertFormatPrice(order_infomation.deliveryPrice!.toDouble().round())} đ',
-                                      //'${order_infomation.deliveryPrice!.toDouble().round()} đ',
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          color: kPrimaryColor,
-                                          fontWeight: FontWeight.bold),
-                                    )
+                              Text(
+                                '0 đ',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold),
+                              )
                             ],
                           ),
                           const SizedBox(height: 15),
@@ -1439,3 +1709,39 @@ final _processes = [
   'Sẵn sàng',
   'Hoàn tất',
 ];
+
+class DeliveryTextBox extends StatelessWidget {
+  final String from;
+  final String to;
+  const DeliveryTextBox({
+    super.key,
+    required this.from,
+    required this.to,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            from,
+            style: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+          ),
+          SizedBox(
+            width: 340 / 2,
+            child: Text(
+              to,
+              style: const TextStyle(fontSize: 15),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.right,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
