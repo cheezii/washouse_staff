@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/src/widgets/basic.dart' as basic;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:http/http.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -18,9 +21,11 @@ import 'package:washouse_staff/utils/price_util.dart';
 
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/firestore_constants.dart';
+import '../../components/constants/text_constants.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
 import '../../resource/model/chat_message.dart';
+import '../../resource/model/response_model/notification_item_response.dart';
 import '../notification/list_notification_screen.dart';
 import '../order/create_order_screen.dart';
 import '../../components/constants/color_constants.dart';
@@ -44,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TooltipBehavior tooltipBehavior = TooltipBehavior(enable: true);
   Statistic statistic = Statistic();
   bool isLoading = false;
+  int numOfNotifications = 0;
 
   void getCenterDetail() async {
     int id = widget.centerId;
@@ -65,18 +71,18 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       // Wait for getOrderInformation to complete
       Statistic result = await orderController.getStatistics();
+      NotificationResponse notis = await getNotifications();
       setState(() {
         // Update state with loaded data
         statistic = result;
         print('length');
         print(statistic.dailystatistics![1].toJson());
         for (var element in statistic.dailystatistics!) {
-          print(element.day!.substring(0, 2));
           double day = double.parse(element.day!.substring(0, 2));
-          print('day $day');
           completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
           cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
         }
+        numOfNotifications = notis.numOfUnread!;
         isLoading = false;
       });
     } catch (e) {
@@ -95,6 +101,24 @@ class _HomeScreenState extends State<HomeScreen> {
       getCenterDetail();
     });
     loadData();
+  }
+
+  Future<NotificationResponse> getNotifications() async {
+    NotificationResponse notificationResponse = NotificationResponse();
+    try {
+      String url = '$baseUrl/notifications/me-noti';
+      Response response = await baseController.makeAuthenticatedRequest(url, {});
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)["data"];
+        notificationResponse = NotificationResponse.fromJson(data);
+      } else {
+        throw Exception('Error fetching getNotifications: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getNotifications-$e');
+    }
+    return notificationResponse;
   }
 
   final List<ChartData> data = [
@@ -155,12 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //   },
     // );
     if (isLoading) {
-      return basic.Center(
-          child: LoadingAnimationWidget.twistingDots(
-        leftDotColor: const Color(0xFF1A1A3F),
-        rightDotColor: const Color(0xFFEA3799),
-        size: 200,
-      ));
+      return basic.Center(child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50));
     } else {
       OrderOverview overview = statistic.orderOverview!;
       return Scaffold(
@@ -185,10 +204,37 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
               },
-              icon: const Icon(
-                Icons.notifications,
-                color: textColor,
-                size: 30.0,
+              icon: Stack(
+                children: [
+                  const Icon(
+                    Icons.notifications,
+                    color: textColor,
+                    size: 30.0,
+                  ),
+                  if (numOfNotifications > 0)
+                    Positioned(
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '$numOfNotifications',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ],
