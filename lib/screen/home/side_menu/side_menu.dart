@@ -26,8 +26,10 @@ class _SideMenuState extends State<SideMenu> {
   String? _CustomerAvatar;
 
   void _loadData() async {
-    String? name = await baseController.getStringtoSharedPreference("CURRENT_USER_NAME");
-    String? avatar = await baseController.getStringtoSharedPreference("CURRENT_USER_AVATAR");
+    String? name =
+        await baseController.getStringtoSharedPreference("CURRENT_USER_NAME");
+    String? avatar =
+        await baseController.getStringtoSharedPreference("CURRENT_USER_AVATAR");
     setState(() {
       _CustomerName = name;
       _CustomerAvatar = avatar;
@@ -56,7 +58,8 @@ class _SideMenuState extends State<SideMenu> {
                 leading: _CustomerAvatar == null
                     ? const CircleAvatar(
                         backgroundColor: Colors.white,
-                        backgroundImage: AssetImage('assets/images/avatar/10.jpg'),
+                        backgroundImage:
+                            AssetImage('assets/images/avatar/10.jpg'),
                       )
                     : CircleAvatar(
                         backgroundColor: Colors.white,
@@ -64,14 +67,18 @@ class _SideMenuState extends State<SideMenu> {
                       ),
                 title: Text(
                   '$_CustomerName',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w500),
                 ),
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 40, bottom: 15, top: 15),
                 child: Text(
                   'TRUNG TÂM',
-                  style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
               MenuItemCard(
@@ -90,26 +97,34 @@ class _SideMenuState extends State<SideMenu> {
                 press: () => selectedItem(context, 2),
               ),
               MenuItemCard(
+                title: 'Vận chuyển',
+                icon: Icons.motorcycle_rounded,
+                press: () => selectedItem(context, 3),
+              ),
+              MenuItemCard(
                 title: 'Đánh giá',
                 icon: Icons.star_rounded,
-                press: () => selectedItem(context, 3),
+                press: () => selectedItem(context, 4),
               ),
               const Padding(
                 padding: EdgeInsets.only(left: 40, bottom: 15, top: 15),
                 child: Text(
                   'CÁ NHÂN',
-                  style: TextStyle(color: Colors.white70, fontSize: 20, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
                 ),
               ),
               MenuItemCard(
                 title: 'Hồ sơ',
                 icon: Icons.person,
-                press: () => selectedItem(context, 4),
+                press: () => selectedItem(context, 5),
               ),
               MenuItemCard(
                 title: 'Đăng xuất',
                 icon: Icons.logout_rounded,
-                press: () => selectedItem(context, 5),
+                press: () => selectedItem(context, 6),
               ),
             ],
           ),
@@ -124,7 +139,8 @@ class _SideMenuState extends State<SideMenu> {
       child: ListTile(
         title: Text(
           tilte,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
         ),
         onTap: press,
       ),
@@ -135,19 +151,31 @@ class _SideMenuState extends State<SideMenu> {
     Navigator.of(context).pop();
     switch (index) {
       case 0:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
         break;
       case 1:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const ListCategoryScreen()));
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const ListCategoryScreen()));
         break;
       case 2:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const OrderListScreen()));
-        break;
-      case 4:
-        Navigator.push(context, PageTransition(child: const InfomationScreen(), type: PageTransitionType.fade));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const OrderListScreen()));
         break;
       case 5:
-        Navigator.push(context, PageTransition(child: const Login(), type: PageTransitionType.fade));
+        Navigator.push(
+            context,
+            PageTransition(
+                child: const InfomationScreen(),
+                type: PageTransitionType.fade));
+        break;
+      case 6:
+        Navigator.push(
+            context,
+            PageTransition(
+                child: const Login(), type: PageTransitionType.fade));
         break;
     }
   }

@@ -16,6 +16,7 @@ class DetailService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //List<CartItem> cartItems = Provider.of<CartProvider>(context).cartItems;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(

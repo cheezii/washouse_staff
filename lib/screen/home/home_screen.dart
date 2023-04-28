@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:washouse_staff/resource/controller/base_controller.dart';
 import 'package:washouse_staff/screen/chat/chat_detail_screen.dart';
 import 'package:washouse_staff/screen/chat/chat_screen.dart';
@@ -35,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   BaseController baseController = BaseController();
   LaundryCenter centerDetails = LaundryCenter();
   bool isLoadingDetail = true;
+  TooltipBehavior tooltipBehavior = TooltipBehavior(enable: true);
 
   void getCenterDetail() async {
     int id = widget.centerId;
@@ -66,6 +68,38 @@ class _HomeScreenState extends State<HomeScreen> {
     ChartData('Đã hủy', 5, cancelledColor),
   ];
 
+  //List<SalesData> getChartData() {
+  final completeData = [
+    // SalesData('17/4', 50),
+    // SalesData('18/4', 50),
+    // SalesData('19/4', 50),
+    // SalesData('20/4', 50),
+    // SalesData('21/4', 50),
+    // SalesData('22/4', 50),
+    SalesData(17, 15),
+    SalesData(18, 20),
+    SalesData(19, 6),
+    SalesData(20, 11),
+    SalesData(21, 9),
+    SalesData(22, 13),
+  ];
+  final cancelData = [
+    // SalesData('17/4', 50),
+    // SalesData('18/4', 50),
+    // SalesData('19/4', 50),
+    // SalesData('20/4', 50),
+    // SalesData('21/4', 50),
+    // SalesData('22/4', 50),
+    SalesData(17, 1),
+    SalesData(18, 0),
+    SalesData(19, 0),
+    SalesData(20, 2),
+    SalesData(21, 0),
+    SalesData(22, 1),
+  ];
+  //  return chartData;
+  //}
+
   @override
   Widget build(BuildContext context) {
     print('center id: ${widget.centerId}');
@@ -85,11 +119,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Trang chủ', style: TextStyle(color: textColor, fontSize: 24)),
+        title: const Text('Trang chủ',
+            style: TextStyle(color: textColor, fontSize: 24)),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      child: const ListNotificationScreen(),
+                      type: PageTransitionType.rightToLeftWithFade));
             },
             icon: const Icon(
               Icons.notifications,
@@ -102,29 +141,218 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Quản lý đơn hàng',
-              style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+            const Text(
+              'Tổng quan đơn hàng',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: textBoldColor,
+                  fontWeight: FontWeight.w600),
             ),
-            Container(
-              width: 400, // Set the width of the chart
-              height: 200, // Set the height of the chart
-              child: charts.BarChart(
-                [
-                  charts.Series<ChartData, String>(
-                    id: 'chartData',
-                    domainFn: (ChartData data, _) => data.category,
-                    measureFn: (ChartData data, _) => data.value,
-                    data: data,
-                    labelAccessorFn: (ChartData data, _) => '${data.value}',
-                    colorFn: (ChartData data, _) => charts.ColorUtil.fromDartColor(data.colorCode),
-                  )
-                ],
-                animate: true,
-                vertical: false,
-              ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '0',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Chờ xác nhận')
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '7',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Đang xử lý')
+                    ],
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '9',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Sẵn sàng')
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '9',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Chờ vận chuyển')
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '10',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Hoàn tất')
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 70,
+                  width: 125,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: textColor.withOpacity(.7)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '7',
+                        style: TextStyle(
+                          color: kPrimaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Đã hủy')
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Thống kê đơn hàng theo ngày',
+              style: TextStyle(
+                  fontSize: 20,
+                  color: textBoldColor,
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 10),
+            SfCartesianChart(
+              legend: Legend(isVisible: true, position: LegendPosition.bottom),
+              tooltipBehavior: tooltipBehavior,
+              series: <ChartSeries>[
+                LineSeries<SalesData, dynamic>(
+                  dataSource: completeData,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                  xValueMapper: (SalesData sales, _) => sales.day,
+                  yValueMapper: (SalesData sales, _) => sales.value,
+                  enableTooltip: true,
+                  name: 'Thành công',
+                  color: Colors.purple,
+                ),
+                LineSeries<SalesData, dynamic>(
+                  dataSource: cancelData,
+                  dataLabelSettings: const DataLabelSettings(isVisible: true),
+                  xValueMapper: (SalesData sales, _) => sales.day,
+                  yValueMapper: (SalesData sales, _) => sales.value,
+                  enableTooltip: true,
+                  name: 'Hủy',
+                  color: Colors.green,
+                )
+              ],
+              // primaryXAxis:
+              //     NumericAxis(edgeLabelPlacement: EdgeLabelPlacement.shift),
+            )
+            // Container(
+            //   width: 400, // Set the width of the chart
+            //   height: 200, // Set the height of the chart
+            //   child: charts.BarChart(
+            //     [
+            //       charts.Series<ChartData, String>(
+            //         id: 'chartData',
+            //         domainFn: (ChartData data, _) => data.category,
+            //         measureFn: (ChartData data, _) => data.value,
+            //         data: data,
+            //         labelAccessorFn: (ChartData data, _) => '${data.value}',
+            //         colorFn: (ChartData data, _) => charts.ColorUtil.fromDartColor(data.colorCode),
+            //       )
+            //     ],
+            //     animate: true,
+            //     vertical: false,
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -142,7 +370,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Tin nhắn',
             backgroundColor: kPrimaryColor,
             onTap: () async {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ChatScreen()));
               //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailPage(arguments: ChatPageArguments(peerId: '3', peerAvatar: 'abc', peerNickname: 'Đoàn Trọng Kim'),)));
 
               // String groupChatId = "";
@@ -256,7 +485,10 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Quét mã qr',
             backgroundColor: kPrimaryColor,
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanQRCodeScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ScanQRCodeScreen()));
             },
           ),
           SpeedDialChild(
@@ -271,7 +503,8 @@ class _HomeScreenState extends State<HomeScreen> {
               showDialog(
                   context: context,
                   builder: (context) {
-                    return CreateOrderScreen(categoryData: centerDetails.centerServices);
+                    return CreateOrderScreen(
+                        categoryData: centerDetails.centerServices);
                   });
             },
           )
@@ -279,6 +512,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class SalesData {
+  final double day;
+  final double value;
+
+  SalesData(this.day, this.value);
 }
 
 class ChartData {

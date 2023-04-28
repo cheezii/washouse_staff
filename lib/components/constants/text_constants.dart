@@ -9,6 +9,7 @@ const String descriptionThree =
 const String cancelled = 'Đã hủy';
 const String pending = 'Đang chờ';
 const String confirmed = 'Xác nhận';
+const String received = 'Đã nhận';
 const String processing = 'Xử lý';
 const String ready = 'Sẵn sàng';
 const String completed = 'Hoàn tất';

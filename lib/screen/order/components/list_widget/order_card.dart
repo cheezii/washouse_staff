@@ -13,18 +13,17 @@ import 'card_body.dart';
 import 'card_heading.dart';
 
 class OrderCard extends StatelessWidget {
-  final String status;
   final Order order;
   const OrderCard({
     Key? key,
-    required this.status,
     required this.order,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    int length = order.orderedServices!.length;
     return SizedBox(
-      height: 320,
+      height: length > 1 ? 320 : 285,
       width: double.infinity,
       child: Card(
         shape: RoundedRectangleBorder(
@@ -32,35 +31,43 @@ class OrderCard extends StatelessWidget {
         ),
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CardHeading(order: this.order, status: this.status),
-              CardBody(order: this.order, status: this.status),
+              CardHeading(order: this.order),
+              CardBody(order: this.order),
               Divider(thickness: 1, color: Colors.grey.shade300),
               const SizedBox(height: 1),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
                   onPressed: () {
-                    status == 'Đã hủy'
+                    order.status!.toLowerCase() == 'cancelled'
                         ? Navigator.push(
                             context,
                             PageTransition(
-                              child: CancelledDetailScreen(orderId: order.orderId!),
+                              child: CancelledDetailScreen(
+                                  orderId: order.orderId!),
                               type: PageTransitionType.fade,
                             ),
                           )
-                        : Navigator.push(context, PageTransition(child: OrderDetailScreen(orderId: order.orderId!), type: PageTransitionType.fade));
+                        : Navigator.push(
+                            context,
+                            PageTransition(
+                                child:
+                                    OrderDetailScreen(orderId: order.orderId!),
+                                type: PageTransitionType.fade));
                   },
                   style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                      padding: const EdgeInsetsDirectional.symmetric(
+                          horizontal: 19, vertical: 10),
                       foregroundColor: kPrimaryColor.withOpacity(.7),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
-                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                        side: BorderSide(
+                            color: kPrimaryColor.withOpacity(.5), width: 1),
                       ),
                       backgroundColor: kPrimaryColor),
                   child: const Text(

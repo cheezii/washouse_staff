@@ -7,6 +7,7 @@ import 'package:washouse_staff/screen/order/components/tabview/confirmed_order_s
 import 'package:washouse_staff/screen/order/components/tabview/pending_order_screen.dart';
 import 'package:washouse_staff/screen/order/components/tabview/processing_order_screen.dart';
 import 'package:washouse_staff/screen/order/components/tabview/ready_order_screen.dart';
+import 'package:washouse_staff/screen/order/components/tabview/received_order_screen.dart';
 
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/text_constants.dart';
@@ -19,7 +20,7 @@ class OrderListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       initialIndex: 0,
-      length: 7,
+      length: 8,
       child: Scaffold(
           appBar: AppBar(
             elevation: 0,
@@ -68,6 +69,7 @@ class OrderListScreen extends StatelessWidget {
                 Tab(text: 'Tất cả'),
                 Tab(text: pending),
                 Tab(text: confirmed),
+                Tab(text: 'Đã nhận'),
                 Tab(text: processing),
                 Tab(text: ready),
                 Tab(text: completed),
@@ -79,6 +81,7 @@ class OrderListScreen extends StatelessWidget {
             AllOrderScreen(),
             PendingOrderScreen(),
             ConfirmedOrderScreen(),
+            ReceivedOrderScreen(),
             ProcessingOrderScreen(),
             ReadyOrderScreen(),
             CompletedOrderScreen(),

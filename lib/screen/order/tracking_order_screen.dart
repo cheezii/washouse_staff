@@ -12,7 +12,9 @@ import '../../resource/model/order_infomation.dart';
 class TrackingOrderScreen extends StatefulWidget {
   final String status;
   final Order_Infomation order_infomation;
-  const TrackingOrderScreen({Key? key, required this.status, required this.order_infomation}) : super(key: key);
+  const TrackingOrderScreen(
+      {Key? key, required this.status, required this.order_infomation})
+      : super(key: key);
 
   @override
   State<TrackingOrderScreen> createState() => _TrackingOrderScreenState();
@@ -35,16 +37,18 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.status == 'Đang chờ') {
+    if (widget.status == 'pending') {
       _processIndex = 0;
-    } else if (widget.status == 'Xác nhận') {
+    } else if (widget.status == 'confirmed') {
       _processIndex = 1;
-    } else if (widget.status == 'Xử lý') {
+    } else if (widget.status == 'received') {
       _processIndex = 2;
-    } else if (widget.status == 'Sẵn sàng') {
+    } else if (widget.status == 'processing') {
       _processIndex = 3;
-    } else if (widget.status == 'Hoàn tất') {
+    } else if (widget.status == 'ready') {
       _processIndex = 4;
+    } else if (widget.status == 'completed') {
+      _processIndex = 5;
     }
     _orderinfo = widget.order_infomation;
   }
@@ -66,7 +70,8 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Theo dõi đơn hàng', style: TextStyle(color: textColor, fontSize: 27)),
+        title: const Text('Theo dõi đơn hàng',
+            style: TextStyle(color: textColor, fontSize: 27)),
       ),
       body: Timeline.tileBuilder(
         theme: TimelineThemeData(
@@ -99,7 +104,7 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
             } else {
               color = Colors.grey.shade400;
             }
-            if (_processIndex == 4) {
+            if (_processIndex == 5) {
               color = kPrimaryColor;
               child = const Icon(
                 Icons.check,
@@ -152,7 +157,10 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
                 if (type == ConnectorType.start) {
                   gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
                 } else {
-                  gradientColors = [prevColor, Color.lerp(prevColor, color, 0.5)!];
+                  gradientColors = [
+                    prevColor,
+                    Color.lerp(prevColor, color, 0.5)!
+                  ];
                 }
                 return DecoratedLineConnector(
                   decoration: BoxDecoration(
@@ -186,7 +194,9 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
             return Padding(
               padding: const EdgeInsets.only(left: 10, right: 10),
               child: Text(
-                (index <= _processIndex) ? '${_orderinfo.orderTrackings![index].createdDate}' : 'Chờ cập nhật',
+                (index <= _processIndex)
+                    ? '${_orderinfo.orderTrackings![index].createdDate}'
+                    : 'Chờ cập nhật',
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: getColor(index),
@@ -195,7 +205,8 @@ class _TrackingOrderScreenState extends State<TrackingOrderScreen> {
             );
           },
           connectionDirection: ConnectionDirection.before,
-          itemExtentBuilder: (_, __) => MediaQuery.of(context).size.width / _processes.length,
+          itemExtentBuilder: (_, __) =>
+              MediaQuery.of(context).size.width / _processes.length,
           itemCount: _processes.length,
         ),
       ),
@@ -268,7 +279,8 @@ class _BezierPainter extends CustomPainter {
 
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius, radius)
+        ..quadraticBezierTo(
+            size.width, size.height / 2, size.width + radius, radius)
         ..quadraticBezierTo(size.width, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -278,13 +290,16 @@ class _BezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BezierPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.drawStart != drawStart || oldDelegate.drawEnd != drawEnd;
+    return oldDelegate.color != color ||
+        oldDelegate.drawStart != drawStart ||
+        oldDelegate.drawEnd != drawEnd;
   }
 }
 
 final _processes = [
   'Đang chờ',
   'Xác nhận',
+  'Đã nhận',
   'Xử lý',
   'Sẵn sàng',
   'Hoàn thành',
