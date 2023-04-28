@@ -10,6 +10,7 @@ import 'package:washouse_staff/resource/model/order.dart';
 import '../../components/constants/text_constants.dart';
 import '../model/cart_item.dart';
 import '../model/order_infomation.dart';
+import '../model/staff_statistic.dart';
 import '../provider/cart_provider.dart';
 
 class OrderController {
@@ -230,5 +231,23 @@ class OrderController {
       print('error: updateMeasurementOrderDetail-$e');
       return 'error_fetch';
     }
+  }
+
+  Future<Statistic> getStatistics() async {
+    var statistic = Statistic();
+    try {
+      String url = '$baseUrl/manager/my-center/staff-statistics';
+      Response response = await baseController.makeAuthenticatedRequest(url, {});
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body)["data"];
+        statistic = Statistic.fromJson(data);
+      } else {
+        // Handle error response
+        throw Exception('Error fetching getStatistics: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getStatistics-$e');
+    }
+    return statistic;
   }
 }
