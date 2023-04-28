@@ -191,17 +191,27 @@ class OrderDeliveries {
   String? shipperName;
   String? shipperPhone;
   int? locationId;
+  String? addressString;
   bool? deliveryType;
   int? estimatedTime;
   String? deliveryDate;
   String? status;
 
-  OrderDeliveries({this.shipperName, this.shipperPhone, this.locationId, this.deliveryType, this.estimatedTime, this.deliveryDate, this.status});
+  OrderDeliveries(
+      {this.shipperName,
+      this.shipperPhone,
+      this.locationId,
+      this.addressString,
+      this.deliveryType,
+      this.estimatedTime,
+      this.deliveryDate,
+      this.status});
 
   OrderDeliveries.fromJson(Map<String, dynamic> json) {
     shipperName = json['shipperName'];
     shipperPhone = json['shipperPhone'];
     locationId = json['locationId'];
+    addressString = json['addressString'];
     deliveryType = json['deliveryType'];
     estimatedTime = json['estimatedTime'];
     deliveryDate = json['deliveryDate'];
@@ -213,6 +223,7 @@ class OrderDeliveries {
     data['shipperName'] = this.shipperName;
     data['shipperPhone'] = this.shipperPhone;
     data['locationId'] = this.locationId;
+    data['addressString'] = this.addressString;
     data['deliveryType'] = this.deliveryType;
     data['estimatedTime'] = this.estimatedTime;
     data['deliveryDate'] = this.deliveryDate;
