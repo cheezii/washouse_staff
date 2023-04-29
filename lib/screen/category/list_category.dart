@@ -70,11 +70,16 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Danh sách dịch vụ', style: TextStyle(color: textColor, fontSize: 25)),
+        title: const Text('Danh sách dịch vụ',
+            style: TextStyle(color: textColor, fontSize: 25)),
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      child: const ListNotificationScreen(),
+                      type: PageTransitionType.rightToLeftWithFade));
             },
             icon: const Icon(
               Icons.notifications,
@@ -93,7 +98,8 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'Tìm kiếm',
-                  hintStyle: TextStyle(color: Colors.grey.shade500, height: 1, fontSize: 15),
+                  hintStyle: TextStyle(
+                      color: Colors.grey.shade500, height: 1, fontSize: 15),
                   prefixIcon: Icon(
                     Icons.search_rounded,
                     color: Colors.grey.shade500,
@@ -115,7 +121,8 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                     ),
                   ),
                 ),
-                style: TextStyle(color: Colors.grey.shade700, height: 1, fontSize: 15),
+                style: TextStyle(
+                    color: Colors.grey.shade700, height: 1, fontSize: 15),
               ),
               const SizedBox(height: 10),
               Skeleton(
@@ -127,15 +134,18 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                     itemBuilder: (context, cateIndex) {
                       return ExpansionTile(
                         leading: const Icon(Icons.category_rounded),
-                        title: Text('${catetList[cateIndex].serviceCategoryName}'),
+                        title:
+                            Text('${catetList[cateIndex].serviceCategoryName}'),
                         trailing: const Icon(Icons.keyboard_arrow_down_rounded),
                         children: [
                           ListView.builder(
                               shrinkWrap: true,
                               itemCount: catetList[cateIndex].services?.length,
                               itemBuilder: (context, serviceIndex) {
-                                var serviceList = catetList[cateIndex].services as List<ServiceCenter>;
-                                var priceList = serviceList[serviceIndex].prices as List<Prices>;
+                                var serviceList = catetList[cateIndex].services
+                                    as List<ServiceCenter>;
+                                var priceList = serviceList[serviceIndex].prices
+                                    as List<Prices>;
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 55),
                                   child: ListTile(
@@ -146,7 +156,9 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                                     trailing: priceList.isEmpty
                                         ? Text(
                                             '${PriceUtils().convertFormatPrice(serviceList[serviceIndex].price!.round())} đ/${serviceList[serviceIndex].unit!.toLowerCase()}',
-                                            style: const TextStyle(color: kPrimaryColor, fontWeight: FontWeight.w500),
+                                            style: const TextStyle(
+                                                color: kPrimaryColor,
+                                                fontWeight: FontWeight.w500),
                                           )
                                         : IconButton(
                                             onPressed: () {
@@ -154,50 +166,75 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                                                 context: context,
                                                 builder: ((context) {
                                                   return AlertDialog(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(15),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
                                                     ),
                                                     title: const Align(
-                                                      alignment: Alignment.center,
+                                                      alignment:
+                                                          Alignment.center,
                                                       child: Text('Bảng giá'),
                                                     ),
                                                     content: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
                                                       children: [
                                                         Row(
                                                           children: [
                                                             const Text(
                                                               'Giá dịch vụ tối thiểu: ',
-                                                              style: TextStyle(fontStyle: FontStyle.italic),
+                                                              style: TextStyle(
+                                                                  fontStyle:
+                                                                      FontStyle
+                                                                          .italic),
                                                             ),
                                                             Text(
                                                               '${PriceUtils().convertFormatPrice(serviceList[serviceIndex].minPrice!.round())} đ',
                                                               style: const TextStyle(
-                                                                  fontStyle: FontStyle.italic, color: kPrimaryColor, fontWeight: FontWeight.w500),
+                                                                  fontStyle:
+                                                                      FontStyle
+                                                                          .italic,
+                                                                  color:
+                                                                      kPrimaryColor,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500),
                                                             ),
                                                           ],
                                                         ),
                                                         DataTable(
-                                                          columns: const <DataColumn>[
+                                                          columns: const <
+                                                              DataColumn>[
                                                             DataColumn(
                                                               label: Text(
                                                                 'Tối đa',
-                                                                style: TextStyle(fontStyle: FontStyle.italic),
+                                                                style: TextStyle(
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .italic),
                                                               ),
                                                             ),
                                                             DataColumn(
                                                               label: Text(
                                                                 'Giá thành',
-                                                                style: TextStyle(fontStyle: FontStyle.italic),
+                                                                style: TextStyle(
+                                                                    fontStyle:
+                                                                        FontStyle
+                                                                            .italic),
                                                               ),
                                                             ),
                                                           ],
                                                           rows: priceList
-                                                              .map<DataRow>((e) => DataRow(cells: [
-                                                                    DataCell(Text(
-                                                                        e.maxValue.toString() + ' ${serviceList[serviceIndex].unit!.toLowerCase()}')),
-                                                                    DataCell(Text(
-                                                                        '${PriceUtils().convertFormatPrice(e.price?.round() as num)} đ/${serviceList[serviceIndex].unit!.toLowerCase()}')),
-                                                                  ]))
+                                                              .map<DataRow>(
+                                                                  (e) =>
+                                                                      DataRow(
+                                                                          cells: [
+                                                                            DataCell(Text(e.maxValue.toString() +
+                                                                                ' ${serviceList[serviceIndex].unit!.toLowerCase()}')),
+                                                                            DataCell(Text('${PriceUtils().convertFormatPrice(e.price?.round() as num)} đ/${serviceList[serviceIndex].unit!.toLowerCase()}')),
+                                                                          ]))
                                                               .toList(),
                                                         ),
                                                       ],

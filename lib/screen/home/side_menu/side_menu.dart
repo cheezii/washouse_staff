@@ -7,6 +7,8 @@ import 'package:washouse_staff/resource/controller/base_controller.dart';
 import 'package:washouse_staff/screen/started/login.dart';
 
 import '../../category/list_category.dart';
+import '../../delivery/delivery_list.dart';
+import '../../feedback/feedback_screen.dart';
 import '../../order/order_list_screen.dart';
 import '../../profile/information_screen.dart';
 import '../home_screen.dart';
@@ -163,6 +165,16 @@ class _SideMenuState extends State<SideMenu> {
       case 2:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const OrderListScreen()));
+        break;
+      case 3:
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const ListDeliveryScreen()));
+        break;
+      case 4:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const FeedbackScreen()));
         break;
       case 5:
         Navigator.push(
