@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:washouse_staff/screen/home/home_screen.dart';
+
 import '../../components/constants/color_constants.dart';
 import '../../components/constants/size.dart';
+import '../../components/constants/text_constants.dart';
 import '../../resource/controller/account_controller.dart';
-import '../../resource/controller/google_controller.dart';
-import '../home/base_screen.dart';
+import '../reset_password/send_otp.dart';
 import 'login.dart';
 
 class SignUp extends StatefulWidget {
@@ -17,26 +19,27 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
+TextEditingController emailController = TextEditingController();
+TextEditingController phoneController = TextEditingController();
+TextEditingController passwordController = TextEditingController();
+TextEditingController conpasswordController = TextEditingController();
+
 class _SignUpState extends State<SignUp> {
-  String? _errorMessage;
-  bool _isPassHidden = true;
-  bool _isConPassHidden = true;
-  AccountController accountController = AccountController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController conpasswordController = TextEditingController();
   GlobalKey<FormState> _formPwdKey = GlobalKey<FormState>();
   GlobalKey<FormState> _formConPwdKey = GlobalKey<FormState>();
   GlobalKey<FormState> _formPhoneNumKey = GlobalKey<FormState>();
   final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
+  String? _errorMessage;
+  bool _isPassHidden = true;
+  bool _isConPassHidden = true;
+  AccountController accountController = AccountController();
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        //resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: kBackgroundColor,
         body: Center(
           child: Padding(
@@ -47,7 +50,6 @@ class _SignUpState extends State<SignUp> {
             child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset('assets/images/started/phone-security.png'),
                   const SizedBox(height: kDefaultPadding),
@@ -184,7 +186,9 @@ class _SignUpState extends State<SignUp> {
                             Navigator.push(
                                 context,
                                 PageTransition(
-                                    child: const Login(),
+                                    child: const OTPScreen(
+                                      isSignUp: true,
+                                    ),
                                     type: PageTransitionType.fade));
                           }
                         }
@@ -228,7 +232,7 @@ class _SignUpState extends State<SignUp> {
                   //   ),
                   // ),
                   GestureDetector(
-                    onTap: signUp,
+                    onTap: () {},
                     child: Container(
                       width: size.width,
                       decoration: BoxDecoration(
@@ -238,13 +242,12 @@ class _SignUpState extends State<SignUp> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           SizedBox(
-                            height: kDefaultPadding * 1.5,
+                            height: 30,
                             child: Image.asset('assets/images/google.png'),
                           ),
-                          const SizedBox(width: 10),
                           const Text(
                             'Đăng ký bằng Google',
                             style: TextStyle(
@@ -297,48 +300,6 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
-  }
-
-  Future signUp() async {
-    final user = await GoogleControler.login();
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: const EdgeInsets.all(16),
-            height: 90,
-            decoration: const BoxDecoration(
-              color: Color(0xffc72c41),
-              borderRadius: BorderRadius.all(Radius.circular(20)),
-            ),
-            child: Center(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Oops',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  Text(
-                    "Đăng ký không thành công",
-                    style: TextStyle(fontSize: 12, color: Colors.white),
-                    maxLines: 2,
-                    overflow: TextOverflow.clip,
-                  )
-                ],
-              ),
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-        ),
-      );
-      //}
-    } else {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (Context) => BaseScreen()));
-    }
   }
 
   void displayDialog(context, title, text) => showDialog(

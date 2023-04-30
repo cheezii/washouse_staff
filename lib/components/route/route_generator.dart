@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:washouse_staff/screen/home/home_screen.dart';
+import 'package:washouse_staff/screen/order/create_order_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
     switch (settings.name) {
-      // case '/centerDetails':
+      case '/home':
+        return MaterialPageRoute(
+          builder: (context) => HomeScreen(centerId: args),
+        );
+      case '/createOrder':
+        return MaterialPageRoute(
+          builder: (context) => CreateOrderScreen(categoryData: args),
+        );
+      // case '/listCategory':
       //   return MaterialPageRoute(
-      //     builder: (context) => CenterDetailScreen(centerData: args),
-      //   );
-      // case '/serviceDetails':
-      //   return MaterialPageRoute(
-      //     builder: (context) => ServiceDetailScreen(serviceData: args),
-      //   );
-      // case '/listNotification':
-      //   return MaterialPageRoute(
-      //     builder: (context) => ListNotificationScreen(),
+      //     builder: (context) => ListCategoryScreen(categoryData: args),
       //   );
       default:
         return _errorRoute();
@@ -25,10 +27,10 @@ class RouteGenerator {
     return MaterialPageRoute(builder: (context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('ERROR'),
+          title: const Text('ERROR'),
           centerTitle: true,
         ),
-        body: Center(
+        body: const Center(
           child: Text('Không tìm thấy trang!'),
         ),
       );

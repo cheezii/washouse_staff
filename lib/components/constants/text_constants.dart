@@ -6,13 +6,15 @@ const String descriptionTwo =
 const String titleThree = 'Việc giặt trở nên dễ dàng hơn';
 const String descriptionThree =
     'Tìm kiếm và liên hệ với các tiệm giặt ủi gần nhất.';
-const String cancel = 'Đã hủy';
-const String confirming = 'Chờ xác nhận';
-const String processing = 'Chờ xử lý';
-const String shipping = 'Chờ giao';
-const String complete = 'Hoàn thành';
+const String cancelled = 'Đã hủy';
+const String pending = 'Đang chờ';
+const String confirmed = 'Xác nhận';
+const String received = 'Đã nhận';
+const String processing = 'Xử lý';
+const String ready = 'Sẵn sàng';
+const String completed = 'Hoàn tất';
 
 //Api constant
-const String baseUrl = 'https://washouse.azurewebsites.net/api';
+const String baseUrl = 'https://api-washouse.azurewebsites.net/api';
 //const String baseUrl = 'https://localhost:44360/api';
 const String apiKey = 'AIzaSyDkPbok7azcZ9mht1nD-RjJy1wJOkhlo7M';
