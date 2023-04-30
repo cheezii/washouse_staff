@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../components/constants/color_constants.dart';
+import 'component/list_widget/order_card.dart';
 
 class ListDeliveryScreen extends StatelessWidget {
   const ListDeliveryScreen({super.key});
@@ -35,6 +36,19 @@ class ListDeliveryScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: 3,
+            itemBuilder: ((context, index) {
+              return CardOrder();
+            }),
+          ),
+        ),
       ),
     );
   }

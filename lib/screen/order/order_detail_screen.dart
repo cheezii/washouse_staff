@@ -81,8 +81,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
     try {
       // Wait for getOrderInformation to complete
-      Order_Infomation result = await orderController.getOrderInformation(widget.orderId);
-      var _centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+      Order_Infomation result =
+          await orderController.getOrderInformation(widget.orderId);
+      var _centerId =
+          await baseController.getInttoSharedPreference("CENTER_ID");
 
       setState(() {
         // Update state with loaded data
@@ -131,7 +133,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
                 width: 100,
                 height: 100,
-                child: LoadingAnimationWidget.threeRotatingDots(color: kPrimaryColor, size: 50),
+                child: LoadingAnimationWidget.threeRotatingDots(
+                    color: kPrimaryColor, size: 50),
               ),
             ),
           )
@@ -158,7 +161,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, PageTransition(child: const HomeScreen(), type: PageTransitionType.fade));
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            child: const HomeScreen(),
+                            type: PageTransitionType.fade));
                   },
                   child: Text('Quay về trang chủ'),
                 ),
@@ -196,7 +203,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           centerTitle: true,
-          title: Text('Chi tiết đơn hàng', style: TextStyle(color: textColor, fontSize: 27)),
+          title: Text('Chi tiết đơn hàng',
+              style: TextStyle(color: textColor, fontSize: 27)),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -213,18 +221,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       children: [
                         Text(
                           '#${order_infomation.id}',
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 20),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           '${order_infomation.orderTrackings!.first.createdDate}',
-                          style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.grey.shade700),
                         ),
                       ],
                     ),
                     Text(
                       '${OrderUtils().mapVietnameseOrderStatus(status)}',
-                      style: TextStyle(color: kPrimaryColor, fontSize: 17, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: kPrimaryColor,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600),
                     )
                   ],
                 ),
@@ -240,15 +253,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       children: [
                         const Text(
                           'Theo dõi đơn hàng',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w500),
                         ),
                         IconButton(
                           onPressed: () {
                             Navigator.push(
                                 context,
                                 PageTransition(
-                                    child: TrackingOrderScreen(order_infomation: order_infomation, status: status),
-                                    type: PageTransitionType.rightToLeftWithFade));
+                                    child: TrackingOrderScreen(
+                                        order_infomation: order_infomation,
+                                        status: status),
+                                    type: PageTransitionType
+                                        .rightToLeftWithFade));
                           },
                           icon: const Icon(
                             Icons.arrow_forward_ios_rounded,
@@ -272,7 +289,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       ),
                       builder: TimelineTileBuilder.connected(
                         connectionDirection: ConnectionDirection.before,
-                        itemExtentBuilder: (_, __) => MediaQuery.of(context).size.width / _processes.length,
+                        itemExtentBuilder: (_, __) =>
+                            MediaQuery.of(context).size.width /
+                            _processes.length,
                         contentsBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.only(top: 15.0),
@@ -294,7 +313,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               padding: EdgeInsets.all(8.0),
                               child: CircularProgressIndicator(
                                 strokeWidth: 3.0,
-                                valueColor: AlwaysStoppedAnimation(Colors.white),
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
                               ),
                             );
                           } else if (index < _processIndex) {
@@ -358,9 +378,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               final color = getColor(index);
                               List<Color> gradientColors;
                               if (type == ConnectorType.start) {
-                                gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
+                                gradientColors = [
+                                  Color.lerp(prevColor, color, 0.5)!,
+                                  color
+                                ];
                               } else {
-                                gradientColors = [prevColor, Color.lerp(prevColor, color, 0.5)!];
+                                gradientColors = [
+                                  prevColor,
+                                  Color.lerp(prevColor, color, 0.5)!
+                                ];
                               }
                               return DecoratedLineConnector(
                                 decoration: BoxDecoration(
@@ -392,7 +418,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     const Text(
                       'Thông tin khách hàng', //hoặc địa chỉ nhận hàng/gửi hàng...
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -402,19 +429,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     const SizedBox(height: 6),
                     Text(
                       'Số điện thoại: ${order_infomation.customerMobile}',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 16),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'Địa chỉ: ${order_infomation.customerAddress}',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 16),
                       overflow: TextOverflow.clip,
                     ),
                   ],
                 ),
               ),
               separateLine(),
-              DetailService(status: OrderUtils().mapVietnameseOrderStatus(status), order_infomation: order_infomation),
+              DetailService(
+                  status: OrderUtils().mapVietnameseOrderStatus(status),
+                  order_infomation: order_infomation),
               separateLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -423,7 +454,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     const Text(
                       'Phương thức vận chuyển',
-                      style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: textColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 6),
                     Padding(
@@ -432,7 +466,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         children: [
                           SizedBox(
                             width: 35,
-                            child: Image.asset('assets/images/shipping/ship-di.png'),
+                            child: Image.asset(
+                                'assets/images/shipping/ship-di.png'),
                           ),
                           const SizedBox(width: 8),
                           (order_infomation.deliveryType == 0)
@@ -469,40 +504,66 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               const SizedBox(height: 20),
                               const Text(
                                 'Thông tin giao hàng',
-                                style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                    color: textColor,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600),
                               ),
                               const SizedBox(height: 8),
-                              (order_infomation.deliveryType == 1 || order_infomation.deliveryType == 3)
+                              (order_infomation.deliveryType == 1 ||
+                                      order_infomation.deliveryType == 3)
                                   ? basic.Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         const Text(
                                           'Lấy đơn hàng',
-                                          style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600),
+                                          style: TextStyle(
+                                              color: textColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600),
                                         ),
                                         const SizedBox(height: 8),
                                         Column(
                                           children: [
                                             DeliveryTextBox(
                                                 from: 'Nhân viên',
-                                                to: (order_infomation.orderDeliveries!.first.shipperName == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .first
+                                                            .shipperName ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.first.shipperName}'),
                                             DeliveryTextBox(
                                                 from: 'SĐT nhân viên',
-                                                to: (order_infomation.orderDeliveries!.first.shipperPhone == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .first
+                                                            .shipperPhone ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.first.shipperPhone}'),
                                             DeliveryTextBox(
                                                 from: 'Ngày vận chuyển',
-                                                to: (order_infomation.orderDeliveries!.first.deliveryDate == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .first
+                                                            .deliveryDate ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.first.deliveryDate}'),
-                                            DeliveryTextBox(from: 'Địa chỉ', to: '${order_infomation.orderDeliveries!.first.addressString}'),
-                                            DeliveryTextBox(from: 'Ước tính', to: '${order_infomation.orderDeliveries!.first.estimatedTime} phút'),
+                                            DeliveryTextBox(
+                                                from: 'Địa chỉ',
+                                                to: '${order_infomation.orderDeliveries!.first.addressString}'),
+                                            DeliveryTextBox(
+                                                from: 'Ước tính',
+                                                to: '${order_infomation.orderDeliveries!.first.estimatedTime} phút'),
                                             DeliveryTextBox(
                                                 from: 'Giờ khách hẹn giao hàng',
-                                                to: (order_infomation.preferredDropoffTime == null)
+                                                to: (order_infomation
+                                                            .preferredDropoffTime ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.preferredDropoffTime}'),
                                           ],
@@ -510,134 +571,183 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       ],
                                     )
                                   : const SizedBox(height: 0),
-                              (order_infomation.deliveryType == 2 || order_infomation.deliveryType == 3)
+                              (order_infomation.deliveryType == 2 ||
+                                      order_infomation.deliveryType == 3)
                                   ? basic.Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         basic.Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             const Text(
                                               'Trả đơn hàng',
-                                              style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w600),
+                                              style: TextStyle(
+                                                  color: textColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600),
                                             ),
-                                            (order_infomation.status!.trim().toLowerCase() == 'ready')
+                                            (order_infomation.status!
+                                                        .trim()
+                                                        .toLowerCase() ==
+                                                    'ready')
                                                 ? TextButton(
                                                     onPressed: () async {
                                                       showDialog(
                                                           context: context,
-                                                          builder: (builder) => AlertDialog(
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(15),
-                                                                ),
-                                                                title: const Align(
-                                                                  alignment: Alignment.center,
-                                                                  child: Text('Chọn giờ hẹn'),
-                                                                ),
-                                                                actions: [
-                                                                  ElevatedButton(
-                                                                    onPressed: () {},
-                                                                    style: ElevatedButton.styleFrom(
-                                                                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                                        foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                                        elevation: 0,
-                                                                        shape: RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(20),
-                                                                          side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
-                                                                        ),
-                                                                        backgroundColor: kPrimaryColor),
-                                                                    child: const Text(
-                                                                      'Lưu',
-                                                                      style: TextStyle(
-                                                                        color: Colors.white,
-                                                                        fontSize: 15,
-                                                                        fontWeight: FontWeight.w500,
-                                                                      ),
+                                                          builder:
+                                                              (builder) =>
+                                                                  AlertDialog(
+                                                                    shape:
+                                                                        RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              15),
                                                                     ),
-                                                                  ),
-                                                                ],
-                                                                content: Row(
-                                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      width: 110,
-                                                                      height: 40,
-                                                                      child: DropdownButtonFormField(
-                                                                        decoration: InputDecoration(
-                                                                          enabledBorder: OutlineInputBorder(
-                                                                            borderSide: const BorderSide(color: textColor, width: 1),
-                                                                            borderRadius: BorderRadius.circular(10),
-                                                                          ),
-                                                                          contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
-                                                                          focusedBorder: OutlineInputBorder(
-                                                                            borderSide: const BorderSide(color: textColor, width: 1),
-                                                                            borderRadius: BorderRadius.circular(10),
-                                                                          ),
-                                                                        ),
-                                                                        isDense: true,
-                                                                        isExpanded: true,
-                                                                        items: <String>['Hôm nay', 'Ngày mai'].map((String item) {
-                                                                          return DropdownMenuItem<String>(
-                                                                            value: item,
-                                                                            child: Text(item),
-                                                                          );
-                                                                        }).toList(),
-                                                                        icon: const Icon(
-                                                                          Icons.keyboard_arrow_down_rounded,
-                                                                          size: 25,
-                                                                        ),
-                                                                        iconSize: 30,
-                                                                        hint: const Text('Chọn ngày'),
-                                                                        value: sendOrderDate,
-                                                                        style: const TextStyle(color: textColor),
-                                                                        onChanged: (value) {
-                                                                          setState(() {
-                                                                            sendOrderDate = value;
-                                                                          });
-                                                                        },
-                                                                      ),
+                                                                    title:
+                                                                        const Align(
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .center,
+                                                                      child: Text(
+                                                                          'Chọn giờ hẹn'),
                                                                     ),
-                                                                    const SizedBox(width: 5),
-                                                                    SizedBox(
-                                                                      width: 120,
-                                                                      height: 40,
-                                                                      child: ElevatedButton(
-                                                                        onPressed: () async {
-                                                                          TimeOfDay? orderTime =
-                                                                              await showTimePicker(context: context, initialTime: TimeOfDay.now());
-                                                                        },
+                                                                    actions: [
+                                                                      ElevatedButton(
+                                                                        onPressed:
+                                                                            () {},
                                                                         style: ElevatedButton.styleFrom(
-                                                                          padding:
-                                                                              const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                                          foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                                          elevation: 0,
-                                                                          shape: RoundedRectangleBorder(
-                                                                            borderRadius: BorderRadius.circular(10),
-                                                                            side: const BorderSide(color: textColor, width: 1),
+                                                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                                            foregroundColor: kPrimaryColor.withOpacity(.7),
+                                                                            elevation: 0,
+                                                                            shape: RoundedRectangleBorder(
+                                                                              borderRadius: BorderRadius.circular(20),
+                                                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                                                            ),
+                                                                            backgroundColor: kPrimaryColor),
+                                                                        child:
+                                                                            const Text(
+                                                                          'Lưu',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontSize:
+                                                                                15,
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
                                                                           ),
-                                                                          backgroundColor: kBackgroundColor,
                                                                         ),
-                                                                        child: Row(
-                                                                          children: [
-                                                                            Text(
-                                                                              sendOrderTime,
-                                                                              style: TextStyle(
-                                                                                color: Colors.grey.shade600,
+                                                                      ),
+                                                                    ],
+                                                                    content:
+                                                                        Row(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceEvenly,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          width:
+                                                                              110,
+                                                                          height:
+                                                                              40,
+                                                                          child:
+                                                                              DropdownButtonFormField(
+                                                                            decoration:
+                                                                                InputDecoration(
+                                                                              enabledBorder: OutlineInputBorder(
+                                                                                borderSide: const BorderSide(color: textColor, width: 1),
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                              ),
+                                                                              contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+                                                                              focusedBorder: OutlineInputBorder(
+                                                                                borderSide: const BorderSide(color: textColor, width: 1),
+                                                                                borderRadius: BorderRadius.circular(10),
                                                                               ),
                                                                             ),
-                                                                            const Spacer(),
-                                                                            Icon(
-                                                                              Icons.watch_later_outlined,
-                                                                              size: 20,
-                                                                              color: Colors.grey.shade600,
-                                                                            )
-                                                                          ],
+                                                                            isDense:
+                                                                                true,
+                                                                            isExpanded:
+                                                                                true,
+                                                                            items:
+                                                                                <String>[
+                                                                              'Hôm nay',
+                                                                              'Ngày mai'
+                                                                            ].map((String item) {
+                                                                              return DropdownMenuItem<String>(
+                                                                                value: item,
+                                                                                child: Text(item),
+                                                                              );
+                                                                            }).toList(),
+                                                                            icon:
+                                                                                const Icon(
+                                                                              Icons.keyboard_arrow_down_rounded,
+                                                                              size: 25,
+                                                                            ),
+                                                                            iconSize:
+                                                                                30,
+                                                                            hint:
+                                                                                const Text('Chọn ngày'),
+                                                                            value:
+                                                                                sendOrderDate,
+                                                                            style:
+                                                                                const TextStyle(color: textColor),
+                                                                            onChanged:
+                                                                                (value) {
+                                                                              setState(() {
+                                                                                sendOrderDate = value;
+                                                                              });
+                                                                            },
+                                                                          ),
                                                                         ),
-                                                                      ),
+                                                                        const SizedBox(
+                                                                            width:
+                                                                                5),
+                                                                        SizedBox(
+                                                                          width:
+                                                                              120,
+                                                                          height:
+                                                                              40,
+                                                                          child:
+                                                                              ElevatedButton(
+                                                                            onPressed:
+                                                                                () async {
+                                                                              TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                                                                            },
+                                                                            style:
+                                                                                ElevatedButton.styleFrom(
+                                                                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                                              foregroundColor: kPrimaryColor.withOpacity(.7),
+                                                                              elevation: 0,
+                                                                              shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(10),
+                                                                                side: const BorderSide(color: textColor, width: 1),
+                                                                              ),
+                                                                              backgroundColor: kBackgroundColor,
+                                                                            ),
+                                                                            child:
+                                                                                Row(
+                                                                              children: [
+                                                                                Text(
+                                                                                  sendOrderTime,
+                                                                                  style: TextStyle(
+                                                                                    color: Colors.grey.shade600,
+                                                                                  ),
+                                                                                ),
+                                                                                const Spacer(),
+                                                                                Icon(
+                                                                                  Icons.watch_later_outlined,
+                                                                                  size: 20,
+                                                                                  color: Colors.grey.shade600,
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                              ));
+                                                                  ));
                                                     },
                                                     child: const Text(
                                                       'Chọn giờ hẹn',
@@ -665,24 +775,42 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                           children: [
                                             DeliveryTextBox(
                                                 from: 'Nhân viên',
-                                                to: (order_infomation.orderDeliveries!.last.shipperName == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .last
+                                                            .shipperName ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.last.shipperName}'),
                                             DeliveryTextBox(
                                                 from: 'SĐT nhân viên',
-                                                to: (order_infomation.orderDeliveries!.last.shipperPhone == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .last
+                                                            .shipperPhone ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.last.shipperPhone}'),
                                             DeliveryTextBox(
                                                 from: 'Ngày vận chuyển',
-                                                to: (order_infomation.orderDeliveries!.last.deliveryDate == null)
+                                                to: (order_infomation
+                                                            .orderDeliveries!
+                                                            .last
+                                                            .deliveryDate ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.orderDeliveries!.last.deliveryDate}'),
-                                            DeliveryTextBox(from: 'Địa chỉ', to: '${order_infomation.orderDeliveries!.last.addressString}'),
-                                            DeliveryTextBox(from: 'Ước tính', to: '${order_infomation.orderDeliveries!.last.estimatedTime} phút'),
+                                            DeliveryTextBox(
+                                                from: 'Địa chỉ',
+                                                to: '${order_infomation.orderDeliveries!.last.addressString}'),
+                                            DeliveryTextBox(
+                                                from: 'Ước tính',
+                                                to: '${order_infomation.orderDeliveries!.last.estimatedTime} phút'),
                                             DeliveryTextBox(
                                                 from: 'Giờ khách hẹn trả hàng',
-                                                to: (order_infomation.preferredDeliverTime == null)
+                                                to: (order_infomation
+                                                            .preferredDeliverTime ==
+                                                        null)
                                                     ? 'Chưa xác định'
                                                     : '${order_infomation.preferredDeliverTime}'),
                                           ],
@@ -732,38 +860,44 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     const Text(
                       'Phương thức thanh toán',
-                      style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: textColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600),
                     ),
                     const SizedBox(height: 6),
                     Padding(
                       padding: const EdgeInsets.only(left: 10),
-                      child: (order_infomation.orderPayment!.paymentMethod! == 0)
-                          ? Row(
-                              children: [
-                                SizedBox(
-                                  width: 35,
-                                  child: Image.asset('assets/images/shipping/cash-on-delivery.png'),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Thanh toán bằng tiền mặt',
-                                  style: TextStyle(fontSize: 16),
+                      child:
+                          (order_infomation.orderPayment!.paymentMethod! == 0)
+                              ? Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 35,
+                                      child: Image.asset(
+                                          'assets/images/shipping/cash-on-delivery.png'),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Thanh toán bằng tiền mặt',
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
                                 )
-                              ],
-                            )
-                          : Row(
-                              children: [
-                                SizedBox(
-                                  width: 35,
-                                  child: Image.asset('assets/images/payments/vnpay-icon.png'),
+                              : Row(
+                                  children: [
+                                    SizedBox(
+                                      width: 35,
+                                      child: Image.asset(
+                                          'assets/images/payments/vnpay-icon.png'),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Thanh toán bằng ví',
+                                      style: TextStyle(fontSize: 16),
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Thanh toán bằng ví',
-                                  style: TextStyle(fontSize: 16),
-                                )
-                              ],
-                            ),
                     ),
                   ],
                 ),
@@ -776,7 +910,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     const Text(
                       'Chi tiết thanh toán',
-                      style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          color: textColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 10),
                     Padding(
@@ -792,7 +929,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                               Text(
                                 '${PriceUtils().convertFormatPrice(order_infomation.totalOrderValue!.toInt())} đ',
-                                style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 16,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
@@ -807,12 +947,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               (order_infomation.deliveryPrice == null)
                                   ? const Text(
                                       '0 đ',
-                                      style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold),
                                     )
                                   : Text(
                                       '${PriceUtils().convertFormatPrice(order_infomation.deliveryPrice!.toDouble().round())} đ',
                                       //'${order_infomation.deliveryPrice!.toDouble().round()} đ',
-                                      style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold),
                                     )
                             ],
                           ),
@@ -826,7 +972,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                               Text(
                                 '0 đ',
-                                style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
@@ -841,11 +990,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               (order_infomation.orderPayment!.discount == 0)
                                   ? const Text(
                                       '- 0 đ',
-                                      style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold),
                                     )
                                   : Text(
                                       '- ${PriceUtils().convertFormatPrice((order_infomation.orderPayment!.discount! * order_infomation.totalOrderValue!).toInt())} đ',
-                                      style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold),
                                     )
                             ],
                           ),
@@ -863,7 +1018,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               ),
                               Text(
                                 '${PriceUtils().convertFormatPrice(order_infomation.orderPayment!.paymentTotal!.toInt())} đ',
-                                style: const TextStyle(fontSize: 17, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontSize: 17,
+                                    color: kPrimaryColor,
+                                    fontWeight: FontWeight.bold),
                               )
                             ],
                           ),
@@ -879,11 +1037,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         ),
         bottomNavigationBar: status.toLowerCase() == 'pending'
             ? Container(
-                padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
                 height: 70,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30)),
                   boxShadow: [
                     BoxShadow(
                       offset: const Offset(0, -15),
@@ -900,22 +1061,29 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       height: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: cancelledColor),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            backgroundColor: cancelledColor),
                         onPressed: () async {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Align(alignment: Alignment.center, child: Text('Thông báo')),
+                                title: const Align(
+                                    alignment: Alignment.center,
+                                    child: Text('Thông báo')),
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text('Bạn có chắn chắn muốn hủy đơn hàng ${order_infomation.id!}?'),
+                                    Text(
+                                        'Bạn có chắn chắn muốn hủy đơn hàng ${order_infomation.id!}?'),
                                     const SizedBox(height: 10),
                                     const Text(
                                       'Lý do hủy',
-                                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 19),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 19),
                                     ),
                                     const SizedBox(height: 10),
                                     TextFormField(
@@ -924,7 +1092,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       controller: _textEditingController,
                                       decoration: InputDecoration(
                                         hintText: 'Nhập lý do hủy',
-                                        contentPadding: const EdgeInsets.only(top: 8, left: 8, right: 8, bottom: 8),
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 8,
+                                            left: 8,
+                                            right: 8,
+                                            bottom: 8),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
                                             color: Colors.grey.shade600,
@@ -942,32 +1114,46 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 ),
                                 actions: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
                                     children: [
                                       SizedBox(
                                         width: 140,
                                         child: ElevatedButton(
                                           onPressed: () async {
-                                            String result = await trackingController.cancelledOrder(order_infomation.id!, CancelledReason);
-                                            if (result.compareTo("success") == 0) {
+                                            String result =
+                                                await trackingController
+                                                    .cancelledOrder(
+                                                        order_infomation.id!,
+                                                        CancelledReason);
+                                            if (result.compareTo("success") ==
+                                                0) {
                                               Navigator.of(context).pop();
                                               showDialog(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   return AlertDialog(
-                                                    title: const Text('Thông báo'),
-                                                    content: Text('Đơn hàng đã được hủy thành công!'),
+                                                    title:
+                                                        const Text('Thông báo'),
+                                                    content: Text(
+                                                        'Đơn hàng đã được hủy thành công!'),
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () {
-                                                          Navigator.of(context).pop();
+                                                          Navigator.of(context)
+                                                              .pop();
                                                           Navigator.push(
                                                               context,
                                                               PageTransition(
-                                                                  child: CancelledDetailScreen(
-                                                                    orderId: order_infomation.id!,
+                                                                  child:
+                                                                      CancelledDetailScreen(
+                                                                    orderId:
+                                                                        order_infomation
+                                                                            .id!,
                                                                   ),
-                                                                  type: PageTransitionType.rightToLeftWithFade));
+                                                                  type: PageTransitionType
+                                                                      .rightToLeftWithFade));
                                                         },
                                                         child: Text('OK'),
                                                       ),
@@ -979,15 +1165,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                               Navigator.of(context).pop();
                                               showDialog(
                                                 context: context,
-                                                builder: (BuildContext context) {
+                                                builder:
+                                                    (BuildContext context) {
                                                   return AlertDialog(
-                                                    title: const Text('Thông báo'),
+                                                    title:
+                                                        const Text('Thông báo'),
                                                     content: Text(
                                                         'Có lỗi xảy ra trong quá trình xử lý hoặc đơn hàng không thể hủy! Bạn vui lòng thử lại sau'),
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () {
-                                                          Navigator.of(context).pop();
+                                                          Navigator.of(context)
+                                                              .pop();
                                                         },
                                                         child: Text('OK'),
                                                       ),
@@ -998,12 +1187,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                              padding:
+                                                  const EdgeInsetsDirectional
+                                                          .symmetric(
+                                                      horizontal: 19,
+                                                      vertical: 10),
                                               elevation: 0,
-                                              foregroundColor: cancelledColor.withOpacity(.5),
+                                              foregroundColor: cancelledColor
+                                                  .withOpacity(.5),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20),
-                                                side: BorderSide(color: cancelledColor, width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                side: BorderSide(
+                                                    color: cancelledColor,
+                                                    width: 1),
                                               ),
                                               backgroundColor: cancelledColor),
                                           child: const Text(
@@ -1019,14 +1216,23 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                       SizedBox(
                                         width: 120,
                                         child: ElevatedButton(
-                                          onPressed: () => Navigator.of(context).pop(),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
                                           style: ElevatedButton.styleFrom(
-                                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                              padding:
+                                                  const EdgeInsetsDirectional
+                                                          .symmetric(
+                                                      horizontal: 19,
+                                                      vertical: 10),
                                               elevation: 0,
-                                              foregroundColor: kPrimaryColor.withOpacity(.5),
+                                              foregroundColor:
+                                                  kPrimaryColor.withOpacity(.5),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20),
-                                                side: const BorderSide(color: kPrimaryColor, width: 1),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                side: const BorderSide(
+                                                    color: kPrimaryColor,
+                                                    width: 1),
                                               ),
                                               backgroundColor: kPrimaryColor),
                                           child: const Text(
@@ -1123,12 +1329,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       height: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            backgroundColor: kPrimaryColor),
                         onPressed: () async {
                           setState(() {
-                            _processIndex = (_processIndex + 1) % _processes.length;
+                            _processIndex =
+                                (_processIndex + 1) % _processes.length;
                           });
-                          String result = await trackingController.trackingOrder(order_infomation.id!);
+                          String result = await trackingController
+                              .trackingOrder(order_infomation.id!);
                           if (result.compareTo("success") == 0) {
                             Navigator.of(context).pop();
                             showDialog(
@@ -1136,7 +1346,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text('Thông báo'),
-                                  content: Text('Đơn hàng đã được xác nhận thành công!'),
+                                  content: Text(
+                                      'Đơn hàng đã được xác nhận thành công!'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -1147,7 +1358,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                 child: OrderDetailScreen(
                                                   orderId: order_infomation.id!,
                                                 ),
-                                                type: PageTransitionType.rightToLeftWithFade));
+                                                type: PageTransitionType
+                                                    .rightToLeftWithFade));
                                       },
                                       child: Text('OK'),
                                     ),
@@ -1162,7 +1374,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text('Thông báo'),
-                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                  content: Text(
+                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -1185,13 +1398,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ],
                 ),
               )
-            : status.toLowerCase() == 'confirmed' || status.toLowerCase() == 'processing' || status.toLowerCase() == 'received'
+            : status.toLowerCase() == 'confirmed' ||
+                    status.toLowerCase() == 'processing' ||
+                    status.toLowerCase() == 'received'
                 ? Container(
-                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
                     height: 70,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                      borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30)),
                       boxShadow: [
                         BoxShadow(
                           offset: const Offset(0, -15),
@@ -1205,12 +1423,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       height: 40,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            backgroundColor: kPrimaryColor),
                         onPressed: () async {
                           setState(() {
-                            _processIndex = (_processIndex + 1) % _processes.length;
+                            _processIndex =
+                                (_processIndex + 1) % _processes.length;
                           });
-                          String result = await trackingController.trackingOrder(order_infomation.id!);
+                          String result = await trackingController
+                              .trackingOrder(order_infomation.id!);
                           if (result.compareTo("success") == 0) {
                             Navigator.of(context).pop();
                             showDialog(
@@ -1233,7 +1455,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                 child: OrderDetailScreen(
                                                   orderId: order_infomation.id!,
                                                 ),
-                                                type: PageTransitionType.rightToLeftWithFade));
+                                                type: PageTransitionType
+                                                    .rightToLeftWithFade));
                                       },
                                       child: Text('OK'),
                                     ),
@@ -1248,7 +1471,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: const Text('Thông báo'),
-                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                  content: Text(
+                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -1271,11 +1495,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   )
                 : status.toLowerCase() == 'ready'
                     ? Container(
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 30),
                         height: 70,
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(30),
+                              topRight: Radius.circular(30)),
                           boxShadow: [
                             BoxShadow(
                               offset: const Offset(0, -15),
@@ -1289,41 +1516,57 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           height: 40,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: kPrimaryColor),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15)),
+                                backgroundColor: kPrimaryColor),
                             onPressed: () async {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
                                     title: const Text('Thông báo'),
-                                    content: Text('Bạn có chắn chắn muốn hoàn thành đơn hàng ${order_infomation.id!}?'),
+                                    content: Text(
+                                        'Bạn có chắn chắn muốn hoàn thành đơn hàng ${order_infomation.id!}?'),
                                     actions: [
                                       TextButton(
                                         onPressed: () async {
-                                          String result = await trackingController.completeOrder(order_infomation.id!);
-                                          if (result.compareTo("success") == 0) {
+                                          String result =
+                                              await trackingController
+                                                  .completeOrder(
+                                                      order_infomation.id!);
+                                          if (result.compareTo("success") ==
+                                              0) {
                                             Navigator.of(context).pop();
 
                                             setState(() {
-                                              _processIndex = (_processIndex + 1) % _processes.length;
+                                              _processIndex =
+                                                  (_processIndex + 1) %
+                                                      _processes.length;
                                             });
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
-                                                  content: Text('Đơn hàng đã hoàn thành!'),
+                                                  title:
+                                                      const Text('Thông báo'),
+                                                  content: Text(
+                                                      'Đơn hàng đã hoàn thành!'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                         Navigator.push(
                                                             context,
                                                             PageTransition(
-                                                                child: OrderDetailScreen(
-                                                                  orderId: order_infomation.id!,
+                                                                child:
+                                                                    OrderDetailScreen(
+                                                                  orderId:
+                                                                      order_infomation
+                                                                          .id!,
                                                                 ),
-                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                                type: PageTransitionType
+                                                                    .rightToLeftWithFade));
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -1337,12 +1580,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
-                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  title:
+                                                      const Text('Thông báo'),
+                                                  content: Text(
+                                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -1374,16 +1620,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       )
                     : status.toLowerCase() == 'completed'
                         ? Container(
-                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 15, horizontal: 30),
                             height: 70,
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(30),
+                                  topRight: Radius.circular(30)),
                               boxShadow: [
                                 BoxShadow(
                                   offset: const Offset(0, -15),
                                   blurRadius: 20,
-                                  color: const Color(0xffdadada).withOpacity(0.15),
+                                  color:
+                                      const Color(0xffdadada).withOpacity(0.15),
                                 ),
                               ],
                             ),
@@ -1392,10 +1642,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               height: 40,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)), backgroundColor: kPrimaryColor),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    backgroundColor: kPrimaryColor),
                                 onPressed: () {
                                   setState(() {
-                                    _processIndex = (_processIndex + 1) % _processes.length;
+                                    _processIndex =
+                                        (_processIndex + 1) % _processes.length;
                                   });
                                 },
                                 child: const Text(
@@ -1459,7 +1713,8 @@ class _BezierPainter extends CustomPainter {
       offset2 = _offset(radius, -angle);
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(0.0, size.height / 2, -radius, radius) // TODO connector start & gradient
+        ..quadraticBezierTo(0.0, size.height / 2, -radius,
+            radius) // TODO connector start & gradient
         ..quadraticBezierTo(0.0, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -1472,7 +1727,8 @@ class _BezierPainter extends CustomPainter {
 
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius, radius) // TODO connector end & gradient
+        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius,
+            radius) // TODO connector end & gradient
         ..quadraticBezierTo(size.width, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -1482,7 +1738,9 @@ class _BezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BezierPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.drawStart != drawStart || oldDelegate.drawEnd != drawEnd;
+    return oldDelegate.color != color ||
+        oldDelegate.drawStart != drawStart ||
+        oldDelegate.drawEnd != drawEnd;
   }
 }
 
