@@ -12,13 +12,10 @@ class CenterController {
     LaundryCenter? currentCenter = LaundryCenter();
     try {
       String url = '$baseUrl/manager/my-center';
-      Response response =
-          await baseController.makeAuthenticatedRequest(url, {});
+      Response response = await baseController.makeAuthenticatedRequest(url, {});
       if (response.statusCode == 200) {
         // Handle successful response
-        currentCenter = jsonDecode(response.body)["data"] != null
-            ? LaundryCenter?.fromJson(jsonDecode(response.body)["data"])
-            : null;
+        currentCenter = jsonDecode(response.body)["data"] != null ? LaundryCenter?.fromJson(jsonDecode(response.body)["data"]) : null;
         //Map<String, dynamic> accountDetails = json.decode(response.body);
         return currentCenter;
         //print(currentUser.name);
