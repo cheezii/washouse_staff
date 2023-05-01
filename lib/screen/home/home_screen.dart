@@ -79,8 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
         print(statistic.dailystatistics![1].toJson());
         for (var element in statistic.dailystatistics!) {
           double day = double.parse(element.day!.substring(0, 2));
-          completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
-          cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
+          //completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
+          //cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
+          completeData.add(new SalesData(element.day!.substring(0, 5), element.successfulOrder!.toDouble()));
+          cancelData.add(new SalesData(element.day!.substring(0, 5), element.cancelledOrder!.toDouble()));
         }
         numOfNotifications = notis.numOfUnread!;
         isLoading = false;
@@ -417,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   LineSeries<SalesData, dynamic>(
                     dataSource: completeData,
                     dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    xValueMapper: (SalesData sales, _) => sales.day,
+                    xValueMapper: (SalesData sales, _) => sales.day.toString(),
                     yValueMapper: (SalesData sales, _) => sales.value,
                     enableTooltip: true,
                     name: 'Thành công',
@@ -426,7 +428,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   LineSeries<SalesData, dynamic>(
                     dataSource: cancelData,
                     dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    xValueMapper: (SalesData sales, _) => sales.day,
+                    xValueMapper: (SalesData sales, _) => sales.day.toString(),
                     yValueMapper: (SalesData sales, _) => sales.value,
                     enableTooltip: true,
                     name: 'Hủy',
@@ -435,25 +437,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 // primaryXAxis:
                 //     NumericAxis(edgeLabelPlacement: EdgeLabelPlacement.shift),
+                primaryXAxis: CategoryAxis(
+                  isVisible: true,
+                  labelRotation: 75,
+                  arrangeByIndex: true,
+                  labelPlacement: LabelPlacement.betweenTicks,
+                  edgeLabelPlacement: EdgeLabelPlacement.shift,
+                ),
               )
-              // Container(
-              //   width: 400, // Set the width of the chart
-              //   height: 200, // Set the height of the chart
-              //   child: charts.BarChart(
-              //     [
-              //       charts.Series<ChartData, String>(
-              //         id: 'chartData',
-              //         domainFn: (ChartData data, _) => data.category,
-              //         measureFn: (ChartData data, _) => data.value,
-              //         data: data,
-              //         labelAccessorFn: (ChartData data, _) => '${data.value}',
-              //         colorFn: (ChartData data, _) => charts.ColorUtil.fromDartColor(data.colorCode),
-              //       )
-              //     ],
-              //     animate: true,
-              //     vertical: false,
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -611,8 +602,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// class SalesData {
+//   final double day;
+//   final double value;
+
+//   SalesData(this.day, this.value);
+// }
+
 class SalesData {
-  final double day;
+  final String day;
   final double value;
 
   SalesData(this.day, this.value);
