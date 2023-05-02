@@ -1,7 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'dart:ui';
+import 'package:flutter/src/widgets/basic.dart' as basic;
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:http/http.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -206,7 +210,35 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
     var provider = Provider.of<CartProvider>(context);
     measurementController = TextEditingController(text: measurement.toString());
     if (isLoadingDeliveryPrice) {
-      return CircularProgressIndicator();
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 10.0,
+                sigmaY: 10.0,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
+            ),
+          ),
+          Positioned(
+            child: basic.Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                width: 100,
+                height: 100,
+                child: LoadingAnimationWidget.threeRotatingDots(color: kPrimaryColor, size: 50),
+              ),
+            ),
+          )
+        ],
+      );
     } else {
       return Scaffold(
         resizeToAvoidBottomInset: false,

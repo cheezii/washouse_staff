@@ -417,7 +417,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                 const Spacer(),
                                 (order_infomation.orderDeliveries!.first.shipperPhone != null &&
                                         (order_infomation.orderDeliveries!.first.status != null) &&
-                                        (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0))
+                                        ((order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0) ||
+                                            (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('delivering') == 0)))
                                     ? ElevatedButton(
                                         onPressed: () async {
                                           setState(() {
@@ -435,7 +436,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
                                                   title: const Text('Thông báo'),
-                                                  content: Text('Trạng thái vận chuyển đã được cập nhật!'),
+                                                  content: Text(
+                                                      'Trạng thái vận chuyển đã được cập nhật trở thành "${MappingUtils().mapVietnameseNextDeliveryStatus(order_infomation.orderDeliveries!.first.status!)}"!'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
