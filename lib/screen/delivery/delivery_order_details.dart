@@ -6,12 +6,16 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:timelines/timelines.dart';
+import '../../resource/controller/base_controller.dart';
+import 'package:washouse_staff/screen/category/list_category.dart';
 
 import '../../components/constants/color_constants.dart';
+import '../../resource/controller/center_controller.dart';
 import '../../resource/controller/order_controller.dart';
 import '../../resource/controller/tracking_controller.dart';
 import '../../resource/model/order.dart';
 import '../../resource/model/order_infomation.dart';
+import '../../utils/mapping_util.dart';
 import '../../utils/order_util.dart';
 import '../../utils/price_util.dart';
 import '../order/components/details_widget/service_details.dart';
@@ -32,8 +36,14 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
   bool isLoading = false;
   int? centerId;
   late Order_Infomation order_infomation;
+  late String dropoffShipperPhone;
+  late String dropoffShipperName;
+  late String deliverShipperPhone;
+  late String deliverShipperName;
   OrderController orderController = OrderController();
   TrackingController trackingController = TrackingController();
+  CenterController centerController = CenterController();
+  BaseController baseController = BaseController();
   Color getColor(int index) {
     if (index == _processIndex) {
       return kPrimaryColor;
@@ -185,7 +195,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                 ),
                                 const Spacer(),
                                 Text(
-                                  '${widget.order.deliveries!.first.deliveryStatus}', //map lại VNese
+                                  //'a',
+                                  '${MappingUtils().mapVietnameseDeliveryStatus(order_infomation.orderDeliveries!.first.status!)}',
                                   style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
                                 )
                               ],
@@ -198,7 +209,9 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                   style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
                                 ),
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.first.shipperPhone == null)
+                                (order_infomation.orderDeliveries!.first.status == null ||
+                                        ((order_infomation.orderDeliveries!.first.status != null) &&
+                                            (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0)))
                                     ? ElevatedButton(
                                         onPressed: () {
                                           showDialog(
@@ -237,6 +250,11 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                       floatingLabelBehavior: FloatingLabelBehavior.always,
                                                     ),
                                                     cursorColor: textColor.withOpacity(.8),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        dropoffShipperName = value;
+                                                      });
+                                                    },
                                                   ),
                                                   const SizedBox(height: 8),
                                                   TextField(
@@ -259,12 +277,73 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                     ),
                                                     cursorColor: textColor.withOpacity(.8),
                                                     keyboardType: TextInputType.number,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        dropoffShipperPhone = value;
+                                                      });
+                                                    },
                                                   ),
                                                 ],
                                               ),
                                               actions: [
                                                 ElevatedButton(
-                                                  onPressed: () {},
+                                                  onPressed: () async {
+                                                    setState(() {
+                                                      isLoading = true;
+                                                    });
+                                                    Map<String, dynamic>? result = await centerController.assignDelivery(
+                                                        widget.order.orderId!, 'dropoff', dropoffShipperName, dropoffShipperPhone);
+                                                    setState(() {
+                                                      isLoading = false;
+                                                    });
+                                                    if (result != null) {
+                                                      Navigator.of(context).pop();
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: const Text('Thông báo'),
+                                                            content: Text('Thông tin người vận chuyển đã được cập nhật!'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                  Navigator.of(context).pop();
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      PageTransition(
+                                                                          child: DeliveryOrderDetails(
+                                                                            order: widget.order,
+                                                                          ),
+                                                                          type: PageTransitionType.rightToLeftWithFade));
+                                                                },
+                                                                child: Text('OK'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    } else {
+                                                      Navigator.of(context).pop();
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: const Text('Thông báo'),
+                                                            content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                                child: Text('OK'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  },
                                                   style: ElevatedButton.styleFrom(
                                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                                                       foregroundColor: kPrimaryColor.withOpacity(.7),
@@ -297,7 +376,7 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           backgroundColor: kPrimaryColor,
                                         ),
                                         child: const Text(
-                                          'Chọn NV',
+                                          'Cập nhật NV',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                       )
@@ -336,26 +415,88 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             Row(
                               children: [
                                 const Spacer(),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                      foregroundColor: kPrimaryColor.withOpacity(.7),
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                (order_infomation.orderDeliveries!.first.shipperPhone != null &&
+                                        (order_infomation.orderDeliveries!.first.status != null) &&
+                                        (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0))
+                                    ? ElevatedButton(
+                                        onPressed: () async {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          Map<String, dynamic>? result =
+                                              await centerController.changeDeliveryStatus(widget.order.orderId!, 'dropoff');
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          print(result);
+                                          if (result != null) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Trạng thái vận chuyển đã được cập nhật!'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context).pop();
+                                                        Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                                child: DeliveryOrderDetails(
+                                                                  order: widget.order,
+                                                                ),
+                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                            foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(20),
+                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                            ),
+                                            backgroundColor: kPrimaryColor),
+                                        child: const Text(
+                                          'Cập nhật trạng thái',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        height: 0,
+                                        width: 0,
                                       ),
-                                      backgroundColor: kPrimaryColor),
-                                  child: const Text(
-                                    'Cập nhật vận chuyển',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
                               ],
                             ),
                           ],
@@ -383,7 +524,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                 ),
                                 const Spacer(),
                                 Text(
-                                  '${widget.order.deliveries!.last.deliveryStatus}', //map lại VNese
+                                  //'b',
+                                  '${MappingUtils().mapVietnameseDeliveryStatus(order_infomation.orderDeliveries!.last.status!)}',
                                   style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
                                 )
                               ],
@@ -396,7 +538,9 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                   style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
                                 ),
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.last.shipperPhone == null)
+                                (order_infomation.orderDeliveries!.last.status == null ||
+                                        ((order_infomation.orderDeliveries!.last.status != null) &&
+                                            (order_infomation.orderDeliveries!.last.status!.trim().toLowerCase().compareTo('pending') == 0)))
                                     ? ElevatedButton(
                                         onPressed: () {
                                           showDialog(
@@ -435,6 +579,11 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                       floatingLabelBehavior: FloatingLabelBehavior.always,
                                                     ),
                                                     cursorColor: textColor.withOpacity(.8),
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        deliverShipperName = value;
+                                                      });
+                                                    },
                                                   ),
                                                   const SizedBox(height: 8),
                                                   TextField(
@@ -457,12 +606,73 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                     ),
                                                     cursorColor: textColor.withOpacity(.8),
                                                     keyboardType: TextInputType.number,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        deliverShipperPhone = value;
+                                                      });
+                                                    },
                                                   ),
                                                 ],
                                               ),
                                               actions: [
                                                 ElevatedButton(
-                                                  onPressed: () {},
+                                                  onPressed: () async {
+                                                    setState(() {
+                                                      isLoading = true;
+                                                    });
+                                                    Map<String, dynamic>? result = await centerController.assignDelivery(
+                                                        widget.order.orderId!, 'deliver', deliverShipperName, deliverShipperPhone);
+                                                    setState(() {
+                                                      isLoading = false;
+                                                    });
+                                                    if (result != null) {
+                                                      Navigator.of(context).pop();
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: const Text('Thông báo'),
+                                                            content: Text('Thông tin người vận chuyển đã được cập nhật!'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                  Navigator.of(context).pop();
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      PageTransition(
+                                                                          child: DeliveryOrderDetails(
+                                                                            order: widget.order,
+                                                                          ),
+                                                                          type: PageTransitionType.rightToLeftWithFade));
+                                                                },
+                                                                child: Text('OK'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    } else {
+                                                      Navigator.of(context).pop();
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: const Text('Thông báo'),
+                                                            content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                },
+                                                                child: Text('OK'),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    }
+                                                  },
                                                   style: ElevatedButton.styleFrom(
                                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
                                                       foregroundColor: kPrimaryColor.withOpacity(.7),
@@ -495,7 +705,7 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           backgroundColor: kPrimaryColor,
                                         ),
                                         child: const Text(
-                                          'Chọn NV',
+                                          'Cập nhật NV',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                       )
@@ -534,26 +744,88 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             Row(
                               children: [
                                 const Spacer(),
-                                ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                      foregroundColor: kPrimaryColor.withOpacity(.7),
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                (order_infomation.orderDeliveries!.last.shipperPhone != null &&
+                                        (order_infomation.orderDeliveries!.last.status != null) &&
+                                        (order_infomation.orderDeliveries!.last.status!.trim().toLowerCase().compareTo('pending') == 0))
+                                    ? ElevatedButton(
+                                        onPressed: () async {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          Map<String, dynamic>? result =
+                                              await centerController.changeDeliveryStatus(widget.order.orderId!, 'deliver');
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          print(result);
+                                          if (result != null) {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Trạng thái vận chuyển đã được cập nhật!'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context).pop();
+                                                        Navigator.push(
+                                                            context,
+                                                            PageTransition(
+                                                                child: DeliveryOrderDetails(
+                                                                  order: widget.order,
+                                                                ),
+                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          } else {
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return AlertDialog(
+                                                  title: const Text('Thông báo'),
+                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context).pop();
+                                                      },
+                                                      child: Text('OK'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                            foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(20),
+                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                            ),
+                                            backgroundColor: kPrimaryColor),
+                                        child: const Text(
+                                          'Cập nhật trạng thái',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        height: 0,
+                                        width: 0,
                                       ),
-                                      backgroundColor: kPrimaryColor),
-                                  child: const Text(
-                                    'Cập nhật vận chuyển',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
                               ],
                             ),
                           ],
@@ -808,33 +1080,33 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
             ),
           ),
         ),
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-          height: 70,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0, -15),
-                blurRadius: 20,
-                color: const Color(0xffdadada).withOpacity(0.15),
-              ),
-            ],
-          ),
-          child: SizedBox(
-            width: 190,
-            height: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
-              onPressed: () {},
-              child: const Text(
-                'Hoàn tất thanh toán',
-                style: TextStyle(fontSize: 17),
-              ),
-            ),
-          ),
-        ),
+        // bottomNavigationBar: Container(
+        //   padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+        //   height: 70,
+        //   decoration: BoxDecoration(
+        //     color: Colors.white,
+        //     borderRadius: const BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
+        //     boxShadow: [
+        //       BoxShadow(
+        //         offset: const Offset(0, -15),
+        //         blurRadius: 20,
+        //         color: const Color(0xffdadada).withOpacity(0.15),
+        //       ),
+        //     ],
+        //   ),
+        //   child: SizedBox(
+        //     width: 190,
+        //     height: 40,
+        //     child: ElevatedButton(
+        //       style: ElevatedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), backgroundColor: kPrimaryColor),
+        //       onPressed: () {},
+        //       child: const Text(
+        //         'Hoàn tất thanh toán',
+        //         style: TextStyle(fontSize: 17),
+        //       ),
+        //     ),
+        //   ),
+        // ),
       );
     }
   }

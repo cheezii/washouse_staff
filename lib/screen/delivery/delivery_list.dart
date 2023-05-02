@@ -62,7 +62,7 @@ class _ListDeliveryScreenState extends State<ListDeliveryScreen> {
       //   ),
       // ),
       body: FutureBuilder(
-        future: orderController.getOrderDeliveryList(1, 20, null, null, null, null, true, 'Pending'),
+        future: orderController.getOrderDeliveryList(1, 50, null, null, null, null, true, 'Pending'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

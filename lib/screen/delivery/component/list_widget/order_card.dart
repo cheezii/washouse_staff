@@ -141,17 +141,25 @@ class CardOrder extends StatelessWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  '${order.deliveries!.last.addressString}',
-                                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: textColor),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ),
-                                Text(
-                                  '${order.deliveries!.last.wardName}, ${order.deliveries!.last.districtName}',
-                                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                SizedBox(
+                                  width: 280, // Set the width of the SizedBox to limit the width of the Column
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${order.deliveries!.last.addressString}',
+                                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: textColor),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      Text(
+                                        '${order.deliveries!.last.wardName}, ${order.deliveries!.last.districtName}',
+                                        style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             )
