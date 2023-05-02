@@ -1,8 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../../../components/constants/color_constants.dart';
+import '../../../resource/controller/order_controller.dart';
 import '../../../utils/time_utils.dart';
+import '../../order/order_detail_screen.dart';
 
 class NotificationList extends StatefulWidget {
   final String title;
@@ -24,7 +27,15 @@ class NotificationList extends StatefulWidget {
 }
 
 class _NotificationListState extends State<NotificationList> {
+  OrderController orderController = OrderController();
   late FontWeight fontWeight;
+  bool isPayment = false;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     //bool checkOver24h = TimeUtils().checkOver24Hours(widget.time);
@@ -35,7 +46,31 @@ class _NotificationListState extends State<NotificationList> {
     else
       fontWeight = FontWeight.normal;
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        if (widget.title.contains("đơn hàng:")) {
+          String orderId = widget.title.split(':').last.trim();
+          var order = await orderController.getOrderInformation(orderId);
+          if (order.orderPayment!.status!
+                      .trim()
+                      .toLowerCase()
+                      .compareTo('paid') ==
+                  0 ||
+              order.orderPayment!.status!
+                      .trim()
+                      .toLowerCase()
+                      .compareTo('received') ==
+                  0) {
+            setState(() {
+              isPayment = true;
+            });
+          }
+          Navigator.push(
+              context,
+              PageTransition(
+                  child: OrderDetailScreen(orderId: orderId),
+                  type: PageTransitionType.leftToRightWithFade));
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ClipRRect(
@@ -75,7 +110,9 @@ class _NotificationListState extends State<NotificationList> {
                                 widget.title,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.grey.shade800,
+                                  color: widget.isNotiRead
+                                      ? Colors.grey.shade800
+                                      : kPrimaryColor,
                                   fontWeight: fontWeight,
                                 ),
                               ),

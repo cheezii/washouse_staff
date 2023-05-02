@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -81,8 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
           double day = double.parse(element.day!.substring(0, 2));
           //completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
           //cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
-          completeData.add(new SalesData(element.day!.substring(0, 5), element.successfulOrder!.toDouble()));
-          cancelData.add(new SalesData(element.day!.substring(0, 5), element.cancelledOrder!.toDouble()));
+          completeData.add(new SalesData(element.day!.substring(0, 5),
+              element.successfulOrder!.toDouble()));
+          cancelData.add(new SalesData(element.day!.substring(0, 5),
+              element.cancelledOrder!.toDouble()));
         }
         numOfNotifications = notis.numOfUnread!;
         isLoading = false;
@@ -109,13 +112,15 @@ class _HomeScreenState extends State<HomeScreen> {
     NotificationResponse notificationResponse = NotificationResponse();
     try {
       String url = '$baseUrl/notifications/me-noti';
-      Response response = await baseController.makeAuthenticatedRequest(url, {});
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)["data"];
         notificationResponse = NotificationResponse.fromJson(data);
       } else {
-        throw Exception('Error fetching getNotifications: ${response.statusCode}');
+        throw Exception(
+            'Error fetching getNotifications: ${response.statusCode}');
       }
     } catch (e) {
       print('error: getNotifications-$e');
@@ -181,7 +186,36 @@ class _HomeScreenState extends State<HomeScreen> {
     //   },
     // );
     if (isLoading) {
-      return basic.Center(child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50));
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 10.0,
+                sigmaY: 10.0,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
+            ),
+          ),
+          Positioned(
+            child: basic.Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                width: 100,
+                height: 100,
+                child: LoadingAnimationWidget.threeRotatingDots(
+                    color: kPrimaryColor, size: 50),
+              ),
+            ),
+          )
+        ],
+      );
     } else {
       OrderOverview overview = statistic.orderOverview!;
       return Scaffold(
@@ -200,11 +234,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           centerTitle: true,
-          title: const Text('Trang chủ', style: TextStyle(color: textColor, fontSize: 24)),
+          title: const Text('Trang chủ',
+              style: TextStyle(color: textColor, fontSize: 24)),
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: const ListNotificationScreen(),
+                        type: PageTransitionType.rightToLeftWithFade));
               },
               icon: Stack(
                 children: [
@@ -248,7 +287,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 'Tổng quan đơn hàng (7 ngày)',
-                style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 20,
+                    color: textBoldColor,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 10),
               Row(
@@ -409,11 +451,15 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               const Text(
                 'Thống kê đơn hàng theo ngày',
-                style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 20,
+                    color: textBoldColor,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 10),
               SfCartesianChart(
-                legend: Legend(isVisible: true, position: LegendPosition.bottom),
+                legend:
+                    Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: tooltipBehavior,
                 series: <ChartSeries>[
                   LineSeries<SalesData, dynamic>(
@@ -462,7 +508,10 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Tin nhắn',
               backgroundColor: kPrimaryColor,
               onTap: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChatScreen()));
                 //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailPage(arguments: ChatPageArguments(peerId: '3', peerAvatar: 'abc', peerNickname: 'Đoàn Trọng Kim'),)));
 
                 // String groupChatId = "";
@@ -576,7 +625,10 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Quét mã qr',
               backgroundColor: kPrimaryColor,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanQRCodeScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScanQRCodeScreen()));
               },
             ),
             SpeedDialChild(
@@ -591,7 +643,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return CreateOrderScreen(categoryData: centerDetails.centerServices);
+                      return CreateOrderScreen(
+                          categoryData: centerDetails.centerServices);
                     });
               },
             )
