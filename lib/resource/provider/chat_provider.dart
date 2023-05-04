@@ -57,31 +57,44 @@ class ChatProvider {
   // }
 
   Stream<QuerySnapshot> getStreamFireStore(String pathCollection, int limit,
-      String? textSearch, String currrentUserId) {
+      String? textSearch, String groupChatId) {
     if (textSearch?.isNotEmpty == true) {
       return firebaseFirestore
           .collection(pathCollection)
-          .doc(currrentUserId)
-          .collection(currrentUserId)
+          .doc(groupChatId)
+          .collection('msglist')
           .limit(limit)
           .where(FirestoreConstants.name, arrayContains: textSearch!)
           .snapshots();
     } else {
       return firebaseFirestore
           .collection(pathCollection)
-          .doc(currrentUserId)
-          .collection(currrentUserId)
+          .doc(groupChatId)
+          .collection('msglist')
           .limit(limit)
           .snapshots();
     }
   }
 
-  // Stream<QuerySnapshot> getListStream(String groupChatId, String currentId) {
-  //   return firebaseFirestore
-  //       .collection(FirestoreConstants.pathListChatCollection)
-  //       .where(FirestoreConstants.groupChatId, arrayContains: currentId)
-  //       .snapshots();
-  // }
+  Stream<QuerySnapshot> getListStream(String currentId) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathMessageCollection)
+        // .where(FirestoreConstants.idFrom, isEqualTo: currentId)
+        .where(FirestoreConstants.idTo, isEqualTo: currentId)
+        .snapshots();
+  }
+  // Future getListStream(String currentId) async {
+  //   var result = await FirebaseFirestore.instance
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .withConverter(
+  //           fromFirestore: ((snapshot, _) =>
+  //               MessageData.fromDocument(snapshot)),
+  //           toFirestore: (MessageData msg, options) => msg.toJson())
+  //       .where(FirestoreConstants.idFrom, isEqualTo: currentId)
+  //       .where(FirestoreConstants.idTo, isEqualTo: currentId)
+  //       .get();
+  //   return result;
+  //}
 
   Stream<QuerySnapshot> getChatStream(String groupChatId, int limit) {
     return firebaseFirestore

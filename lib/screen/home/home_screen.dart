@@ -512,7 +512,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ChatScreen()));
-                //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailPage(arguments: ChatPageArguments(peerId: '3', peerAvatar: 'abc', peerNickname: 'Đoàn Trọng Kim'),)));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => ChatDetailPage(
+                //               arguments: ChatPageArguments(
+                //                   peerId: '2',
+                //                   peerAvatar: 'abc',
+                //                   peerNickname: 'Đoàn Trọng Kim'),
+                //             )));
 
                 // String groupChatId = "";
                 // if (widget.centerId.toString().compareTo('3') > 0) {

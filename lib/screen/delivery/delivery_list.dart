@@ -36,7 +36,8 @@ class _ListDeliveryScreenState extends State<ListDeliveryScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Vận chuyển', style: TextStyle(color: textColor, fontSize: 25)),
+        title: const Text('Vận chuyển',
+            style: TextStyle(color: textColor, fontSize: 25)),
         actions: [
           IconButton(
             onPressed: () {},
@@ -62,11 +63,13 @@ class _ListDeliveryScreenState extends State<ListDeliveryScreen> {
       //   ),
       // ),
       body: FutureBuilder(
-        future: orderController.getOrderDeliveryList(1, 50, null, null, null, null, true, 'Pending'),
+        future: orderController.getOrderDeliveryList(
+            1, 50, null, null, null, null, true, 'Pending'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50),
+              child: LoadingAnimationWidget.prograssiveDots(
+                  color: kPrimaryColor, size: 50),
             );
           } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
             orderList = snapshot.data!;
@@ -85,8 +88,7 @@ class _ListDeliveryScreenState extends State<ListDeliveryScreen> {
               ),
             );
           } else {
-            //return CardOrder();
-            return const NoOrderScreen();
+            return const Center(child: NoOrderScreen());
           }
         },
       ),
