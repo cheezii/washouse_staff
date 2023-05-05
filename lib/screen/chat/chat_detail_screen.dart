@@ -181,6 +181,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Flexible(
       child: groupChatId.isNotEmpty
           ? StreamBuilder<QuerySnapshot>(
+              //stream: chatProvider.getChatStream(groupChatId),
               stream: chatProvider.getChatStream(groupChatId, _limit),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -214,8 +215,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget buildItem(int index, DocumentSnapshot? document) {
     if (document != null) {
       MessageChat messageChat = MessageChat.fromDocument(document);
+      print(messageChat.content);
       if (messageChat.idFrom == currentId.toString()) {
         // Right (my message)
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[

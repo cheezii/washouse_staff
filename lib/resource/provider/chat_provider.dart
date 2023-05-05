@@ -61,13 +61,13 @@ class ChatProvider {
     if (textSearch?.isNotEmpty == true) {
       return firebaseFirestore
           .collection(FirestoreConstants.pathMessageCollection)
-          .where(FirestoreConstants.idFrom, isEqualTo: currentId)
+          .where(FirestoreConstants.idTo, isEqualTo: currentId)
           .where(FirestoreConstants.nameTo, arrayContains: textSearch)
           .snapshots();
     } else {
       return firebaseFirestore
           .collection(FirestoreConstants.pathMessageCollection)
-          .where(FirestoreConstants.idFrom, isEqualTo: currentId)
+          .where(FirestoreConstants.idTo, isEqualTo: currentId)
           .snapshots();
     }
   }
@@ -101,6 +101,15 @@ class ChatProvider {
         .limit(limit)
         .snapshots();
   }
+
+  // Stream<QuerySnapshot> getChatStream(String groupChatId) {
+  //   return firebaseFirestore
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .doc(groupChatId)
+  //       .collection('msglist')
+  //       .orderBy(FirestoreConstants.timestamp, descending: true)
+  //       .snapshots();
+  // }
 
   void sendMessage(String content, int type, String groupChatId,
       String currentUserId, String peerId) {

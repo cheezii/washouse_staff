@@ -199,7 +199,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   _textSearch, centerId.toString()),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
                   listChat = snapshot.data!.docs;
                   if (listChat.length > 0) {
                     return ListView.builder(
@@ -227,11 +231,22 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     );
                   }
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
                 }
+                return Column(
+                  children: [
+                    const SizedBox(height: 150),
+                    SizedBox(
+                      height: 150,
+                      width: 150,
+                      child: Image.asset('assets/images/sticker/app_icon.png'),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'Chưa có đoạn chat nào.',
+                      style: TextStyle(fontSize: 18, color: textColor),
+                    )
+                  ],
+                );
               },
             ),
           )
