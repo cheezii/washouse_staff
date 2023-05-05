@@ -26,6 +26,7 @@ NotifyProvider notifyProvider = NotifyProvider();
 class _ListCategoryScreenState extends State<ListCategoryScreen> {
   TextEditingController searchController = TextEditingController();
   List<CenterServices> catetList = [];
+  List<ServiceCenter> listService = [];
   int? _centerId;
   bool _categoryTileExpanded = false;
   bool isLoading = true;
@@ -159,7 +160,7 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                   ),
                 ),
                 style: TextStyle(
-                    color: Colors.grey.shade700, height: 1, fontSize: 15),
+                    color: Colors.grey.shade700, height: 1.4, fontSize: 15),
               ),
               const SizedBox(height: 10),
               Skeleton(

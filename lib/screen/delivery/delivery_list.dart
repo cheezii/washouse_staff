@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:washouse_staff/resource/controller/order_controller.dart';
+import 'package:washouse_staff/screen/delivery/search_delivery_order_screen.dart';
 
 import '../../components/constants/color_constants.dart';
 import '../../resource/model/order.dart';
@@ -40,7 +41,13 @@ class _ListDeliveryScreenState extends State<ListDeliveryScreen> {
             style: TextStyle(color: textColor, fontSize: 25)),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      child: const SearchDeliveryOrderScreen(),
+                      type: PageTransitionType.fade));
+            },
             icon: const Icon(
               Icons.search,
               color: textColor,
