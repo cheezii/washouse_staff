@@ -228,12 +228,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
                     width: 200,
                     decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: kPrimaryColor,
                         borderRadius: BorderRadius.circular(30)),
                     margin: EdgeInsets.only(
                         bottom: isLastMessageRight(index) ? 20 : 10, right: 10),
                     child: Text(
                       messageChat.content,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   )
                 : messageChat.type == TypeMessage.image
@@ -373,12 +374,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
                           width: 200,
                           decoration: BoxDecoration(
-                              color: kPrimaryColor.withOpacity(.7),
+                              color: Colors.grey.shade200,
                               borderRadius: BorderRadius.circular(30)),
                           margin: const EdgeInsets.only(left: 10),
                           child: Text(
                             messageChat.content,
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: textColor),
                           ),
                         )
                       : messageChat.type == TypeMessage.image
