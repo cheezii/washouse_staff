@@ -199,19 +199,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
         );
       }
-      String status = order_infomation.status!;
+      String status = order_infomation.status!.toLowerCase();
       print(status);
-      if (status.toLowerCase().trim().toLowerCase() == 'pending') {
+      if (status.trim() == 'pending') {
         _processIndex = 0;
-      } else if (status.toLowerCase().trim().toLowerCase() == 'confirmed') {
+      } else if (status.trim() == 'confirmed') {
         _processIndex = 1;
-      } else if (status.toLowerCase().trim().toLowerCase() == 'received') {
+      } else if (status.trim() == 'received') {
         _processIndex = 2;
-      } else if (status.toLowerCase().trim().toLowerCase() == 'processing') {
+      } else if (status.trim() == 'processing') {
         _processIndex = 3;
-      } else if (status.toLowerCase().trim().toLowerCase() == 'ready') {
+      } else if (status.trim() == 'ready') {
         _processIndex = 4;
-      } else if (status.toLowerCase().trim().toLowerCase() == 'completed') {
+      } else if (status.trim() == 'completed') {
         _processIndex = 5;
       }
       return Scaffold(
@@ -1096,8 +1096,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             builder: (BuildContext context) {
                               return AlertDialog(
                                 title: const Align(
-                                    alignment: Alignment.center,
-                                    child: Text('Thông báo')),
+                                  alignment: Alignment.center,
+                                  child: Text('Thông báo'),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                                 content: Column(
                                   mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1160,10 +1164,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                 builder:
                                                     (BuildContext context) {
                                                   return AlertDialog(
-                                                    title:
-                                                        const Text('Thông báo'),
+                                                    title: const Align(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text('Thông báo'),
+                                                    ),
                                                     content: Text(
                                                         'Đơn hàng đã được hủy thành công!'),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
                                                     actions: [
                                                       TextButton(
                                                         onPressed: () {
@@ -1194,8 +1207,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                 builder:
                                                     (BuildContext context) {
                                                   return AlertDialog(
-                                                    title:
-                                                        const Text('Thông báo'),
+                                                    title: const Align(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      child: Text('Thông báo'),
+                                                    ),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              15),
+                                                    ),
                                                     content: Text(
                                                         'Có lỗi xảy ra trong quá trình xử lý hoặc đơn hàng không thể hủy! Bạn vui lòng thử lại sau'),
                                                     actions: [
@@ -1371,9 +1393,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: const Text('Thông báo'),
+                                  title: const Align(
+                                    alignment: Alignment.center,
+                                    child: Text('Thông báo'),
+                                  ),
                                   content: Text(
                                       'Đơn hàng đã được xác nhận thành công!'),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -1399,7 +1427,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: const Text('Thông báo'),
+                                  title: const Align(
+                                    alignment: Alignment.center,
+                                    child: Text('Thông báo'),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                   content: Text(
                                       'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                   actions: [
@@ -1464,13 +1498,21 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
+                                print(
+                                    'status: ${order_infomation.orderDeliveries!.first.status}');
                                 return AlertDialog(
-                                  title: const Text('Thông báo'),
+                                  title: const Align(
+                                    alignment: Alignment.center,
+                                    child: Text('Thông báo'),
+                                  ),
                                   content: Text(status == 'confirmed'
                                       ? 'Đơn hàng đã được chuyển sang trạng thái đã nhận!'
                                       : status == 'received'
                                           ? 'Đơn hàng đã được chuyển sang trạng thái xử lý!'
                                           : 'Đơn hàng đã được chuyển sang trạng thái tiếp theo!'),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
@@ -1491,25 +1533,63 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               },
                             );
                           } else {
-                            Navigator.of(context).pop();
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Thông báo'),
-                                  content: Text(
-                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('OK'),
+                            print(
+                                'status: ${order_infomation.orderDeliveries!.first.status}');
+                            if (order_infomation.orderDeliveries!.first.status!
+                                    .toLowerCase() ==
+                                'pending') {
+                              Navigator.of(context).pop();
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text('Thông báo'),
                                     ),
-                                  ],
-                                );
-                              },
-                            );
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    content: Text(
+                                        'Bạn chưa chọn nhân viên vận chuyển, không thể cập nhật đơn hàng!'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            } else {
+                              Navigator.of(context).pop();
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text('Thông báo'),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    content: Text(
+                                        'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('OK'),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            }
                           }
                         },
                         child: const Text(
@@ -1550,11 +1630,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: const Text('Thông báo'),
+                                    title: const Align(
+                                      alignment: Alignment.center,
+                                      child: Text('Thông báo'),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
                                     content: Text(
                                         'Bạn có chắn chắn muốn hoàn thành đơn hàng ${order_infomation.id!}?'),
                                     actions: [
-                                      TextButton(
+                                      ElevatedButton(
                                         onPressed: () async {
                                           String result =
                                               await trackingController
@@ -1573,8 +1659,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title:
-                                                      const Text('Thông báo'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
                                                   content: Text(
                                                       'Đơn hàng đã hoàn thành!'),
                                                   actions: [
@@ -1606,8 +1699,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title:
-                                                      const Text('Thông báo'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
                                                   content: Text(
                                                       'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                                   actions: [
@@ -1624,13 +1724,57 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                             );
                                           }
                                         },
-                                        child: Text('Xác nhận hoàn thành'),
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsetsDirectional
+                                                    .symmetric(
+                                                horizontal: 19, vertical: 10),
+                                            foregroundColor:
+                                                kPrimaryColor.withOpacity(.7),
+                                            elevation: 0,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              side: BorderSide(
+                                                  color: kPrimaryColor,
+                                                  width: 1),
+                                            ),
+                                            backgroundColor: kPrimaryColor),
+                                        child: const Text(
+                                          'OK',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       ),
-                                      TextButton(
+                                      ElevatedButton(
                                         onPressed: () {
                                           Navigator.of(context).pop();
                                         },
-                                        child: Text('Hủy bỏ'),
+                                        style: ElevatedButton.styleFrom(
+                                            padding: const EdgeInsetsDirectional
+                                                    .symmetric(
+                                                horizontal: 19, vertical: 10),
+                                            elevation: 0,
+                                            foregroundColor:
+                                                cancelledColor.withOpacity(.5),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              side: BorderSide(
+                                                  color: cancelledColor,
+                                                  width: 1),
+                                            ),
+                                            backgroundColor: cancelledColor),
+                                        child: const Text(
+                                          'Hủy',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   );

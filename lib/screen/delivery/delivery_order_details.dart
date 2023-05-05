@@ -44,6 +44,16 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
   TrackingController trackingController = TrackingController();
   CenterController centerController = CenterController();
   BaseController baseController = BaseController();
+  TextEditingController dropoffShipperNameContronller = TextEditingController();
+  TextEditingController dropoffShipperPhoneContronller =
+      TextEditingController();
+  TextEditingController deliverShipperNameContronller = TextEditingController();
+  TextEditingController deliverShipperPhoneContronller =
+      TextEditingController();
+  final GlobalKey<FormState> _formNameKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formPhoneNumberKey = GlobalKey<FormState>();
+  final typePhoneNum = RegExp(r'(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b');
+
   Color getColor(int index) {
     if (index == _processIndex) {
       return kPrimaryColor;
@@ -57,19 +67,6 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
   @override
   void initState() {
     super.initState();
-    if (widget.order.status?.trim().toLowerCase() == 'pending') {
-      _processIndex = 0;
-    } else if (widget.order.status?.trim().toLowerCase() == 'confirmed') {
-      _processIndex = 1;
-    } else if (widget.order.status?.trim().toLowerCase() == 'received') {
-      _processIndex = 2;
-    } else if (widget.order.status?.trim().toLowerCase() == 'processing') {
-      _processIndex = 3;
-    } else if (widget.order.status?.trim().toLowerCase() == 'ready') {
-      _processIndex = 4;
-    } else if (widget.order.status?.trim().toLowerCase() == 'completed') {
-      _processIndex = 5;
-    }
     getOrderInfomation();
   }
 
@@ -81,13 +78,31 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
 
     try {
       // Wait for getOrderInformation to complete
-      Order_Infomation result = await orderController.getOrderInformation(widget.order.orderId!);
-      var _centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+      Order_Infomation result =
+          await orderController.getOrderInformation(widget.order.orderId!);
+      var _centerId =
+          await baseController.getInttoSharedPreference("CENTER_ID");
 
       setState(() {
         // Update state with loaded data
         centerId = _centerId;
         order_infomation = result;
+        if (order_infomation.orderDeliveries!.last.status
+                ?.trim()
+                .toLowerCase() ==
+            'pending') {
+          _processIndex = 0;
+        } else if (order_infomation.orderDeliveries!.last.status
+                ?.trim()
+                .toLowerCase() ==
+            'delivering') {
+          _processIndex = 1;
+        } else if (order_infomation.orderDeliveries!.last.status
+                ?.trim()
+                .toLowerCase() ==
+            'completed') {
+          _processIndex = 2;
+        }
         isLoading = false;
       });
     } catch (e) {
@@ -142,7 +157,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                 ),
                 width: 100,
                 height: 100,
-                child: LoadingAnimationWidget.threeRotatingDots(color: kPrimaryColor, size: 50),
+                child: LoadingAnimationWidget.threeRotatingDots(
+                    color: kPrimaryColor, size: 50),
               ),
             ),
           )
@@ -164,7 +180,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
             ),
           ),
           centerTitle: true,
-          title: const Text('Chi tiết vận chuyển', style: TextStyle(color: textColor, fontSize: 25)),
+          title: const Text('Chi tiết vận chuyển',
+              style: TextStyle(color: textColor, fontSize: 25)),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -174,7 +191,10 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
               children: [
                 const Text(
                   'Thông tin vận chuyển',
-                  style: TextStyle(color: textColor, fontSize: 21, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
                 isHaveDropoff
@@ -191,13 +211,21 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                               children: [
                                 const Text(
                                   'Chiều đi',
-                                  style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 const Spacer(),
                                 Text(
                                   //'a',
-                                  '${MappingUtils().mapVietnameseDeliveryStatus(order_infomation.orderDeliveries!.first.status!)}',
-                                  style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
+                                  MappingUtils().mapVietnameseDeliveryStatus(
+                                      order_infomation
+                                          .orderDeliveries!.first.status!),
+                                  style: const TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
                                 )
                               ],
                             ),
@@ -206,19 +234,32 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                               children: [
                                 const Text(
                                   'Nhân viên',
-                                  style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.first.status == null ||
-                                        ((order_infomation.orderDeliveries!.first.status != null) &&
-                                            (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0)))
+                                (order_infomation.orderDeliveries!.first
+                                                .status ==
+                                            null ||
+                                        ((order_infomation.orderDeliveries!
+                                                    .first.status !=
+                                                null) &&
+                                            (order_infomation.orderDeliveries!
+                                                    .first.status!
+                                                    .trim()
+                                                    .toLowerCase()
+                                                    .compareTo('pending') ==
+                                                0)))
                                     ? ElevatedButton(
                                         onPressed: () {
                                           showDialog(
                                             context: context,
                                             builder: (context) => AlertDialog(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15),
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
                                               ),
                                               title: const Align(
                                                 alignment: Alignment.center,
@@ -227,138 +268,280 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               content: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  TextField(
-                                                    style: const TextStyle(
-                                                      color: textColor,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Tên nhân viên vận chuyển',
-                                                      labelStyle: const TextStyle(
+                                                  Form(
+                                                    key: _formNameKey,
+                                                    child: TextFormField(
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Không được để trống trường này';
+                                                        }
+                                                        return null;
+                                                      },
+                                                      controller:
+                                                          dropoffShipperNameContronller,
+                                                      onSaved: (newValue) {
+                                                        dropoffShipperNameContronller
+                                                            .text = newValue!;
+                                                      },
+                                                      style: const TextStyle(
                                                         color: textColor,
-                                                        fontSize: 18,
                                                       ),
-                                                      hintStyle: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey.shade500,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            'Tên nhân viên vận chuyển',
+                                                        labelStyle:
+                                                            const TextStyle(
+                                                          color: textColor,
+                                                          fontSize: 18,
+                                                        ),
+                                                        hintStyle: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                        ),
+                                                        // enabledBorder: OutlineInputBorder(
+                                                        //     borderSide: BorderSide(
+                                                        //         width: 1,
+                                                        //         color: Colors.grey.shade400)),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 5),
+                                                        hintText:
+                                                            'Nhập họ và tên nhân viên',
+                                                        floatingLabelBehavior:
+                                                            FloatingLabelBehavior
+                                                                .always,
                                                       ),
-                                                      // enabledBorder: OutlineInputBorder(
-                                                      //     borderSide: BorderSide(
-                                                      //         width: 1,
-                                                      //         color: Colors.grey.shade400)),
-                                                      contentPadding: const EdgeInsets.symmetric(vertical: 5),
-                                                      hintText: 'Nhập họ và tên nhân viên',
-                                                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                      cursorColor: textColor
+                                                          .withOpacity(.8),
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          dropoffShipperNameContronller
+                                                              .text = value;
+                                                        });
+                                                      },
                                                     ),
-                                                    cursorColor: textColor.withOpacity(.8),
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        dropoffShipperName = value;
-                                                      });
-                                                    },
                                                   ),
                                                   const SizedBox(height: 8),
-                                                  TextField(
-                                                    style: const TextStyle(
-                                                      color: textColor,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'SĐT nhân viên vận chuyển',
-                                                      labelStyle: const TextStyle(
+                                                  Form(
+                                                    key: _formPhoneNumberKey,
+                                                    child: TextFormField(
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Số điện thoại không được để trống';
+                                                        }
+                                                        if (!typePhoneNum
+                                                            .hasMatch(value)) {
+                                                          return 'Số điện thoại phải có mười số';
+                                                        }
+                                                        return null;
+                                                      },
+                                                      onSaved: (newValue) {
+                                                        dropoffShipperPhoneContronller
+                                                            .text = newValue!;
+                                                      },
+                                                      controller:
+                                                          dropoffShipperPhoneContronller,
+                                                      style: const TextStyle(
                                                         color: textColor,
-                                                        fontSize: 18,
                                                       ),
-                                                      hintStyle: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey.shade500,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            'SĐT nhân viên vận chuyển',
+                                                        labelStyle:
+                                                            const TextStyle(
+                                                          color: textColor,
+                                                          fontSize: 18,
+                                                        ),
+                                                        hintStyle: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                        ),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 5),
+                                                        hintText:
+                                                            'Nhập SĐT nhân viên',
+                                                        floatingLabelBehavior:
+                                                            FloatingLabelBehavior
+                                                                .always,
                                                       ),
-                                                      contentPadding: const EdgeInsets.symmetric(vertical: 5),
-                                                      hintText: 'Nhập SĐT nhân viên',
-                                                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                      cursorColor: textColor
+                                                          .withOpacity(.8),
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          dropoffShipperPhoneContronller
+                                                              .text = value;
+                                                        });
+                                                      },
                                                     ),
-                                                    cursorColor: textColor.withOpacity(.8),
-                                                    keyboardType: TextInputType.number,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        dropoffShipperPhone = value;
-                                                      });
-                                                    },
                                                   ),
                                                 ],
                                               ),
                                               actions: [
                                                 ElevatedButton(
                                                   onPressed: () async {
-                                                    setState(() {
-                                                      isLoading = true;
-                                                    });
-                                                    Map<String, dynamic>? result = await centerController.assignDelivery(
-                                                        widget.order.orderId!, 'dropoff', dropoffShipperName, dropoffShipperPhone);
-                                                    setState(() {
-                                                      isLoading = false;
-                                                    });
-                                                    if (result != null) {
-                                                      Navigator.of(context).pop();
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return AlertDialog(
-                                                            title: const Text('Thông báo'),
-                                                            content: Text('Thông tin người vận chuyển đã được cập nhật!'),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(context).pop();
-                                                                  Navigator.of(context).pop();
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      PageTransition(
-                                                                          child: DeliveryOrderDetails(
-                                                                            order: widget.order,
-                                                                          ),
-                                                                          type: PageTransitionType.rightToLeftWithFade));
-                                                                },
-                                                                child: Text('OK'),
+                                                    if (_formNameKey
+                                                            .currentState!
+                                                            .validate() &&
+                                                        _formPhoneNumberKey
+                                                            .currentState!
+                                                            .validate()) {
+                                                      _formNameKey.currentState!
+                                                          .save();
+                                                      _formPhoneNumberKey
+                                                          .currentState!
+                                                          .save();
+                                                      setState(() {
+                                                        isLoading = true;
+                                                      });
+                                                      Map<String,
+                                                              dynamic>? result =
+                                                          await centerController.assignDelivery(
+                                                              widget.order
+                                                                  .orderId!,
+                                                              'dropoff',
+                                                              dropoffShipperNameContronller
+                                                                  .text,
+                                                              dropoffShipperPhoneContronller
+                                                                  .text);
+                                                      setState(() {
+                                                        isLoading = false;
+                                                      });
+                                                      if (result != null) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title:
+                                                                  const Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                    'Thông báo'),
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      );
-                                                    } else {
-                                                      Navigator.of(context).pop();
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return AlertDialog(
-                                                            title: const Text('Thông báo'),
-                                                            content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(context).pop();
-                                                                },
-                                                                child: Text('OK'),
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      );
+                                                              content: Text(
+                                                                  'Thông tin người vận chuyển đã được cập nhật!'),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        PageTransition(
+                                                                            child: DeliveryOrderDetails(
+                                                                              order: widget.order,
+                                                                            ),
+                                                                            type: PageTransitionType.rightToLeftWithFade));
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      } else {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title:
+                                                                  const Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                    'Thông báo'),
+                                                              ),
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
+                                                              ),
+                                                              content: Text(
+                                                                  'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      }
                                                     }
                                                   },
-                                                  style: ElevatedButton.styleFrom(
-                                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                      foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                      elevation: 0,
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(20),
-                                                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
-                                                      ),
-                                                      backgroundColor: kPrimaryColor),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      19,
+                                                                  vertical: 10),
+                                                          foregroundColor:
+                                                              kPrimaryColor
+                                                                  .withOpacity(
+                                                                      .7),
+                                                          elevation: 0,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                            side: BorderSide(
+                                                                color: kPrimaryColor
+                                                                    .withOpacity(
+                                                                        .5),
+                                                                width: 1),
+                                                          ),
+                                                          backgroundColor:
+                                                              kPrimaryColor),
                                                   child: const Text(
                                                     'Cập nhật',
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ),
@@ -367,11 +550,17 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                          padding: const EdgeInsetsDirectional
+                                                  .symmetric(
+                                              horizontal: 19, vertical: 10),
                                           elevation: 0,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
-                                            side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            side: BorderSide(
+                                                color: kPrimaryColor
+                                                    .withOpacity(.5),
+                                                width: 1),
                                           ),
                                           backgroundColor: kPrimaryColor,
                                         ),
@@ -388,26 +577,30 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             ),
                             Text(
                               'Họ và tên: ${(order_infomation.orderDeliveries!.first.shipperName == null) ? 'Chưa xác định' : order_infomation.orderDeliveries!.first.shipperName}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: textColor,
                                 fontSize: 16,
                               ),
                             ),
                             Text(
                               'Số điện thoại: ${(order_infomation.orderDeliveries!.first.shipperPhone == null) ? 'Chưa xác định' : order_infomation.orderDeliveries!.first.shipperPhone}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 color: textColor,
                                 fontSize: 16,
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Text(
+                            const Text(
                               'Địa chỉ lấy đơn',
-                              style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              order_infomation.orderDeliveries!.first.addressString!,
-                              style: TextStyle(
+                              order_infomation
+                                  .orderDeliveries!.first.addressString!,
+                              style: const TextStyle(
                                 color: textColor,
                                 fontSize: 16,
                               ),
@@ -415,17 +608,34 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             Row(
                               children: [
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.first.shipperPhone != null &&
-                                        (order_infomation.orderDeliveries!.first.status != null) &&
-                                        ((order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('pending') == 0) ||
-                                            (order_infomation.orderDeliveries!.first.status!.trim().toLowerCase().compareTo('delivering') == 0)))
+                                (order_infomation.orderDeliveries!.first
+                                                .shipperPhone !=
+                                            null &&
+                                        (order_infomation.orderDeliveries!.first
+                                                .status !=
+                                            null) &&
+                                        ((order_infomation.orderDeliveries!
+                                                    .first.status!
+                                                    .trim()
+                                                    .toLowerCase()
+                                                    .compareTo('pending') ==
+                                                0) ||
+                                            (order_infomation.orderDeliveries!
+                                                    .first.status!
+                                                    .trim()
+                                                    .toLowerCase()
+                                                    .compareTo('delivering') ==
+                                                0)))
                                     ? ElevatedButton(
                                         onPressed: () async {
                                           setState(() {
                                             isLoading = true;
                                           });
                                           Map<String, dynamic>? result =
-                                              await centerController.changeDeliveryStatus(widget.order.orderId!, 'dropoff');
+                                              await centerController
+                                                  .changeDeliveryStatus(
+                                                      widget.order.orderId!,
+                                                      'dropoff');
                                           setState(() {
                                             isLoading = false;
                                           });
@@ -435,21 +645,34 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
                                                   content: Text(
                                                       'Trạng thái vận chuyển đã được cập nhật trở thành "${MappingUtils().mapVietnameseNextDeliveryStatus(order_infomation.orderDeliveries!.first.status!)}"!'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                         Navigator.push(
                                                             context,
                                                             PageTransition(
-                                                                child: DeliveryOrderDetails(
-                                                                  order: widget.order,
+                                                                child:
+                                                                    DeliveryOrderDetails(
+                                                                  order: widget
+                                                                      .order,
                                                                 ),
-                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                                type: PageTransitionType
+                                                                    .rightToLeftWithFade));
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -462,12 +685,22 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
-                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  content: Text(
+                                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -478,12 +711,19 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                            foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            padding: const EdgeInsetsDirectional
+                                                    .symmetric(
+                                                horizontal: 19, vertical: 10),
+                                            foregroundColor:
+                                                kPrimaryColor.withOpacity(.7),
                                             elevation: 0,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(20),
-                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              side: BorderSide(
+                                                  color: kPrimaryColor
+                                                      .withOpacity(.5),
+                                                  width: 1),
                                             ),
                                             backgroundColor: kPrimaryColor),
                                         child: const Text(
@@ -522,13 +762,21 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                               children: [
                                 const Text(
                                   'Chiều về',
-                                  style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600),
                                 ),
                                 const Spacer(),
                                 Text(
                                   //'b',
-                                  '${MappingUtils().mapVietnameseDeliveryStatus(order_infomation.orderDeliveries!.last.status!)}',
-                                  style: TextStyle(color: kPrimaryColor, fontSize: 16, fontWeight: FontWeight.w500),
+                                  MappingUtils().mapVietnameseDeliveryStatus(
+                                      order_infomation
+                                          .orderDeliveries!.last.status!),
+                                  style: TextStyle(
+                                      color: kPrimaryColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
                                 )
                               ],
                             ),
@@ -537,19 +785,32 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                               children: [
                                 const Text(
                                   'Nhân viên',
-                                  style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                                  style: TextStyle(
+                                      color: textColor,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.last.status == null ||
-                                        ((order_infomation.orderDeliveries!.last.status != null) &&
-                                            (order_infomation.orderDeliveries!.last.status!.trim().toLowerCase().compareTo('pending') == 0)))
+                                (order_infomation
+                                                .orderDeliveries!.last.status ==
+                                            null ||
+                                        ((order_infomation.orderDeliveries!.last
+                                                    .status !=
+                                                null) &&
+                                            (order_infomation.orderDeliveries!
+                                                    .last.status!
+                                                    .trim()
+                                                    .toLowerCase()
+                                                    .compareTo('pending') ==
+                                                0)))
                                     ? ElevatedButton(
                                         onPressed: () {
                                           showDialog(
                                             context: context,
                                             builder: (context) => AlertDialog(
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(15),
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
                                               ),
                                               title: const Align(
                                                 alignment: Alignment.center,
@@ -558,138 +819,280 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               content: Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  TextField(
-                                                    style: const TextStyle(
-                                                      color: textColor,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'Tên nhân viên vận chuyển',
-                                                      labelStyle: const TextStyle(
+                                                  Form(
+                                                    key: _formNameKey,
+                                                    child: TextFormField(
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Không được để trống trường này';
+                                                        }
+                                                        return null;
+                                                      },
+                                                      onSaved: (newValue) {
+                                                        deliverShipperNameContronller
+                                                            .text = newValue!;
+                                                      },
+                                                      style: const TextStyle(
                                                         color: textColor,
-                                                        fontSize: 18,
                                                       ),
-                                                      hintStyle: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey.shade500,
+                                                      controller:
+                                                          deliverShipperNameContronller,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            'Tên nhân viên vận chuyển',
+                                                        labelStyle:
+                                                            const TextStyle(
+                                                          color: textColor,
+                                                          fontSize: 18,
+                                                        ),
+                                                        hintStyle: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                        ),
+                                                        // enabledBorder: OutlineInputBorder(
+                                                        //     borderSide: BorderSide(
+                                                        //         width: 1,
+                                                        //         color: Colors.grey.shade400)),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 5),
+                                                        hintText:
+                                                            'Nhập họ và tên nhân viên',
+                                                        floatingLabelBehavior:
+                                                            FloatingLabelBehavior
+                                                                .always,
                                                       ),
-                                                      // enabledBorder: OutlineInputBorder(
-                                                      //     borderSide: BorderSide(
-                                                      //         width: 1,
-                                                      //         color: Colors.grey.shade400)),
-                                                      contentPadding: const EdgeInsets.symmetric(vertical: 5),
-                                                      hintText: 'Nhập họ và tên nhân viên',
-                                                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                      cursorColor: textColor
+                                                          .withOpacity(.8),
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          deliverShipperNameContronller
+                                                              .text = value;
+                                                        });
+                                                      },
                                                     ),
-                                                    cursorColor: textColor.withOpacity(.8),
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        deliverShipperName = value;
-                                                      });
-                                                    },
                                                   ),
                                                   const SizedBox(height: 8),
-                                                  TextField(
-                                                    style: const TextStyle(
-                                                      color: textColor,
-                                                    ),
-                                                    decoration: InputDecoration(
-                                                      labelText: 'SĐT nhân viên vận chuyển',
-                                                      labelStyle: const TextStyle(
+                                                  Form(
+                                                    key: _formPhoneNumberKey,
+                                                    child: TextFormField(
+                                                      validator: (value) {
+                                                        if (value!.isEmpty) {
+                                                          return 'Số điện thoại không được để trống';
+                                                        }
+                                                        if (!typePhoneNum
+                                                            .hasMatch(value)) {
+                                                          return 'Số điện thoại phải có mười số';
+                                                        }
+                                                        return null;
+                                                      },
+                                                      onSaved: (newValue) {
+                                                        deliverShipperPhoneContronller
+                                                            .text = newValue!;
+                                                      },
+                                                      controller:
+                                                          deliverShipperPhoneContronller,
+                                                      style: const TextStyle(
                                                         color: textColor,
-                                                        fontSize: 18,
                                                       ),
-                                                      hintStyle: TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.grey.shade500,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            'SĐT nhân viên vận chuyển',
+                                                        labelStyle:
+                                                            const TextStyle(
+                                                          color: textColor,
+                                                          fontSize: 18,
+                                                        ),
+                                                        hintStyle: TextStyle(
+                                                          fontSize: 16,
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                        ),
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                vertical: 5),
+                                                        hintText:
+                                                            'Nhập SĐT nhân viên',
+                                                        floatingLabelBehavior:
+                                                            FloatingLabelBehavior
+                                                                .always,
                                                       ),
-                                                      contentPadding: const EdgeInsets.symmetric(vertical: 5),
-                                                      hintText: 'Nhập SĐT nhân viên',
-                                                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                                                      cursorColor: textColor
+                                                          .withOpacity(.8),
+                                                      keyboardType:
+                                                          TextInputType.number,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          deliverShipperPhoneContronller
+                                                              .text = value;
+                                                        });
+                                                      },
                                                     ),
-                                                    cursorColor: textColor.withOpacity(.8),
-                                                    keyboardType: TextInputType.number,
-                                                    onChanged: (value) {
-                                                      setState(() {
-                                                        deliverShipperPhone = value;
-                                                      });
-                                                    },
                                                   ),
                                                 ],
                                               ),
                                               actions: [
                                                 ElevatedButton(
                                                   onPressed: () async {
-                                                    setState(() {
-                                                      isLoading = true;
-                                                    });
-                                                    Map<String, dynamic>? result = await centerController.assignDelivery(
-                                                        widget.order.orderId!, 'deliver', deliverShipperName, deliverShipperPhone);
-                                                    setState(() {
-                                                      isLoading = false;
-                                                    });
-                                                    if (result != null) {
-                                                      Navigator.of(context).pop();
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return AlertDialog(
-                                                            title: const Text('Thông báo'),
-                                                            content: Text('Thông tin người vận chuyển đã được cập nhật!'),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(context).pop();
-                                                                  Navigator.of(context).pop();
-                                                                  Navigator.push(
-                                                                      context,
-                                                                      PageTransition(
-                                                                          child: DeliveryOrderDetails(
-                                                                            order: widget.order,
-                                                                          ),
-                                                                          type: PageTransitionType.rightToLeftWithFade));
-                                                                },
-                                                                child: Text('OK'),
+                                                    if (_formNameKey
+                                                            .currentState!
+                                                            .validate() &&
+                                                        _formPhoneNumberKey
+                                                            .currentState!
+                                                            .validate()) {
+                                                      _formNameKey.currentState!
+                                                          .save();
+                                                      _formPhoneNumberKey
+                                                          .currentState!
+                                                          .save();
+                                                      setState(() {
+                                                        isLoading = true;
+                                                      });
+                                                      Map<String,
+                                                              dynamic>? result =
+                                                          await centerController.assignDelivery(
+                                                              widget.order
+                                                                  .orderId!,
+                                                              'deliver',
+                                                              deliverShipperNameContronller
+                                                                  .text,
+                                                              deliverShipperPhoneContronller
+                                                                  .text);
+                                                      setState(() {
+                                                        isLoading = false;
+                                                      });
+                                                      if (result != null) {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title:
+                                                                  const Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                    'Thông báo'),
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      );
-                                                    } else {
-                                                      Navigator.of(context).pop();
-                                                      showDialog(
-                                                        context: context,
-                                                        builder: (BuildContext context) {
-                                                          return AlertDialog(
-                                                            title: const Text('Thông báo'),
-                                                            content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
-                                                            actions: [
-                                                              TextButton(
-                                                                onPressed: () {
-                                                                  Navigator.of(context).pop();
-                                                                },
-                                                                child: Text('OK'),
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      );
+                                                              content: Text(
+                                                                  'Thông tin người vận chuyển đã được cập nhật!'),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        PageTransition(
+                                                                            child: DeliveryOrderDetails(
+                                                                              order: widget.order,
+                                                                            ),
+                                                                            type: PageTransitionType.rightToLeftWithFade));
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      } else {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        showDialog(
+                                                          context: context,
+                                                          builder: (BuildContext
+                                                              context) {
+                                                            return AlertDialog(
+                                                              title:
+                                                                  const Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                    'Thông báo'),
+                                                              ),
+                                                              shape:
+                                                                  RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            15),
+                                                              ),
+                                                              content: Text(
+                                                                  'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                              actions: [
+                                                                TextButton(
+                                                                  onPressed:
+                                                                      () {
+                                                                    Navigator.of(
+                                                                            context)
+                                                                        .pop();
+                                                                  },
+                                                                  child: Text(
+                                                                      'OK'),
+                                                                ),
+                                                              ],
+                                                            );
+                                                          },
+                                                        );
+                                                      }
                                                     }
                                                   },
-                                                  style: ElevatedButton.styleFrom(
-                                                      padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                      foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                      elevation: 0,
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(20),
-                                                        side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
-                                                      ),
-                                                      backgroundColor: kPrimaryColor),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                          padding:
+                                                              const EdgeInsetsDirectional
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      19,
+                                                                  vertical: 10),
+                                                          foregroundColor:
+                                                              kPrimaryColor
+                                                                  .withOpacity(
+                                                                      .7),
+                                                          elevation: 0,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20),
+                                                            side: BorderSide(
+                                                                color: kPrimaryColor
+                                                                    .withOpacity(
+                                                                        .5),
+                                                                width: 1),
+                                                          ),
+                                                          backgroundColor:
+                                                              kPrimaryColor),
                                                   child: const Text(
                                                     'Cập nhật',
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 15,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ),
@@ -698,11 +1101,17 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           );
                                         },
                                         style: ElevatedButton.styleFrom(
-                                          padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                          padding: const EdgeInsetsDirectional
+                                                  .symmetric(
+                                              horizontal: 19, vertical: 10),
                                           elevation: 0,
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20),
-                                            side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            side: BorderSide(
+                                                color: kPrimaryColor
+                                                    .withOpacity(.5),
+                                                width: 1),
                                           ),
                                           backgroundColor: kPrimaryColor,
                                         ),
@@ -734,10 +1143,14 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             const SizedBox(height: 10),
                             Text(
                               'Địa chỉ lấy đơn',
-                              style: TextStyle(color: textColor, fontSize: 18, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                  color: textColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
                             ),
                             Text(
-                              order_infomation.orderDeliveries!.last.addressString!,
+                              order_infomation
+                                  .orderDeliveries!.last.addressString!,
                               style: TextStyle(
                                 color: textColor,
                                 fontSize: 16,
@@ -746,16 +1159,28 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             Row(
                               children: [
                                 const Spacer(),
-                                (order_infomation.orderDeliveries!.last.shipperPhone != null &&
-                                        (order_infomation.orderDeliveries!.last.status != null) &&
-                                        (order_infomation.orderDeliveries!.last.status!.trim().toLowerCase().compareTo('pending') == 0))
+                                (order_infomation.orderDeliveries!.last
+                                                .shipperPhone !=
+                                            null &&
+                                        (order_infomation
+                                                .orderDeliveries!.last.status !=
+                                            null) &&
+                                        (order_infomation
+                                                .orderDeliveries!.last.status!
+                                                .trim()
+                                                .toLowerCase()
+                                                .compareTo('pending') ==
+                                            0))
                                     ? ElevatedButton(
                                         onPressed: () async {
                                           setState(() {
                                             isLoading = true;
                                           });
                                           Map<String, dynamic>? result =
-                                              await centerController.changeDeliveryStatus(widget.order.orderId!, 'deliver');
+                                              await centerController
+                                                  .changeDeliveryStatus(
+                                                      widget.order.orderId!,
+                                                      'deliver');
                                           setState(() {
                                             isLoading = false;
                                           });
@@ -765,20 +1190,34 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
-                                                  content: Text('Trạng thái vận chuyển đã được cập nhật!'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  content: Text(
+                                                      'Trạng thái vận chuyển đã được cập nhật!'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                         Navigator.push(
                                                             context,
                                                             PageTransition(
-                                                                child: DeliveryOrderDetails(
-                                                                  order: widget.order,
+                                                                child:
+                                                                    DeliveryOrderDetails(
+                                                                  order: widget
+                                                                      .order,
                                                                 ),
-                                                                type: PageTransitionType.rightToLeftWithFade));
+                                                                type: PageTransitionType
+                                                                    .rightToLeftWithFade));
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -791,12 +1230,22 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return AlertDialog(
-                                                  title: const Text('Thông báo'),
-                                                  content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                  title: const Align(
+                                                    alignment: Alignment.center,
+                                                    child: Text('Thông báo'),
+                                                  ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15),
+                                                  ),
+                                                  content: Text(
+                                                      'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () {
-                                                        Navigator.of(context).pop();
+                                                        Navigator.of(context)
+                                                            .pop();
                                                       },
                                                       child: Text('OK'),
                                                     ),
@@ -807,12 +1256,19 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           }
                                         },
                                         style: ElevatedButton.styleFrom(
-                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                            foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            padding: const EdgeInsetsDirectional
+                                                    .symmetric(
+                                                horizontal: 19, vertical: 10),
+                                            foregroundColor:
+                                                kPrimaryColor.withOpacity(.7),
                                             elevation: 0,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(20),
-                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              side: BorderSide(
+                                                  color: kPrimaryColor
+                                                      .withOpacity(.5),
+                                                  width: 1),
                                             ),
                                             backgroundColor: kPrimaryColor),
                                         child: const Text(
@@ -838,8 +1294,11 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                       ),
                 const SizedBox(height: 15),
                 const Text(
-                  'Trạng thái đơn hàng',
-                  style: TextStyle(color: textColor, fontSize: 21, fontWeight: FontWeight.w600),
+                  'Trạng thái vận chuyển',
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w600),
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -854,7 +1313,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                     ),
                     builder: TimelineTileBuilder.connected(
                       connectionDirection: ConnectionDirection.before,
-                      itemExtentBuilder: (_, __) => MediaQuery.of(context).size.width / _processes.length,
+                      itemExtentBuilder: (_, __) =>
+                          MediaQuery.of(context).size.width / _processes.length,
                       contentsBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.only(top: 15.0),
@@ -889,7 +1349,7 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                         } else {
                           color = Colors.grey.shade400;
                         }
-                        if (_processIndex == 5) {
+                        if (_processIndex == 2) {
                           color = kPrimaryColor;
                           child = const Icon(
                             Icons.check,
@@ -940,9 +1400,15 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             final color = getColor(index);
                             List<Color> gradientColors;
                             if (type == ConnectorType.start) {
-                              gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
+                              gradientColors = [
+                                Color.lerp(prevColor, color, 0.5)!,
+                                color
+                              ];
                             } else {
-                              gradientColors = [prevColor, Color.lerp(prevColor, color, 0.5)!];
+                              gradientColors = [
+                                prevColor,
+                                Color.lerp(prevColor, color, 0.5)!
+                              ];
                             }
                             return DecoratedLineConnector(
                               decoration: BoxDecoration(
@@ -968,7 +1434,10 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                 const SizedBox(height: 15),
                 const Text(
                   'Chi tiết đơn hàng',
-                  style: TextStyle(color: textColor, fontSize: 21, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 21,
+                      fontWeight: FontWeight.w600),
                 ),
                 // Text(
                 //   'Chi tiết trong comment bên dưới',
@@ -977,14 +1446,20 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                 //     fontSize: 18,
                 //   ),
                 // ),
-                DetailService(status: OrderUtils().mapVietnameseOrderStatus(order_infomation.status!), order_infomation: order_infomation),
+                DetailService(
+                    status: OrderUtils()
+                        .mapVietnameseOrderStatus(order_infomation.status!),
+                    order_infomation: order_infomation),
                 const SizedBox(height: 15),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       'Thông tin thanh toán',
-                      style: TextStyle(color: textColor, fontSize: 21, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                          color: textColor,
+                          fontSize: 21,
+                          fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 10),
                     Column(
@@ -998,7 +1473,10 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             ),
                             Text(
                               '${PriceUtils().convertFormatPrice(order_infomation.totalOrderValue!.toInt())} đ',
-                              style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  color: kPrimaryColor,
+                                  fontWeight: FontWeight.bold),
                             )
                           ],
                         ),
@@ -1013,12 +1491,18 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             (order_infomation.deliveryPrice == null)
                                 ? const Text(
                                     '0 đ',
-                                    style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.bold),
                                   )
                                 : Text(
                                     '${PriceUtils().convertFormatPrice(order_infomation.deliveryPrice!.toDouble().round())} đ',
                                     //'${order_infomation.deliveryPrice!.toDouble().round()} đ',
-                                    style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.bold),
                                   )
                           ],
                         ),
@@ -1032,7 +1516,10 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             ),
                             Text(
                               '${order_infomation.orderPayment!.platformFee!.toInt()} đ',
-                              style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: kPrimaryColor,
+                                  fontWeight: FontWeight.bold),
                             )
                           ],
                         ),
@@ -1047,11 +1534,17 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             (order_infomation.orderPayment!.discount == 0)
                                 ? const Text(
                                     '- 0 đ',
-                                    style: TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.bold),
                                   )
                                 : Text(
                                     '- ${PriceUtils().convertFormatPrice((order_infomation.orderPayment!.discount! * order_infomation.totalOrderValue!).toInt())} đ',
-                                    style: const TextStyle(fontSize: 16, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.bold),
                                   )
                           ],
                         ),
@@ -1069,7 +1562,10 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                             ),
                             Text(
                               '${PriceUtils().convertFormatPrice(order_infomation.orderPayment!.paymentTotal!.toInt())} đ',
-                              style: const TextStyle(fontSize: 17, color: kPrimaryColor, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 17,
+                                  color: kPrimaryColor,
+                                  fontWeight: FontWeight.bold),
                             )
                           ],
                         ),
@@ -1162,7 +1658,8 @@ class _BezierPainter extends CustomPainter {
       offset2 = _offset(radius, -angle);
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(0.0, size.height / 2, -radius, radius) // TODO connector start & gradient
+        ..quadraticBezierTo(0.0, size.height / 2, -radius,
+            radius) // TODO connector start & gradient
         ..quadraticBezierTo(0.0, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -1175,7 +1672,8 @@ class _BezierPainter extends CustomPainter {
 
       path = Path()
         ..moveTo(offset1.dx, offset1.dy)
-        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius, radius) // TODO connector end & gradient
+        ..quadraticBezierTo(size.width, size.height / 2, size.width + radius,
+            radius) // TODO connector end & gradient
         ..quadraticBezierTo(size.width, size.height / 2, offset2.dx, offset2.dy)
         ..close();
 
@@ -1185,15 +1683,14 @@ class _BezierPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_BezierPainter oldDelegate) {
-    return oldDelegate.color != color || oldDelegate.drawStart != drawStart || oldDelegate.drawEnd != drawEnd;
+    return oldDelegate.color != color ||
+        oldDelegate.drawStart != drawStart ||
+        oldDelegate.drawEnd != drawEnd;
   }
 }
 
 final _processes = [
   'Đang chờ',
-  'Xác nhận',
-  'Đã nhận',
-  'Xử lý',
-  'Sẵn sàng',
+  'Đang vận chuyển',
   'Hoàn tất',
 ];

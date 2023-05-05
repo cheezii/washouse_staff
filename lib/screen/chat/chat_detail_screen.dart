@@ -83,12 +83,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     } else {
       groupChatId = '$peerId-$currentId';
     }
-
-    // chatProvider.updateDataFirestore(
-    //   FirestoreConstants.pathListChatCollection,
-    //   currentUserId.toString(),
-    //   {FirestoreConstants.chattingWith: peerId},
-    // );
   }
 
   Future getImage() async {
@@ -229,7 +223,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 // Text
                 ? Container(
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    //width: 200,
+                    width: 200,
                     decoration: BoxDecoration(
                         color: Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(30)),
@@ -374,7 +368,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   messageChat.type == TypeMessage.text
                       ? Container(
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                          //width: 200,
+                          width: 200,
                           decoration: BoxDecoration(
                               color: kPrimaryColor.withOpacity(.7),
                               borderRadius: BorderRadius.circular(30)),

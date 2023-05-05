@@ -54,13 +54,15 @@ class _ListNotificationScreenState extends State<ListNotificationScreen> {
     NotificationResponse notificationResponse = NotificationResponse();
     try {
       String url = '$baseUrl/notifications/me-noti';
-      Response response = await baseController.makeAuthenticatedRequest(url, {});
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)["data"];
         notificationResponse = NotificationResponse.fromJson(data);
       } else {
-        throw Exception('Error fetching getNotifications: ${response.statusCode}');
+        throw Exception(
+            'Error fetching getNotifications: ${response.statusCode}');
       }
     } catch (e) {
       print('error: getNotifications-$e');
@@ -112,17 +114,18 @@ class _ListNotificationScreenState extends State<ListNotificationScreen> {
           ),
         ),
         centerTitle: true,
-        title: const Text('Thông báo', style: TextStyle(color: Colors.white, fontSize: 27)),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.check_circle_outline_outlined,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
-        ],
+        title: const Text('Thông báo',
+            style: TextStyle(color: Colors.white, fontSize: 27)),
+        // actions: [
+        //   IconButton(
+        //     onPressed: () {},
+        //     icon: const Icon(
+        //       Icons.check_circle_outline_outlined,
+        //       color: Colors.white,
+        //       size: 24,
+        //     ),
+        //   ),
+        //],
       ),
       // body: Column(
       //   children: [
@@ -159,6 +162,7 @@ class _ListNotificationScreenState extends State<ListNotificationScreen> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: NotificationList(
+                      id: notifications[index].id!,
                       title: notifications[index].title!,
                       content: notifications[index].content!,
                       image: 'assets/images/logo/washouse-favicon.png',

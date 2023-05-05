@@ -20,12 +20,15 @@ class AddToCartDialog extends StatefulWidget {
 
 class _AddToCartDialogState extends State<AddToCartDialog> {
   final _dropDownServiceKey = GlobalKey<FormBuilderFieldState>();
+  GlobalKey<FormState> _formMeasurementKey = GlobalKey<FormState>();
+  TextEditingController measurementController = TextEditingController();
   CenterServices? cateChoosen;
   ServiceCenter? serviceChoosen;
   double priceOfService = 0;
   double measurementOfService = 0;
   double unitPriceOfService = 0;
   String? noteServiceOfCustomer;
+  bool isLoadingService = false;
 
   List<CenterServices> categoryList = [];
   List<ServiceCenter> serviceList = [];
@@ -39,10 +42,25 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    measurementController.clear();
+  }
+
+  Future getServicesList(List<ServiceCenter> serviceCenter) async {
+    setState(() {
+      serviceList = serviceCenter;
+      isLoadingService = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var provider = Provider.of<CartProvider>(context);
     return AlertDialog(
-      title: const Align(alignment: Alignment.center, child: Text('Thêm dịch vụ')),
+      title:
+          const Align(alignment: Alignment.center, child: Text('Thêm dịch vụ')),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -87,9 +105,13 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
                 int index = categoryList.indexOf(value as CenterServices);
                 setState(() {
                   cateChoosen = value;
-                  serviceList = categoryList[index].services as List<ServiceCenter>;
+                  serviceList =
+                      categoryList[index].services as List<ServiceCenter>;
+                  // getServicesList(
+                  //     categoryList[index].services as List<ServiceCenter>);
                   _dropDownServiceKey.currentState!.reset();
                   _dropDownServiceKey.currentState!.setValue(null);
+                  isLoadingService = true;
                 });
               },
             ),
@@ -117,6 +139,12 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
             FormBuilderDropdown(
               key: _dropDownServiceKey,
               name: 'Dịch vụ',
+              validator: (value) {
+                if (value == null) {
+                  return 'Không được để trống trường này';
+                }
+              },
+              enabled: isLoadingService,
               items: serviceList.map((item) {
                 return DropdownMenuItem(
                   value: item,
@@ -149,53 +177,70 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
             SizedBox(
               width: double.infinity,
               height: 50,
-              child: TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.all(8),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  ),
-                  hintText: 'Nhập số lượng/khối lượng',
-                  hintStyle: TextStyle(
-                    color: textNoteColor,
-                  ),
-                ),
-                onChanged: (value) {
-                  if (serviceChoosen != null) {
-                    //Kiểm tra unit Price nằm trong khoảng nào
-                    double currentPrice = 0;
-                    double totalCurrentPrice = 0;
-                    var measurementInput = double.parse(value);
-
-                    print(measurementInput);
-                    if (serviceChoosen!.priceType!) {
-                      bool check = false;
-                      for (var itemPrice in serviceChoosen!.prices!) {
-                        if (measurementInput <= itemPrice.maxValue! && !check) {
-                          currentPrice = itemPrice.price!.toDouble();
-                        }
-                        if (currentPrice > 0) {
-                          check = true;
-                        }
-                      }
-                      if (serviceChoosen!.minPrice != null && currentPrice * measurementInput < serviceChoosen!.minPrice!) {
-                        totalCurrentPrice = serviceChoosen!.minPrice!.toDouble();
-                      } else {
-                        totalCurrentPrice = currentPrice * measurementInput;
-                      }
-                    } else {
-                      totalCurrentPrice = serviceChoosen!.price! * measurementInput.toDouble();
-                      currentPrice = serviceChoosen!.price!.toDouble();
+              child: Form(
+                key: _formMeasurementKey,
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Không được để trống trường này';
                     }
-                    setState(() {
-                      measurementOfService = measurementInput;
-                      priceOfService = totalCurrentPrice;
-                      unitPriceOfService = currentPrice;
-                      print(priceOfService);
-                    });
-                  }
-                },
+                  },
+                  onSaved: (newValue) {
+                    measurementController.text = newValue!;
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    contentPadding: EdgeInsets.all(8),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(width: 1),
+                    ),
+                    hintText: 'Nhập số lượng/khối lượng',
+                    hintStyle: TextStyle(
+                      color: textNoteColor,
+                    ),
+                  ),
+                  controller: measurementController,
+                  onChanged: (value) {
+                    if (serviceChoosen != null) {
+                      //Kiểm tra unit Price nằm trong khoảng nào
+                      double currentPrice = 0;
+                      double totalCurrentPrice = 0;
+                      var measurementInput = double.parse(value);
+
+                      print(measurementInput);
+                      if (serviceChoosen!.priceType!) {
+                        bool check = false;
+                        for (var itemPrice in serviceChoosen!.prices!) {
+                          if (measurementInput <= itemPrice.maxValue! &&
+                              !check) {
+                            currentPrice = itemPrice.price!.toDouble();
+                          }
+                          if (currentPrice > 0) {
+                            check = true;
+                          }
+                        }
+                        if (serviceChoosen!.minPrice != null &&
+                            currentPrice * measurementInput <
+                                serviceChoosen!.minPrice!) {
+                          totalCurrentPrice =
+                              serviceChoosen!.minPrice!.toDouble();
+                        } else {
+                          totalCurrentPrice = currentPrice * measurementInput;
+                        }
+                      } else {
+                        totalCurrentPrice = serviceChoosen!.price! *
+                            measurementInput.toDouble();
+                        currentPrice = serviceChoosen!.price!.toDouble();
+                      }
+                      setState(() {
+                        measurementOfService = measurementInput;
+                        priceOfService = totalCurrentPrice;
+                        unitPriceOfService = currentPrice;
+                        print(priceOfService);
+                      });
+                    }
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 15),
@@ -259,7 +304,8 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
             Navigator.of(context).pop();
           },
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+            padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 19, vertical: 10),
             elevation: 0,
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
@@ -278,36 +324,45 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
         ),
         ElevatedButton(
           onPressed: () {
-            setState(() {
-              var orderDetailItem = OrderDetailItem(
-                serviceId: serviceChoosen!.serviceId!.toInt(),
-                serviceName: serviceChoosen!.serviceName!,
-                priceType: serviceChoosen!.priceType!,
-                price: priceOfService,
-                unitPrice: unitPriceOfService,
-                measurement: measurementOfService,
-                customerNote: noteServiceOfCustomer,
-                weight: serviceChoosen!.rate!.toDouble() * measurementOfService,
-                minPrice: serviceChoosen!.minPrice == null ? null : serviceChoosen!.minPrice!.toDouble(),
-                prices: serviceChoosen!.prices,
-                unit: serviceChoosen!.unit,
-                staffNote: null,
-              );
-              provider.addOrderDetailItemToCart(orderDetailItem); //add to cart
-              measurementOfService = 0;
-              priceOfService = 0;
-              unitPriceOfService = 0;
-              noteServiceOfCustomer = null;
-            });
-            Navigator.of(context).pop();
+            if (_formMeasurementKey.currentState!.validate() &&
+                _dropDownServiceKey.currentState!.validate()) {
+              setState(() {
+                var orderDetailItem = OrderDetailItem(
+                  serviceId: serviceChoosen!.serviceId!.toInt(),
+                  serviceName: serviceChoosen!.serviceName!,
+                  priceType: serviceChoosen!.priceType!,
+                  price: priceOfService,
+                  unitPrice: unitPriceOfService,
+                  measurement: measurementOfService,
+                  customerNote: noteServiceOfCustomer,
+                  weight:
+                      serviceChoosen!.rate!.toDouble() * measurementOfService,
+                  minPrice: serviceChoosen!.minPrice == null
+                      ? null
+                      : serviceChoosen!.minPrice!.toDouble(),
+                  prices: serviceChoosen!.prices,
+                  unit: serviceChoosen!.unit,
+                  staffNote: null,
+                );
+                provider
+                    .addOrderDetailItemToCart(orderDetailItem); //add to cart
+                measurementOfService = 0;
+                priceOfService = 0;
+                unitPriceOfService = 0;
+                noteServiceOfCustomer = null;
+              });
+              Navigator.of(context).pop();
+            }
           },
           style: ElevatedButton.styleFrom(
-              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+              padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: 19, vertical: 10),
               foregroundColor: kPrimaryColor.withOpacity(.7),
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                side:
+                    BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
               ),
               backgroundColor: kPrimaryColor),
           child: const Text(

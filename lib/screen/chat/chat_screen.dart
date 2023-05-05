@@ -195,7 +195,8 @@ class _ChatScreenState extends State<ChatScreen> {
           buildSearchBar(),
           Flexible(
             child: StreamBuilder<QuerySnapshot>(
-              stream: chatProvider.getListStream(centerId.toString()),
+              stream: chatProvider.getStreamFireStore(
+                  _textSearch, centerId.toString()),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.hasData) {

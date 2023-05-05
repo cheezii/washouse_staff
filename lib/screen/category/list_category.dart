@@ -8,6 +8,7 @@ import '../../components/constants/color_constants.dart';
 import '../../resource/controller/base_controller.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
+import '../../resource/provider/notify_provider.dart';
 import '../notification/list_notification_screen.dart';
 import 'components/list_categories_skeleton.dart';
 
@@ -20,6 +21,7 @@ class ListCategoryScreen extends StatefulWidget {
 
 BaseController baseController = BaseController();
 CenterController centerController = CenterController();
+NotifyProvider notifyProvider = NotifyProvider();
 
 class _ListCategoryScreenState extends State<ListCategoryScreen> {
   TextEditingController searchController = TextEditingController();
@@ -32,6 +34,14 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
   void initState() {
     _loadData();
     super.initState();
+    notifyProvider.addListener(() => mounted ? setState(() {}) : null);
+    notifyProvider.getNoti();
+  }
+
+  @override
+  void dispose() {
+    notifyProvider.removeListener(() {});
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -81,10 +91,37 @@ class _ListCategoryScreenState extends State<ListCategoryScreen> {
                       child: const ListNotificationScreen(),
                       type: PageTransitionType.rightToLeftWithFade));
             },
-            icon: const Icon(
-              Icons.notifications,
-              color: textColor,
-              size: 30.0,
+            icon: Stack(
+              children: [
+                const Icon(
+                  Icons.notifications,
+                  color: textColor,
+                  size: 30.0,
+                ),
+                if (notifyProvider.numOfNotifications > 0)
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${notifyProvider.numOfNotifications}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],

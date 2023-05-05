@@ -9,27 +9,24 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:http/http.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:washouse_staff/resource/controller/base_controller.dart';
 import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/staff_statistic.dart';
-import 'package:washouse_staff/screen/chat/chat_detail_screen.dart';
 import 'package:washouse_staff/screen/chat/chat_screen.dart';
 import 'package:washouse_staff/screen/home/scan_qr_code.dart';
 import 'package:washouse_staff/screen/home/side_menu/side_menu.dart';
 import 'package:washouse_staff/screen/order/create_order_screen.dart';
-import 'package:washouse_staff/utils/price_util.dart';
-
 import '../../components/constants/color_constants.dart';
-import '../../components/constants/firestore_constants.dart';
 import '../../components/constants/text_constants.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
-import '../../resource/model/chat_message.dart';
 import '../../resource/model/response_model/notification_item_response.dart';
+import '../../resource/provider/notify_provider.dart';
 import '../notification/list_notification_screen.dart';
-import '../order/create_order_screen.dart';
-import '../../components/constants/color_constants.dart';
 
 class HomeScreen extends StatefulWidget {
   final centerId;
@@ -38,6 +35,8 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+NotifyProvider notifyProvider = NotifyProvider();
 
 class _HomeScreenState extends State<HomeScreen> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -73,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // Wait for getOrderInformation to complete
       Statistic result = await orderController.getStatistics();
       NotificationResponse notis = await getNotifications();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         // Update state with loaded data
         statistic = result;
@@ -106,6 +106,14 @@ class _HomeScreenState extends State<HomeScreen> {
       getCenterDetail();
     });
     loadData();
+    notifyProvider.addListener(() => mounted ? setState(() {}) : null);
+    notifyProvider.getNoti();
+  }
+
+  @override
+  void dispose() {
+    notifyProvider.removeListener(() {});
+    super.dispose();
   }
 
   Future<NotificationResponse> getNotifications() async {
@@ -138,53 +146,11 @@ class _HomeScreenState extends State<HomeScreen> {
     ChartData('Đã hủy', 5, cancelledColor),
   ];
 
-  //List<SalesData> getChartData() {
-  List<SalesData> completeData = [
-    // SalesData('17/4', 50),
-    // SalesData('18/4', 50),
-    // SalesData('19/4', 50),
-    // SalesData('20/4', 50),
-    // SalesData('21/4', 50),
-    // SalesData('22/4', 50),
-    //SalesData(17, 15),
-    //SalesData(18, 20),
-    //SalesData(19, 6),
-    //SalesData(20, 11),
-    //SalesData(21, 9),
-    //SalesData(22, 13),
-  ];
-  List<SalesData> cancelData = [
-    // SalesData('17/4', 50),
-    // SalesData('18/4', 50),
-    // SalesData('19/4', 50),
-    // SalesData('20/4', 50),
-    // SalesData('21/4', 50),
-    // SalesData('22/4', 50),
-    //SalesData(17, 1),
-    //SalesData(18, 0),
-    //SalesData(19, 0),
-    //SalesData(20, 2),
-    //SalesData(21, 0),
-    //SalesData(22, 1),
-  ];
-  //  return chartData;
-  //}
+  List<SalesData> completeData = [];
+  List<SalesData> cancelData = [];
 
   @override
   Widget build(BuildContext context) {
-    //print(completeData.toList().first.value);
-    // FutureBuilder(
-    //   future: orderController.getStatistics(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return Center(
-    //         child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50),
-    //       );
-    //     } else if (snapshot.hasData) {
-    //       statistic = snapshot.data!;
-    //     } else {}
-    //   },
-    // );
     if (isLoading) {
       return Stack(
         fit: StackFit.expand,
@@ -252,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: textColor,
                     size: 30.0,
                   ),
-                  if (numOfNotifications > 0)
+                  if (notifyProvider.numOfNotifications > 0)
                     Positioned(
                       right: 0,
                       child: Container(
@@ -266,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           minHeight: 16,
                         ),
                         child: Text(
-                          '$numOfNotifications',
+                          '${notifyProvider.numOfNotifications}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
