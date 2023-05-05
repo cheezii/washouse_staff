@@ -1493,13 +1493,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           });
                           String result = await trackingController
                               .trackingOrder(order_infomation.id!);
+                          print('result: $result');
                           if (result.compareTo("success") == 0) {
                             Navigator.of(context).pop();
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                print(
-                                    'status: ${order_infomation.orderDeliveries!.first.status}');
                                 return AlertDialog(
                                   title: const Align(
                                     alignment: Alignment.center,
@@ -1533,8 +1532,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                               },
                             );
                           } else {
-                            print(
-                                'status: ${order_infomation.orderDeliveries!.first.status}');
                             if (order_infomation.orderDeliveries!.first.status!
                                     .toLowerCase() ==
                                 'pending') {

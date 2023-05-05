@@ -611,6 +611,7 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       itemCount: value.list.length,
                       itemBuilder: (context, index) {
                         final item = value.list[index];
+                        int? id = item.serviceId;
                         bool checkUnit;
                         double measurement = item.measurement;
 
@@ -619,95 +620,120 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                         } else {
                           checkUnit = false;
                         }
-                        return ListTile(
-                          title: Text('${index + 1}. ${item.serviceName}'),
-                          subtitle: SizedBox(
-                            width: 100,
+                        return Dismissible(
+                          key: Key(id.toString()),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffffe6e6),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             child: Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      //measurement--;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, -1);
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 25,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(Icons.remove,
-                                        color: Colors.white, size: 15),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 6),
-                                  child: basic.SizedBox(
-                                    width: 25,
-                                    child: Text(
-                                      checkUnit
-                                          ? '$measurement'
-                                          : '${measurement.round()}',
-                                      style: const TextStyle(color: textColor),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      //measurement++;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, 1);
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 25,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: kPrimaryColor.withOpacity(.8),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(Icons.add,
-                                        color: Colors.white, size: 15),
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                basic.SizedBox(
-                                  width: 30,
-                                  child: Text(
-                                    '${item.unit}', //check uint để hiện kg hay cái
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                SizedBox(
-                                  width: 90,
-                                  child: Text(
-                                    'x  ${PriceUtils().convertFormatPrice((item.price! / item.measurement).toInt())} đ', //check uint để hiện kg hay cái
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                const Text("="),
-                                const SizedBox(width: 10),
-                                Text(
-                                  '${PriceUtils().convertFormatPrice((item.price!).toInt())} đ',
-                                  style: const TextStyle(
-                                      color: kPrimaryColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
+                              children: const [
+                                Spacer(),
+                                Icon(
+                                  Icons.delete_outline_outlined,
+                                  color: Colors.red,
                                 ),
                               ],
                             ),
                           ),
-                          // Text(
-                          //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                          onDismissed: (direction) {
+                            //provider.clear(id!);
+                            value.removeItemFromCart(item);
+                          },
+                          child: ListTile(
+                            title: Text('${index + 1}. ${item.serviceName}'),
+                            subtitle: SizedBox(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        //measurement--;
+                                        provider.updateOrderDetailItemToCart(
+                                            item, -1);
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(Icons.remove,
+                                          color: Colors.white, size: 15),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
+                                    child: basic.SizedBox(
+                                      width: 25,
+                                      child: Text(
+                                        checkUnit
+                                            ? '$measurement'
+                                            : '${measurement.round()}',
+                                        style:
+                                            const TextStyle(color: textColor),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        //measurement++;
+                                        provider.updateOrderDetailItemToCart(
+                                            item, 1);
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: kPrimaryColor.withOpacity(.8),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          color: Colors.white, size: 15),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 7),
+                                  basic.SizedBox(
+                                    width: 30,
+                                    child: Text(
+                                      '${item.unit}', //check uint để hiện kg hay cái
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 7),
+                                  SizedBox(
+                                    width: 90,
+                                    child: Text(
+                                      'x  ${PriceUtils().convertFormatPrice((item.price! / item.measurement).toInt())} đ', //check uint để hiện kg hay cái
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text("="),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '${PriceUtils().convertFormatPrice((item.price!).toInt())} đ',
+                                    style: const TextStyle(
+                                        color: kPrimaryColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Text(
+                            //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                          ),
                         );
                       },
                     ),
