@@ -614,178 +614,178 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.w600),
                                             ),
-                                            (order_infomation.status!
-                                                        .trim()
-                                                        .toLowerCase() ==
-                                                    'ready')
-                                                ? TextButton(
-                                                    onPressed: () async {
-                                                      showDialog(
-                                                          context: context,
-                                                          builder:
-                                                              (builder) =>
-                                                                  AlertDialog(
-                                                                    shape:
-                                                                        RoundedRectangleBorder(
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              15),
-                                                                    ),
-                                                                    title:
-                                                                        const Align(
-                                                                      alignment:
-                                                                          Alignment
-                                                                              .center,
-                                                                      child: Text(
-                                                                          'Chọn giờ hẹn'),
-                                                                    ),
-                                                                    actions: [
-                                                                      ElevatedButton(
-                                                                        onPressed:
-                                                                            () {},
-                                                                        style: ElevatedButton.styleFrom(
-                                                                            padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                                            foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                                            elevation: 0,
-                                                                            shape: RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius.circular(20),
-                                                                              side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
-                                                                            ),
-                                                                            backgroundColor: kPrimaryColor),
-                                                                        child:
-                                                                            const Text(
-                                                                          'Lưu',
-                                                                          style:
-                                                                              TextStyle(
-                                                                            color:
-                                                                                Colors.white,
-                                                                            fontSize:
-                                                                                15,
-                                                                            fontWeight:
-                                                                                FontWeight.w500,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                    content:
-                                                                        Row(
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceEvenly,
-                                                                      children: [
-                                                                        SizedBox(
-                                                                          width:
-                                                                              110,
-                                                                          height:
-                                                                              40,
-                                                                          child:
-                                                                              DropdownButtonFormField(
-                                                                            decoration:
-                                                                                InputDecoration(
-                                                                              enabledBorder: OutlineInputBorder(
-                                                                                borderSide: const BorderSide(color: textColor, width: 1),
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                              ),
-                                                                              contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
-                                                                              focusedBorder: OutlineInputBorder(
-                                                                                borderSide: const BorderSide(color: textColor, width: 1),
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                              ),
-                                                                            ),
-                                                                            isDense:
-                                                                                true,
-                                                                            isExpanded:
-                                                                                true,
-                                                                            items:
-                                                                                <String>[
-                                                                              'Hôm nay',
-                                                                              'Ngày mai'
-                                                                            ].map((String item) {
-                                                                              return DropdownMenuItem<String>(
-                                                                                value: item,
-                                                                                child: Text(item),
-                                                                              );
-                                                                            }).toList(),
-                                                                            icon:
-                                                                                const Icon(
-                                                                              Icons.keyboard_arrow_down_rounded,
-                                                                              size: 25,
-                                                                            ),
-                                                                            iconSize:
-                                                                                30,
-                                                                            hint:
-                                                                                const Text('Chọn ngày'),
-                                                                            value:
-                                                                                sendOrderDate,
-                                                                            style:
-                                                                                const TextStyle(color: textColor),
-                                                                            onChanged:
-                                                                                (value) {
-                                                                              setState(() {
-                                                                                sendOrderDate = value;
-                                                                              });
-                                                                            },
-                                                                          ),
-                                                                        ),
-                                                                        const SizedBox(
-                                                                            width:
-                                                                                5),
-                                                                        SizedBox(
-                                                                          width:
-                                                                              120,
-                                                                          height:
-                                                                              40,
-                                                                          child:
-                                                                              ElevatedButton(
-                                                                            onPressed:
-                                                                                () async {
-                                                                              TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-                                                                            },
-                                                                            style:
-                                                                                ElevatedButton.styleFrom(
-                                                                              padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
-                                                                              foregroundColor: kPrimaryColor.withOpacity(.7),
-                                                                              elevation: 0,
-                                                                              shape: RoundedRectangleBorder(
-                                                                                borderRadius: BorderRadius.circular(10),
-                                                                                side: const BorderSide(color: textColor, width: 1),
-                                                                              ),
-                                                                              backgroundColor: kBackgroundColor,
-                                                                            ),
-                                                                            child:
-                                                                                Row(
-                                                                              children: [
-                                                                                Text(
-                                                                                  sendOrderTime,
-                                                                                  style: TextStyle(
-                                                                                    color: Colors.grey.shade600,
-                                                                                  ),
-                                                                                ),
-                                                                                const Spacer(),
-                                                                                Icon(
-                                                                                  Icons.watch_later_outlined,
-                                                                                  size: 20,
-                                                                                  color: Colors.grey.shade600,
-                                                                                )
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                      ],
-                                                                    ),
-                                                                  ));
-                                                    },
-                                                    child: const Text(
-                                                      'Chọn giờ hẹn',
-                                                      style: TextStyle(
-                                                        color: kPrimaryColor,
-                                                        fontSize: 16,
-                                                      ),
-                                                    ),
-                                                  )
-                                                : SizedBox(
-                                                    height: 0,
-                                                  ),
+                                            // (order_infomation.status!
+                                            //             .trim()
+                                            //             .toLowerCase() ==
+                                            //         'ready')
+                                            //     ? TextButton(
+                                            //         onPressed: () async {
+                                            //           showDialog(
+                                            //               context: context,
+                                            //               builder:
+                                            //                   (builder) =>
+                                            //                       AlertDialog(
+                                            //                         shape:
+                                            //                             RoundedRectangleBorder(
+                                            //                           borderRadius:
+                                            //                               BorderRadius.circular(
+                                            //                                   15),
+                                            //                         ),
+                                            //                         title:
+                                            //                             const Align(
+                                            //                           alignment:
+                                            //                               Alignment
+                                            //                                   .center,
+                                            //                           child: Text(
+                                            //                               'Chọn giờ hẹn'),
+                                            //                         ),
+                                            //                         actions: [
+                                            //                           ElevatedButton(
+                                            //                             onPressed:
+                                            //                                 () {},
+                                            //                             style: ElevatedButton.styleFrom(
+                                            //                                 padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                            //                                 foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            //                                 elevation: 0,
+                                            //                                 shape: RoundedRectangleBorder(
+                                            //                                   borderRadius: BorderRadius.circular(20),
+                                            //                                   side: BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
+                                            //                                 ),
+                                            //                                 backgroundColor: kPrimaryColor),
+                                            //                             child:
+                                            //                                 const Text(
+                                            //                               'Lưu',
+                                            //                               style:
+                                            //                                   TextStyle(
+                                            //                                 color:
+                                            //                                     Colors.white,
+                                            //                                 fontSize:
+                                            //                                     15,
+                                            //                                 fontWeight:
+                                            //                                     FontWeight.w500,
+                                            //                               ),
+                                            //                             ),
+                                            //                           ),
+                                            //                         ],
+                                            //                         content:
+                                            //                             Row(
+                                            //                           mainAxisAlignment:
+                                            //                               MainAxisAlignment
+                                            //                                   .spaceEvenly,
+                                            //                           children: [
+                                            //                             SizedBox(
+                                            //                               width:
+                                            //                                   110,
+                                            //                               height:
+                                            //                                   40,
+                                            //                               child:
+                                            //                                   DropdownButtonFormField(
+                                            //                                 decoration:
+                                            //                                     InputDecoration(
+                                            //                                   enabledBorder: OutlineInputBorder(
+                                            //                                     borderSide: const BorderSide(color: textColor, width: 1),
+                                            //                                     borderRadius: BorderRadius.circular(10),
+                                            //                                   ),
+                                            //                                   contentPadding: const EdgeInsets.only(left: 8, right: 8, top: 0, bottom: 0),
+                                            //                                   focusedBorder: OutlineInputBorder(
+                                            //                                     borderSide: const BorderSide(color: textColor, width: 1),
+                                            //                                     borderRadius: BorderRadius.circular(10),
+                                            //                                   ),
+                                            //                                 ),
+                                            //                                 isDense:
+                                            //                                     true,
+                                            //                                 isExpanded:
+                                            //                                     true,
+                                            //                                 items:
+                                            //                                     <String>[
+                                            //                                   'Hôm nay',
+                                            //                                   'Ngày mai'
+                                            //                                 ].map((String item) {
+                                            //                                   return DropdownMenuItem<String>(
+                                            //                                     value: item,
+                                            //                                     child: Text(item),
+                                            //                                   );
+                                            //                                 }).toList(),
+                                            //                                 icon:
+                                            //                                     const Icon(
+                                            //                                   Icons.keyboard_arrow_down_rounded,
+                                            //                                   size: 25,
+                                            //                                 ),
+                                            //                                 iconSize:
+                                            //                                     30,
+                                            //                                 hint:
+                                            //                                     const Text('Chọn ngày'),
+                                            //                                 value:
+                                            //                                     sendOrderDate,
+                                            //                                 style:
+                                            //                                     const TextStyle(color: textColor),
+                                            //                                 onChanged:
+                                            //                                     (value) {
+                                            //                                   setState(() {
+                                            //                                     sendOrderDate = value;
+                                            //                                   });
+                                            //                                 },
+                                            //                               ),
+                                            //                             ),
+                                            //                             const SizedBox(
+                                            //                                 width:
+                                            //                                     5),
+                                            //                             SizedBox(
+                                            //                               width:
+                                            //                                   120,
+                                            //                               height:
+                                            //                                   40,
+                                            //                               child:
+                                            //                                   ElevatedButton(
+                                            //                                 onPressed:
+                                            //                                     () async {
+                                            //                                   TimeOfDay? orderTime = await showTimePicker(context: context, initialTime: TimeOfDay.now());
+                                            //                                 },
+                                            //                                 style:
+                                            //                                     ElevatedButton.styleFrom(
+                                            //                                   padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                            //                                   foregroundColor: kPrimaryColor.withOpacity(.7),
+                                            //                                   elevation: 0,
+                                            //                                   shape: RoundedRectangleBorder(
+                                            //                                     borderRadius: BorderRadius.circular(10),
+                                            //                                     side: const BorderSide(color: textColor, width: 1),
+                                            //                                   ),
+                                            //                                   backgroundColor: kBackgroundColor,
+                                            //                                 ),
+                                            //                                 child:
+                                            //                                     Row(
+                                            //                                   children: [
+                                            //                                     Text(
+                                            //                                       sendOrderTime,
+                                            //                                       style: TextStyle(
+                                            //                                         color: Colors.grey.shade600,
+                                            //                                       ),
+                                            //                                     ),
+                                            //                                     const Spacer(),
+                                            //                                     Icon(
+                                            //                                       Icons.watch_later_outlined,
+                                            //                                       size: 20,
+                                            //                                       color: Colors.grey.shade600,
+                                            //                                     )
+                                            //                                   ],
+                                            //                                 ),
+                                            //                               ),
+                                            //                             ),
+                                            //                           ],
+                                            //                         ),
+                                            //                       ));
+                                            //         },
+                                            //         child: const Text(
+                                            //           'Chọn giờ hẹn',
+                                            //           style: TextStyle(
+                                            //             color: kPrimaryColor,
+                                            //             fontSize: 16,
+                                            //           ),
+                                            //         ),
+                                            //       )
+                                            //     : SizedBox(
+                                            //         height: 0,
+                                            //       ),
                                           ],
                                         ),
                                         const SizedBox(height: 8),
