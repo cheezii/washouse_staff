@@ -1,41 +1,33 @@
 {
   "project_info": {
-    "project_number": "982047497895",
-    "project_id": "washouse-customer-8086f",
-    "storage_bucket": "washouse-customer-8086f.appspot.com"
+    "project_number": "767203330550",
+    "project_id": "washouse-ebd95",
+    "storage_bucket": "washouse-ebd95.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:982047497895:android:fb67586943923bc8a40582",
+        "mobilesdk_app_id": "1:767203330550:android:64c130115f879e231b1fd7",
         "android_client_info": {
           "package_name": "com.example.washouse_customer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "982047497895-vv3mdr5lgh9l0hblftnisvsa02h019ka.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.washouse_customer",
-            "certificate_hash": "ddf317086adcb18d0ceab8a04ecf90ba13ddd6c7"
-          }
-        },
-        {
-          "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+          "client_id": "767203330550-55kkro5acvr87da81no1gcbmvp4mm0go.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDZf3y-2xyT5JcF_N2FqYlLU9NJh68MKYk"
+          "current_key": "AIzaSyD4SuMpcjUSIz0q0xIFViABzkV7Y30A0jc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+              "client_id": "767203330550-55kkro5acvr87da81no1gcbmvp4mm0go.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -44,27 +36,27 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:982047497895:android:3af9d0979f28d2cda40582",
+        "mobilesdk_app_id": "1:767203330550:android:51d5f7d17742063b1b1fd7",
         "android_client_info": {
           "package_name": "com.example.washouse_staff"
         }
       },
       "oauth_client": [
         {
-          "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+          "client_id": "767203330550-55kkro5acvr87da81no1gcbmvp4mm0go.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDZf3y-2xyT5JcF_N2FqYlLU9NJh68MKYk"
+          "current_key": "AIzaSyD4SuMpcjUSIz0q0xIFViABzkV7Y30A0jc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "982047497895-mtsrvmb913kcr1e64df7pn19pi2abmuu.apps.googleusercontent.com",
+              "client_id": "767203330550-55kkro5acvr87da81no1gcbmvp4mm0go.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

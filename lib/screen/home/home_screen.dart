@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -8,27 +9,24 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:http/http.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:washouse_staff/resource/controller/base_controller.dart';
 import 'package:washouse_staff/resource/controller/order_controller.dart';
 import 'package:washouse_staff/resource/model/staff_statistic.dart';
-import 'package:washouse_staff/screen/chat/chat_detail_screen.dart';
 import 'package:washouse_staff/screen/chat/chat_screen.dart';
 import 'package:washouse_staff/screen/home/scan_qr_code.dart';
 import 'package:washouse_staff/screen/home/side_menu/side_menu.dart';
 import 'package:washouse_staff/screen/order/create_order_screen.dart';
-import 'package:washouse_staff/utils/price_util.dart';
-
 import '../../components/constants/color_constants.dart';
-import '../../components/constants/firestore_constants.dart';
 import '../../components/constants/text_constants.dart';
 import '../../resource/controller/center_controller.dart';
 import '../../resource/model/center.dart';
-import '../../resource/model/chat_message.dart';
 import '../../resource/model/response_model/notification_item_response.dart';
+import '../../resource/provider/notify_provider.dart';
 import '../notification/list_notification_screen.dart';
-import '../order/create_order_screen.dart';
-import '../../components/constants/color_constants.dart';
 
 class HomeScreen extends StatefulWidget {
   final centerId;
@@ -37,6 +35,8 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+NotifyProvider notifyProvider = NotifyProvider();
 
 class _HomeScreenState extends State<HomeScreen> {
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -72,6 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // Wait for getOrderInformation to complete
       Statistic result = await orderController.getStatistics();
       NotificationResponse notis = await getNotifications();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       setState(() {
         // Update state with loaded data
         statistic = result;
@@ -79,8 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
         print(statistic.dailystatistics![1].toJson());
         for (var element in statistic.dailystatistics!) {
           double day = double.parse(element.day!.substring(0, 2));
-          completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
-          cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
+          //completeData.add(new SalesData(day, element.successfulOrder!.toDouble()));
+          //cancelData.add(new SalesData(day, element.cancelledOrder!.toDouble()));
+          completeData.add(new SalesData(element.day!.substring(0, 5),
+              element.successfulOrder!.toDouble()));
+          cancelData.add(new SalesData(element.day!.substring(0, 5),
+              element.cancelledOrder!.toDouble()));
         }
         numOfNotifications = notis.numOfUnread!;
         isLoading = false;
@@ -101,19 +106,29 @@ class _HomeScreenState extends State<HomeScreen> {
       getCenterDetail();
     });
     loadData();
+    notifyProvider.addListener(() => mounted ? setState(() {}) : null);
+    notifyProvider.getNoti();
+  }
+
+  @override
+  void dispose() {
+    notifyProvider.removeListener(() {});
+    super.dispose();
   }
 
   Future<NotificationResponse> getNotifications() async {
     NotificationResponse notificationResponse = NotificationResponse();
     try {
       String url = '$baseUrl/notifications/me-noti';
-      Response response = await baseController.makeAuthenticatedRequest(url, {});
+      Response response =
+          await baseController.makeAuthenticatedRequest(url, {});
 
       if (response.statusCode == 200) {
         var data = jsonDecode(response.body)["data"];
         notificationResponse = NotificationResponse.fromJson(data);
       } else {
-        throw Exception('Error fetching getNotifications: ${response.statusCode}');
+        throw Exception(
+            'Error fetching getNotifications: ${response.statusCode}');
       }
     } catch (e) {
       print('error: getNotifications-$e');
@@ -131,55 +146,42 @@ class _HomeScreenState extends State<HomeScreen> {
     ChartData('Đã hủy', 5, cancelledColor),
   ];
 
-  //List<SalesData> getChartData() {
-  List<SalesData> completeData = [
-    // SalesData('17/4', 50),
-    // SalesData('18/4', 50),
-    // SalesData('19/4', 50),
-    // SalesData('20/4', 50),
-    // SalesData('21/4', 50),
-    // SalesData('22/4', 50),
-    //SalesData(17, 15),
-    //SalesData(18, 20),
-    //SalesData(19, 6),
-    //SalesData(20, 11),
-    //SalesData(21, 9),
-    //SalesData(22, 13),
-  ];
-  List<SalesData> cancelData = [
-    // SalesData('17/4', 50),
-    // SalesData('18/4', 50),
-    // SalesData('19/4', 50),
-    // SalesData('20/4', 50),
-    // SalesData('21/4', 50),
-    // SalesData('22/4', 50),
-    //SalesData(17, 1),
-    //SalesData(18, 0),
-    //SalesData(19, 0),
-    //SalesData(20, 2),
-    //SalesData(21, 0),
-    //SalesData(22, 1),
-  ];
-  //  return chartData;
-  //}
+  List<SalesData> completeData = [];
+  List<SalesData> cancelData = [];
 
   @override
   Widget build(BuildContext context) {
-    //print(completeData.toList().first.value);
-    // FutureBuilder(
-    //   future: orderController.getStatistics(),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.connectionState == ConnectionState.waiting) {
-    //       return Center(
-    //         child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50),
-    //       );
-    //     } else if (snapshot.hasData) {
-    //       statistic = snapshot.data!;
-    //     } else {}
-    //   },
-    // );
     if (isLoading) {
-      return basic.Center(child: LoadingAnimationWidget.prograssiveDots(color: kPrimaryColor, size: 50));
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 10.0,
+                sigmaY: 10.0,
+              ),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
+              ),
+            ),
+          ),
+          Positioned(
+            child: basic.Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                width: 100,
+                height: 100,
+                child: LoadingAnimationWidget.threeRotatingDots(
+                    color: kPrimaryColor, size: 50),
+              ),
+            ),
+          )
+        ],
+      );
     } else {
       OrderOverview overview = statistic.orderOverview!;
       return Scaffold(
@@ -198,11 +200,16 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           centerTitle: true,
-          title: const Text('Trang chủ', style: TextStyle(color: textColor, fontSize: 24)),
+          title: const Text('Trang chủ',
+              style: TextStyle(color: textColor, fontSize: 24)),
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.push(context, PageTransition(child: const ListNotificationScreen(), type: PageTransitionType.rightToLeftWithFade));
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: const ListNotificationScreen(),
+                        type: PageTransitionType.rightToLeftWithFade));
               },
               icon: Stack(
                 children: [
@@ -211,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: textColor,
                     size: 30.0,
                   ),
-                  if (numOfNotifications > 0)
+                  if (notifyProvider.numOfNotifications > 0)
                     Positioned(
                       right: 0,
                       child: Container(
@@ -225,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           minHeight: 16,
                         ),
                         child: Text(
-                          '$numOfNotifications',
+                          '${notifyProvider.numOfNotifications}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
@@ -246,7 +253,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 'Tổng quan đơn hàng (7 ngày)',
-                style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 20,
+                    color: textBoldColor,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 10),
               Row(
@@ -407,17 +417,21 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               const Text(
                 'Thống kê đơn hàng theo ngày',
-                style: TextStyle(fontSize: 20, color: textBoldColor, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                    fontSize: 20,
+                    color: textBoldColor,
+                    fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 10),
               SfCartesianChart(
-                legend: Legend(isVisible: true, position: LegendPosition.bottom),
+                legend:
+                    Legend(isVisible: true, position: LegendPosition.bottom),
                 tooltipBehavior: tooltipBehavior,
                 series: <ChartSeries>[
                   LineSeries<SalesData, dynamic>(
                     dataSource: completeData,
                     dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    xValueMapper: (SalesData sales, _) => sales.day,
+                    xValueMapper: (SalesData sales, _) => sales.day.toString(),
                     yValueMapper: (SalesData sales, _) => sales.value,
                     enableTooltip: true,
                     name: 'Thành công',
@@ -426,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   LineSeries<SalesData, dynamic>(
                     dataSource: cancelData,
                     dataLabelSettings: const DataLabelSettings(isVisible: true),
-                    xValueMapper: (SalesData sales, _) => sales.day,
+                    xValueMapper: (SalesData sales, _) => sales.day.toString(),
                     yValueMapper: (SalesData sales, _) => sales.value,
                     enableTooltip: true,
                     name: 'Hủy',
@@ -435,25 +449,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 // primaryXAxis:
                 //     NumericAxis(edgeLabelPlacement: EdgeLabelPlacement.shift),
+                primaryXAxis: CategoryAxis(
+                  isVisible: true,
+                  labelRotation: 75,
+                  arrangeByIndex: true,
+                  labelPlacement: LabelPlacement.betweenTicks,
+                  edgeLabelPlacement: EdgeLabelPlacement.shift,
+                ),
               )
-              // Container(
-              //   width: 400, // Set the width of the chart
-              //   height: 200, // Set the height of the chart
-              //   child: charts.BarChart(
-              //     [
-              //       charts.Series<ChartData, String>(
-              //         id: 'chartData',
-              //         domainFn: (ChartData data, _) => data.category,
-              //         measureFn: (ChartData data, _) => data.value,
-              //         data: data,
-              //         labelAccessorFn: (ChartData data, _) => '${data.value}',
-              //         colorFn: (ChartData data, _) => charts.ColorUtil.fromDartColor(data.colorCode),
-              //       )
-              //     ],
-              //     animate: true,
-              //     vertical: false,
-              //   ),
-              // ),
             ],
           ),
         ),
@@ -471,8 +474,19 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Tin nhắn',
               backgroundColor: kPrimaryColor,
               onTap: () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ChatScreen()));
-                //Navigator.push(context, MaterialPageRoute(builder: (context) => ChatDetailPage(arguments: ChatPageArguments(peerId: '3', peerAvatar: 'abc', peerNickname: 'Đoàn Trọng Kim'),)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ChatScreen()));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => ChatDetailPage(
+                //               arguments: ChatPageArguments(
+                //                   peerId: '2',
+                //                   peerAvatar: 'abc',
+                //                   peerNickname: 'Đoàn Trọng Kim'),
+                //             )));
 
                 // String groupChatId = "";
                 // if (widget.centerId.toString().compareTo('3') > 0) {
@@ -585,7 +599,10 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Quét mã qr',
               backgroundColor: kPrimaryColor,
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ScanQRCodeScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ScanQRCodeScreen()));
               },
             ),
             SpeedDialChild(
@@ -600,7 +617,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 showDialog(
                     context: context,
                     builder: (context) {
-                      return CreateOrderScreen(categoryData: centerDetails.centerServices);
+                      return CreateOrderScreen(
+                          categoryData: centerDetails.centerServices);
                     });
               },
             )
@@ -611,8 +629,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// class SalesData {
+//   final double day;
+//   final double value;
+
+//   SalesData(this.day, this.value);
+// }
+
 class SalesData {
-  final double day;
+  final String day;
   final double value;
 
   SalesData(this.day, this.value);

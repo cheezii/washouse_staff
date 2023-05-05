@@ -159,7 +159,9 @@ class _LoginState extends State<Login> {
                           } else {
                             var currentUserModel = await accountController
                                 .getCurrentUser() as CurrentUser;
+                            int? currentLaundry;
                             if (currentUserModel != null) {
+                              currentLaundry = currentUserModel.centerManaged;
                               baseController.saveStringtoSharedPreference(
                                   "CURRENT_USER_NAME", currentUserModel.name);
                               baseController.saveStringtoSharedPreference(
@@ -174,22 +176,21 @@ class _LoginState extends State<Login> {
                                   "CURRENT_USER_PASSWORD",
                                   passwordController.text);
                             }
-                            Customer? currentCustomer =
-                                await accountController.getCustomerInfomation(
-                                    currentUserModel.accountId!);
-                            if (currentCustomer != null) {
-                              baseController.saveInttoSharedPreference(
-                                  "CURRENT_CUSTOMER_ID",
-                                  currentUserModel.accountId!);
-                            }
-                            LaundryCenter? currentLaundry =
-                                await centerController.getCenterInfomation();
+                            // Customer? currentCustomer = await accountController.getCustomerInfomation(currentUserModel.accountId!);
+                            // if (currentCustomer != null) {
+                            //   baseController.saveInttoSharedPreference("CURRENT_CUSTOMER_ID", currentUserModel.accountId!);
+                            // }
+                            //LaundryCenter? currentLaundry = await centerController.getCenterInfomation();
+
                             if (currentLaundry != null) {
                               baseController.saveInttoSharedPreference(
-                                  "CENTER_ID", currentLaundry.id!);
+                                  "CENTER_ID", currentLaundry);
                               Navigator.of(context).pop();
                               Navigator.pushNamed(context, '/home',
-                                  arguments: currentLaundry.id);
+                                  arguments: currentLaundry);
+                              // baseController.saveInttoSharedPreference("CENTER_ID", currentLaundry.id!);
+                              // Navigator.of(context).pop();
+                              // Navigator.pushNamed(context, '/home', arguments: currentLaundry.id);
                             } else {
                               Navigator.of(context).pop();
                               _responseMessage =
@@ -268,79 +269,79 @@ class _LoginState extends State<Login> {
                   ),
                 ),
                 const SizedBox(height: kDefaultPadding / 4),
-                Row(
-                  children: const [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: kDefaultPadding / 2),
-                      child: Text('HOẶC'),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: size.width,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: kPrimaryColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kDefaultPadding / 2,
-                    vertical: kDefaultPadding / 2,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      SizedBox(
-                        height: kDefaultPadding * 1.5,
-                        child: Image.asset('assets/images/google.png'),
-                      ),
-                      const Text(
-                        'Đăng nhập bằng Google',
-                        style: TextStyle(
-                          color: textColor,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: const SignUp(),
-                        type: PageTransitionType.rightToLeftWithFade,
-                      ),
-                    );
-                  },
-                  child: const Center(
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Chưa có tài khoản? ',
-                            style: TextStyle(
-                              color: textColor,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Đăng ký',
-                            style: TextStyle(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // Row(
+                //   children: const [
+                //     Expanded(child: Divider()),
+                //     Padding(
+                //       padding:
+                //           EdgeInsets.symmetric(horizontal: kDefaultPadding / 2),
+                //       child: Text('HOẶC'),
+                //     ),
+                //     Expanded(child: Divider()),
+                //   ],
+                // ),
+                // const SizedBox(height: 16),
+                // Container(
+                //   width: size.width,
+                //   decoration: BoxDecoration(
+                //     border: Border.all(color: kPrimaryColor),
+                //     borderRadius: BorderRadius.circular(10),
+                //   ),
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: kDefaultPadding / 2,
+                //     vertical: kDefaultPadding / 2,
+                //   ),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                //     children: [
+                //       SizedBox(
+                //         height: kDefaultPadding * 1.5,
+                //         child: Image.asset('assets/images/google.png'),
+                //       ),
+                //       const Text(
+                //         'Đăng nhập bằng Google',
+                //         style: TextStyle(
+                //           color: textColor,
+                //           fontSize: 18.0,
+                //           fontWeight: FontWeight.w500,
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // const SizedBox(height: 16),
+                // GestureDetector(
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       PageTransition(
+                //         child: const SignUp(),
+                //         type: PageTransitionType.rightToLeftWithFade,
+                //       ),
+                //     );
+                //   },
+                //   child: const Center(
+                //     child: Text.rich(
+                //       TextSpan(
+                //         children: [
+                //           TextSpan(
+                //             text: 'Chưa có tài khoản? ',
+                //             style: TextStyle(
+                //               color: textColor,
+                //             ),
+                //           ),
+                //           TextSpan(
+                //             text: 'Đăng ký',
+                //             style: TextStyle(
+                //               color: kPrimaryColor,
+                //               fontWeight: FontWeight.bold,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           ),

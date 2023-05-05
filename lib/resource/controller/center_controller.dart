@@ -41,8 +41,48 @@ class CenterController {
         throw Exception('Error fetching user data: ${response.statusCode}');
       }
     } catch (e) {
-      print('get service error: $e');
+      print('get center error: $e');
     }
     return center;
+  }
+
+  Future<Map<String, dynamic>?> assignDelivery(String orderId, String type, String shipperName, String shipperPhone) async {
+    final String url = '$baseUrl/manager/my-center/orders/$orderId/deliveries/$type/assign';
+    Map<String, dynamic> queryParams = {};
+    Map<String, dynamic> requestBody = {"shipperName": shipperName, "shipperPhone": shipperPhone};
+    Response response = await baseController.makeAuthenticatedPutRequest(url, queryParams, requestBody);
+    try {
+      if (response.statusCode == 200) {
+        final Map<String, dynamic>? data = json.decode(response.body)["data"];
+        return data;
+      } else {
+        // Handle error response
+        throw Exception('Error fetching assignDelivery: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('assignDelivery error: $e');
+      throw Exception('Error assignDelivery: ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>?> changeDeliveryStatus(String orderId, String type) async {
+    final String url = '$baseUrl/manager/my-center/orders/$orderId/deliveries/$type/change-status';
+    Map<String, dynamic> queryParams = {};
+    Map<String, dynamic> requestBody = {};
+    Response response = await baseController.makeAuthenticatedPutRequest(url, queryParams, requestBody);
+    try {
+      if (response.statusCode == 200) {
+        final Map<String, dynamic>? data = json.decode(response.body)["data"];
+        return data;
+      } else {
+        // Handle error response
+        print('Error fetching changeDeliveryStatus: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('changeDeliveryStatus error: $e');
+      //throw Exception('Error changeDeliveryStatus: ${response.statusCode}');
+      return null;
+    }
   }
 }

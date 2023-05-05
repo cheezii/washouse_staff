@@ -151,164 +151,243 @@ class DetailItemCard extends StatelessWidget {
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          SizedBox(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            child: ElevatedButton(
-                                              onPressed: () async {
-                                                showDialog(
-                                                  context: context,
-                                                  builder:
-                                                      (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: const Text(
-                                                          'Thông báo'),
-                                                      content: Column(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Text(
-                                                              'Trạng thái hiện tại của món hàng là "${OrderUtils().mapVietnameseOrderDetailStatus(order_infomation.orderedDetails![index].status!)}"!'),
-                                                          Text(
-                                                              'Bạn có chắc chắn muốn cập nhật trạng thái của món hàng đến trạng thái tiếp theo?'),
-                                                        ],
-                                                      ),
-                                                      actions: [
-                                                        TextButton(
-                                                          onPressed: () async {
-                                                            String result = await trackingController.trackingOrderDetail(
-                                                                order_infomation
-                                                                    .id!,
-                                                                order_infomation
-                                                                    .orderedDetails![
-                                                                        index]
-                                                                    .orderDetailId!);
-                                                            if (result.compareTo(
-                                                                    "success") ==
-                                                                0) {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              await showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  return AlertDialog(
-                                                                    title: const Text(
-                                                                        'Thông báo'),
-                                                                    content: Text(
-                                                                        'Dịch vụ đã được cập nhật trạng thái thành công!'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                          Navigator.push(
+                                          order_infomation
+                                                      .orderedDetails![index]
+                                                      .status!
+                                                      .toLowerCase() !=
+                                                  'completed'
+                                              ? SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                      .size
+                                                      .width,
+                                                  child: ElevatedButton(
+                                                    onPressed: () async {
+                                                      showDialog(
+                                                        context: context,
+                                                        builder: (BuildContext
+                                                            context) {
+                                                          return AlertDialog(
+                                                            title: const Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .center,
+                                                              child: Text(
+                                                                  'Thông báo'),
+                                                            ),
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15),
+                                                            ),
+                                                            content: Column(
+                                                              mainAxisSize:
+                                                                  MainAxisSize
+                                                                      .min,
+                                                              children: [
+                                                                Text(
+                                                                    'Trạng thái hiện tại của món hàng là "${OrderUtils().mapVietnameseOrderDetailStatus(order_infomation.orderedDetails![index].status!)}"!'),
+                                                                Text(
+                                                                    'Bạn có chắc chắn muốn cập nhật trạng thái của món hàng đến trạng thái tiếp theo?'),
+                                                              ],
+                                                            ),
+                                                            actions: [
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceEvenly,
+                                                                children: [
+                                                                  ElevatedButton(
+                                                                    onPressed:
+                                                                        () async {
+                                                                      String result = await trackingController.trackingOrderDetail(
+                                                                          order_infomation
+                                                                              .id!,
+                                                                          order_infomation
+                                                                              .orderedDetails![index]
+                                                                              .orderDetailId!);
+                                                                      if (result
+                                                                              .compareTo("success") ==
+                                                                          0) {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                        await showDialog(
+                                                                          context:
                                                                               context,
-                                                                              PageTransition(
-                                                                                  child: OrderDetailScreen(
-                                                                                    orderId: order_infomation.id!,
-                                                                                  ),
-                                                                                  type: PageTransitionType.rightToLeftWithFade));
-                                                                        },
-                                                                        child: Text(
-                                                                            'OK'),
+                                                                          builder:
+                                                                              (BuildContext context) {
+                                                                            return AlertDialog(
+                                                                              title: const Align(
+                                                                                alignment: Alignment.center,
+                                                                                child: Text('Thông báo'),
+                                                                              ),
+                                                                              shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(15),
+                                                                              ),
+                                                                              content: Text('Dịch vụ đã được cập nhật trạng thái thành công!'),
+                                                                              actions: [
+                                                                                TextButton(
+                                                                                  onPressed: () {
+                                                                                    Navigator.of(context).pop();
+                                                                                    Navigator.of(context).pop();
+                                                                                    Navigator.push(
+                                                                                        context,
+                                                                                        PageTransition(
+                                                                                            child: OrderDetailScreen(
+                                                                                              orderId: order_infomation.id!,
+                                                                                            ),
+                                                                                            type: PageTransitionType.rightToLeftWithFade));
+                                                                                  },
+                                                                                  child: Text('OK'),
+                                                                                ),
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      } else {
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                        Navigator.of(context)
+                                                                            .pop();
+                                                                        await showDialog(
+                                                                          context:
+                                                                              context,
+                                                                          builder:
+                                                                              (BuildContext context) {
+                                                                            return AlertDialog(
+                                                                              title: const Align(
+                                                                                alignment: Alignment.center,
+                                                                                child: Text('Thông báo'),
+                                                                              ),
+                                                                              shape: RoundedRectangleBorder(
+                                                                                borderRadius: BorderRadius.circular(15),
+                                                                              ),
+                                                                              content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
+                                                                              actions: [
+                                                                                TextButton(
+                                                                                  onPressed: () {
+                                                                                    Navigator.of(context).pop();
+                                                                                  },
+                                                                                  child: Text('OK'),
+                                                                                ),
+                                                                              ],
+                                                                            );
+                                                                          },
+                                                                        );
+                                                                      }
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                      return;
+                                                                    },
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                                        foregroundColor: kPrimaryColor.withOpacity(.7),
+                                                                        elevation: 0,
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20),
+                                                                          side: BorderSide(
+                                                                              color: kPrimaryColor,
+                                                                              width: 1),
+                                                                        ),
+                                                                        backgroundColor: kPrimaryColor),
+                                                                    child:
+                                                                        const Text(
+                                                                      'OK',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            15,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
                                                                       ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                              );
-                                                            } else {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                              await showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (BuildContext
-                                                                        context) {
-                                                                  return AlertDialog(
-                                                                    title: const Text(
-                                                                        'Thông báo'),
-                                                                    content: Text(
-                                                                        'Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () {
-                                                                          Navigator.of(context)
-                                                                              .pop();
-                                                                        },
-                                                                        child: Text(
-                                                                            'OK'),
+                                                                    ),
+                                                                  ),
+                                                                  ElevatedButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.of(
+                                                                              context)
+                                                                          .pop();
+                                                                    },
+                                                                    style: ElevatedButton.styleFrom(
+                                                                        padding: const EdgeInsetsDirectional.symmetric(horizontal: 19, vertical: 10),
+                                                                        elevation: 0,
+                                                                        foregroundColor: cancelledColor.withOpacity(.5),
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(20),
+                                                                          side: BorderSide(
+                                                                              color: cancelledColor,
+                                                                              width: 1),
+                                                                        ),
+                                                                        backgroundColor: cancelledColor),
+                                                                    child:
+                                                                        const Text(
+                                                                      'Hủy',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            15,
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
                                                                       ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                              );
-                                                            }
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                            return;
-                                                          },
-                                                          child: Text('OK'),
-                                                        ),
-                                                        TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          child: Text('Hủy bỏ'),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsetsDirectional
-                                                              .symmetric(
-                                                          horizontal: 19,
-                                                          vertical: 10),
-                                                  foregroundColor: kPrimaryColor
-                                                      .withOpacity(.7),
-                                                  elevation: 0,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                    side: BorderSide(
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                            padding:
+                                                                const EdgeInsetsDirectional
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        19,
+                                                                    vertical:
+                                                                        10),
+                                                            foregroundColor:
+                                                                kPrimaryColor
+                                                                    .withOpacity(
+                                                                        .7),
+                                                            elevation: 0,
+                                                            shape:
+                                                                RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          20),
+                                                              side: BorderSide(
+                                                                  color:
+                                                                      kPrimaryColor,
+                                                                  width: 1),
+                                                            ),
+                                                            backgroundColor:
+                                                                Colors.white),
+                                                    child: const Text(
+                                                      'Cập nhật trạng thái',
+                                                      style: TextStyle(
                                                         color: kPrimaryColor,
-                                                        width: 1),
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
                                                   ),
-                                                  backgroundColor:
-                                                      Colors.white),
-                                              child: const Text(
-                                                'Cập nhật trạng thái',
-                                                style: TextStyle(
-                                                  color: kPrimaryColor,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                                )
+                                              : const SizedBox.shrink(),
                                           const SizedBox(height: 15),
                                           SizedBox(
                                             width: MediaQuery.of(context)
@@ -511,7 +590,13 @@ class DetailItemCard extends StatelessWidget {
                                                                               context: context,
                                                                               builder: (BuildContext context) {
                                                                                 return AlertDialog(
-                                                                                  title: const Text('Thông báo'),
+                                                                                  title: const Align(
+                                                                                    alignment: Alignment.center,
+                                                                                    child: Text('Thông báo'),
+                                                                                  ),
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(15),
+                                                                                  ),
                                                                                   content: Text('Dịch vụ đã được cập nhật thành công!'),
                                                                                   actions: [
                                                                                     TextButton(
@@ -539,7 +624,13 @@ class DetailItemCard extends StatelessWidget {
                                                                               context: context,
                                                                               builder: (BuildContext context) {
                                                                                 return AlertDialog(
-                                                                                  title: const Text('Thông báo'),
+                                                                                  title: const Align(
+                                                                                    alignment: Alignment.center,
+                                                                                    child: Text('Thông báo'),
+                                                                                  ),
+                                                                                  shape: RoundedRectangleBorder(
+                                                                                    borderRadius: BorderRadius.circular(15),
+                                                                                  ),
                                                                                   content: Text('Có lỗi xảy ra trong quá trình xử lý! Bạn vui lòng thử lại sau'),
                                                                                   actions: [
                                                                                     TextButton(

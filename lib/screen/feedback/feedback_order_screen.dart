@@ -74,7 +74,8 @@ class _FeedbackOrderScreenState extends State<FeedbackOrderScreen> {
               isMore = !isMore;
             }),
             isLess: isMore,
-            onTap: () => Navigator.push(context, PageTransition(child: const FeedbackDetailsScreen(), type: PageTransitionType.fade)),
+            onTap: () =>
+                Navigator.push(context, PageTransition(child: FeedbackDetailsScreen(feedback: feedbackList[index]), type: PageTransitionType.fade)),
           );
         }),
         separatorBuilder: (context, index) {

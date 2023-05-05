@@ -7,9 +7,9 @@ class NoOrderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.only(top: 100),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             height: 150,
@@ -23,7 +23,7 @@ class NoOrderScreen extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           const Text(
-            'Không có đơn hàng nào',
+            'Không có đơn hàng nào.',
             style: TextStyle(
                 fontSize: 20, color: textColor, fontWeight: FontWeight.w500),
           ),

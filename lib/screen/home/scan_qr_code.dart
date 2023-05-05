@@ -48,14 +48,16 @@ class _ScanQRCodeScreenState extends State<ScanQRCodeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0),
+        backgroundColor:
+            Theme.of(context).scaffoldBackgroundColor.withOpacity(0),
         leading: GestureDetector(
           onTap: () => Navigator.pop(context),
           child: const Padding(
             padding: EdgeInsets.only(left: 16),
             child: CircleAvatar(
               backgroundColor: Colors.white,
-              child: Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
+              child:
+                  Icon(Icons.arrow_back_ios_new_rounded, color: Colors.black),
             ),
           ),
         ),
@@ -72,14 +74,21 @@ class _ScanQRCodeScreenState extends State<ScanQRCodeScreen> {
 
   Widget _buildQrView(BuildContext context) {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
-    var scanArea = (MediaQuery.of(context).size.width < 400 || MediaQuery.of(context).size.height < 400) ? 150.0 : 300.0;
+    var scanArea = (MediaQuery.of(context).size.width < 400 ||
+            MediaQuery.of(context).size.height < 400)
+        ? 150.0
+        : 300.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
     return QRView(
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: kPrimaryColor, borderRadius: 10, borderLength: 20, borderWidth: 10, cutOutSize: MediaQuery.of(context).size.width * 0.8),
+          borderColor: kPrimaryColor,
+          borderRadius: 10,
+          borderLength: 20,
+          borderWidth: 10,
+          cutOutSize: MediaQuery.of(context).size.width * 0.8),
       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
     );
   }
@@ -102,7 +111,7 @@ class _ScanQRCodeScreenState extends State<ScanQRCodeScreen> {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');
     if (!p) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('no Permission')),
+        const SnackBar(content: Text('Không có quyền truy cập.')),
       );
     }
   }

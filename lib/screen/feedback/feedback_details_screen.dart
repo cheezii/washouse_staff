@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:washouse_staff/resource/model/feedback.dart';
 
 import '../../components/constants/color_constants.dart';
 
 class FeedbackDetailsScreen extends StatelessWidget {
-  const FeedbackDetailsScreen({super.key});
+  final FeedbackModel feedback;
+  const FeedbackDetailsScreen({super.key, required this.feedback});
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +25,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
           ),
         ),
         centerTitle: true,
-        title: const Text('Chi tiết đánh giá',
-            style: TextStyle(color: textColor, fontSize: 25)),
+        title: const Text('Chi tiết đánh giá', style: TextStyle(color: textColor, fontSize: 25)),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -35,7 +36,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Mã đơn: #OrderID',
+                  'Mã đơn: #${feedback.orderId}',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w500,
@@ -43,12 +44,12 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'tên khách hàng: họ tên',
+                  'Tên khách hàng: ${feedback.accountName}',
                   style: TextStyle(fontSize: 17, color: textColor),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'ngày đánh giá: ngày tháng',
+                  'Ngày đánh giá: ${feedback.createdDate}',
                   style: TextStyle(fontSize: 17, color: textColor),
                 ),
               ],
@@ -57,7 +58,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
             Container(
               alignment: Alignment.center,
               child: RatingBarIndicator(
-                rating: 4.5,
+                rating: feedback.rating!.toDouble(),
                 itemBuilder: (context, index) => const Icon(
                   Icons.star,
                   color: kPrimaryColor,
@@ -79,6 +80,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.all(8),
+                  width: 360,
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.grey.shade500,
@@ -87,7 +89,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    'nội dung đánh giá nội dung đánh giá nội dung đánh giá nội dung đánh giá nội dung đánh giá',
+                    '${feedback.content}',
                     style: TextStyle(fontSize: 16, color: textColor),
                   ),
                 ),
@@ -103,8 +105,7 @@ class FeedbackDetailsScreen extends StatelessWidget {
                   shrinkWrap: true,
                   itemBuilder: ((context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       child: Row(
                         children: [
                           Text(

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletons/skeletons.dart';
@@ -27,6 +28,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   List chatList = [];
+  List<QueryDocumentSnapshot> listChat = [];
   final ScrollController listScrollController = ScrollController();
 
   int _limit = 20;
@@ -36,7 +38,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isLoadingList = true;
 
   late final ChatProvider chatProvider = context.read<ChatProvider>();
-  late final int? centerId;
+  int? centerId;
   final firebaseStore = FirebaseFirestore.instance;
   final Debouncer searchDebouncer = Debouncer(milliseconds: 300);
   final StreamController<bool> btnClearController = StreamController<bool>();
@@ -57,7 +59,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _loadData() async {
-    centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+    var id = await baseController.getInttoSharedPreference("CENTER_ID");
+    print('center id load data: $id');
 
     var fromMsg = await firebaseStore
         .collection(FirestoreConstants.pathMessageCollection)
@@ -68,6 +71,8 @@ class _ChatScreenState extends State<ChatScreen> {
         .where('idFrom', isEqualTo: centerId.toString())
         .get();
 
+    print('fromMsg load data: ${fromMsg.docs}');
+
     var toMsg = await firebaseStore
         .collection(FirestoreConstants.pathMessageCollection)
         .withConverter(
@@ -77,7 +82,9 @@ class _ChatScreenState extends State<ChatScreen> {
         .where('idTo', isEqualTo: centerId.toString())
         .get();
 
+    print('toMsg load data: ${toMsg.docs}');
     setState(() {
+      centerId = id;
       if (fromMsg.docs.isNotEmpty) {
         chatList.addAll(fromMsg.docs);
       }
@@ -86,6 +93,43 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     });
   }
+
+  // Future<List> _loadData() async {
+  //   centerId = await baseController.getInttoSharedPreference("CENTER_ID");
+  //   print('center id load data: $centerId');
+
+  //   var fromMsg = await firebaseStore
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .withConverter(
+  //           fromFirestore: ((snapshot, _) =>
+  //               MessageData.fromDocument(snapshot)),
+  //           toFirestore: (MessageData msg, options) => msg.toJson())
+  //       .where('idFrom', isEqualTo: centerId.toString())
+  //       .get();
+
+  //   print('fromMsg load data: ${fromMsg.docs}');
+
+  //   var toMsg = await firebaseStore
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .withConverter(
+  //           fromFirestore: ((snapshot, _) =>
+  //               MessageData.fromDocument(snapshot)),
+  //           toFirestore: (MessageData msg, options) => msg.toJson())
+  //       .where('idTo', isEqualTo: centerId.toString())
+  //       .get();
+
+  //   print('toMsg load data: ${toMsg.docs}');
+  //   //setState(() {
+  //   if (fromMsg.docs.isNotEmpty) {
+  //     chatList.addAll(fromMsg.docs);
+  //   }
+  //   if (toMsg.docs.isNotEmpty) {
+  //     chatList.addAll(toMsg.docs);
+  //   }
+  //   //});
+  //   print('chatList length: ${chatList.length}');
+  //   return chatList;
+  // }
 
   void scrollListener() {
     if (listScrollController.offset >=
@@ -99,9 +143,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (chatList.length > 0) {
-      isLoadingList = false;
-    }
+    // if (chatList.length > 0) {
+    //   isLoadingList = false;
+    // }
     return Scaffold(
       body: Column(
         //crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,20 +193,63 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
           buildSearchBar(),
-          Expanded(
-            // child: Skeleton(
-            //   isLoading: isLoadingList,
-            //   skeleton: CircularProgressIndicator(),
-            child: ListView.builder(
-              itemCount: chatList.length,
-              itemBuilder: (context, index) {
-                print(centerId);
-                var item = chatList[index];
-                return buildMsgListItem(item);
+          Flexible(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: chatProvider.getStreamFireStore(
+                  _textSearch, centerId.toString()),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasData) {
+                  listChat = snapshot.data!.docs;
+                  if (listChat.length > 0) {
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(10),
+                      itemBuilder: (context, index) =>
+                          buildMsgListItem(snapshot.data?.docs[index]),
+                      itemCount: listChat.length,
+                      controller: listScrollController,
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 150),
+                        SizedBox(
+                          height: 150,
+                          width: 150,
+                          child:
+                              Image.asset('assets/images/sticker/app_icon.png'),
+                        ),
+                        const SizedBox(height: 15),
+                        const Text(
+                          'Chưa có đoạn chat nào.',
+                          style: TextStyle(fontSize: 18, color: textColor),
+                        )
+                      ],
+                    );
+                  }
+                }
+                return Column(
+                  children: [
+                    const SizedBox(height: 150),
+                    SizedBox(
+                      height: 150,
+                      width: 150,
+                      child: Image.asset('assets/images/sticker/app_icon.png'),
+                    ),
+                    const SizedBox(height: 15),
+                    const Text(
+                      'Chưa có đoạn chat nào.',
+                      style: TextStyle(fontSize: 18, color: textColor),
+                    )
+                  ],
+                );
               },
             ),
-            //),
-          ),
+          )
         ],
       ),
     );
@@ -234,7 +321,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget buildMsgListItem(DocumentSnapshot<MessageData> item) {
+  Widget buildMsgListItem(DocumentSnapshot? item) {
     if (item != null) {
       MessageData data = MessageData.fromDocument(item);
       return GestureDetector(
@@ -284,16 +371,19 @@ class _ChatScreenState extends State<ChatScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            data.idFrom == centerId.toString()
-                                ? data.nameTo
-                                : data.nameFrom,
-                            overflow: TextOverflow.clip,
-                            maxLines: 1,
-                            style: const TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                                fontWeight: FontWeight.w400),
+                          SizedBox(
+                            width: 250,
+                            child: Text(
+                              data.idFrom == centerId.toString()
+                                  ? data.nameTo
+                                  : data.nameFrom,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: const TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w400),
+                            ),
                           ),
                           Text(
                             TimeUtils().checkOver24Hours(
@@ -309,16 +399,19 @@ class _ChatScreenState extends State<ChatScreen> {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        data.typeContent == 0
-                            ? data.lastContent
-                            : data.typeContent == 2
-                                ? '[Sticker]'
-                                : '[Hình ảnh]',
-                        overflow: TextOverflow.clip,
-                        maxLines: 1,
-                        style: TextStyle(
-                            fontSize: 15, color: Colors.grey.shade500),
+                      SizedBox(
+                        width: 260,
+                        child: Text(
+                          data.typeContent == 0
+                              ? data.lastContent
+                              : data.typeContent == 2
+                                  ? '[Sticker]'
+                                  : '[Hình ảnh]',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: TextStyle(
+                              fontSize: 15, color: Colors.grey.shade500),
+                        ),
                       )
                     ],
                   ),

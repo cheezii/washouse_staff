@@ -4,16 +4,17 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../../components/constants/color_constants.dart';
 import '../../resource/controller/order_controller.dart';
 import '../../resource/model/order.dart';
-import 'components/list_widget/order_card.dart';
+import 'component/list_widget/order_card.dart';
 
-class SearchOrderScreen extends StatefulWidget {
-  const SearchOrderScreen({super.key});
+class SearchDeliveryOrderScreen extends StatefulWidget {
+  const SearchDeliveryOrderScreen({super.key});
 
   @override
-  State<SearchOrderScreen> createState() => _SearchOrderScreenState();
+  State<SearchDeliveryOrderScreen> createState() =>
+      _SearchDeliveryOrderScreenState();
 }
 
-class _SearchOrderScreenState extends State<SearchOrderScreen> {
+class _SearchDeliveryOrderScreenState extends State<SearchDeliveryOrderScreen> {
   OrderController orderController = OrderController();
   List<Order> orderList = [];
   TextEditingController searchController = TextEditingController();
@@ -28,8 +29,8 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
 
     try {
       // Wait for getOrderInformation to complete
-      List<Order> result = await orderController.getOrderList(
-          1, 100, value, null, null, null, null);
+      List<Order> result = await orderController.getOrderDeliveryList(
+          1, 50, null, null, null, null, true, 'Pending');
       setState(() {
         // Update state with loaded data
         suggetsList = result;
@@ -181,7 +182,7 @@ class _SearchOrderScreenState extends State<SearchOrderScreen> {
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: suggetsList.length,
                               itemBuilder: ((context, index) {
-                                return OrderCard(order: suggetsList[index]);
+                                return CardOrder(order: suggetsList[index]);
                               }),
                             ),
                           )

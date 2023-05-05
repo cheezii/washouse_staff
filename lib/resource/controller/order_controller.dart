@@ -250,4 +250,37 @@ class OrderController {
     }
     return statistic;
   }
+
+  Future<List<Order>> getOrderDeliveryList(int? Page, int? PageSize, String? SearchString, String? FromDate, String? ToDate, String? Status,
+      bool? DeliveryType, String? DeliveryStatus) async {
+    List<Order> orderItems = [];
+    try {
+      String url = '$baseUrl/manager/my-center/orders';
+      Map<String, dynamic> queryParams = {
+        "Page": Page.toString(),
+        "PageSize": PageSize.toString(),
+        "SearchString": SearchString,
+        "FromDate": FromDate,
+        "ToDate": ToDate,
+        "Status": Status,
+        "DeliveryType": DeliveryType.toString(),
+        "DeliveryStatus": DeliveryStatus,
+      };
+      print(queryParams);
+      Response response = await baseController.makeAuthenticatedRequest(url, queryParams);
+      print(response.body);
+      if (response.statusCode == 200) {
+        // Handle successful response
+        var data = jsonDecode(response.body)["data"]['items'] as List;
+        orderItems = data.map((e) => Order.fromJson(e)).toList();
+        // Do something with the user data...
+      } else {
+        // Handle error response
+        throw Exception('Error fetching getOrderDeliveryList: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('error: getOrderDeliveryList-$e');
+    }
+    return orderItems;
+  }
 }

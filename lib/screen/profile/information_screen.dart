@@ -533,8 +533,8 @@ class _InfomationScreenState extends State<InfomationScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(16),
         child: ElevatedButton(
           onPressed: () {
             showDialog(

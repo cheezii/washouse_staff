@@ -83,12 +83,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     } else {
       groupChatId = '$peerId-$currentId';
     }
-
-    // chatProvider.updateDataFirestore(
-    //   FirestoreConstants.pathListChatCollection,
-    //   currentUserId.toString(),
-    //   {FirestoreConstants.chattingWith: peerId},
-    // );
   }
 
   Future getImage() async {
@@ -187,6 +181,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     return Flexible(
       child: groupChatId.isNotEmpty
           ? StreamBuilder<QuerySnapshot>(
+              //stream: chatProvider.getChatStream(groupChatId),
               stream: chatProvider.getChatStream(groupChatId, _limit),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -220,8 +215,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   Widget buildItem(int index, DocumentSnapshot? document) {
     if (document != null) {
       MessageChat messageChat = MessageChat.fromDocument(document);
+      print(messageChat.content);
       if (messageChat.idFrom == currentId.toString()) {
         // Right (my message)
+
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -229,7 +226,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 // Text
                 ? Container(
                     padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-                    //width: 200,
+                    width: 200,
                     decoration: BoxDecoration(
                         color: Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(30)),
@@ -374,7 +371,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   messageChat.type == TypeMessage.text
                       ? Container(
                           padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                          //width: 200,
+                          width: 200,
                           decoration: BoxDecoration(
                               color: kPrimaryColor.withOpacity(.7),
                               borderRadius: BorderRadius.circular(30)),

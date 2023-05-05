@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:washouse_staff/resource/provider/cart_provider.dart';
+import 'package:washouse_staff/resource/provider/notify_provider.dart';
 import 'package:washouse_staff/screen/started/login.dart';
 
 import 'components/route/route_generator.dart';
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
             firebaseStorage: firebaseStorage,
           ),
         ),
+        ChangeNotifierProvider<NotifyProvider>(
+          create: (context) => NotifyProvider(),
+        ),
       ],
       child: const MaterialApp(
         title: 'Washouse Staff',
@@ -67,6 +71,8 @@ class MyApp extends StatelessWidget {
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

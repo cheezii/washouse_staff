@@ -56,32 +56,41 @@ class ChatProvider {
   //   }
   // }
 
-  Stream<QuerySnapshot> getStreamFireStore(String pathCollection, int limit,
-      String? textSearch, String currrentUserId) {
+  Stream<QuerySnapshot> getStreamFireStore(
+      String? textSearch, String currentId) {
     if (textSearch?.isNotEmpty == true) {
       return firebaseFirestore
-          .collection(pathCollection)
-          .doc(currrentUserId)
-          .collection(currrentUserId)
-          .limit(limit)
-          .where(FirestoreConstants.name, arrayContains: textSearch!)
+          .collection(FirestoreConstants.pathMessageCollection)
+          .where(FirestoreConstants.idTo, isEqualTo: currentId)
+          .where(FirestoreConstants.nameTo, arrayContains: textSearch)
           .snapshots();
     } else {
       return firebaseFirestore
-          .collection(pathCollection)
-          .doc(currrentUserId)
-          .collection(currrentUserId)
-          .limit(limit)
+          .collection(FirestoreConstants.pathMessageCollection)
+          .where(FirestoreConstants.idTo, isEqualTo: currentId)
           .snapshots();
     }
   }
 
-  // Stream<QuerySnapshot> getListStream(String groupChatId, String currentId) {
-  //   return firebaseFirestore
-  //       .collection(FirestoreConstants.pathListChatCollection)
-  //       .where(FirestoreConstants.groupChatId, arrayContains: currentId)
-  //       .snapshots();
-  // }
+  Stream<QuerySnapshot> getListStream(String currentId) {
+    return firebaseFirestore
+        .collection(FirestoreConstants.pathMessageCollection)
+        //.where(FirestoreConstants.idFrom, isEqualTo: currentId)
+        .where(FirestoreConstants.idTo, isEqualTo: currentId)
+        .snapshots();
+  }
+  // Future getListStream(String currentId) async {
+  //   var result = await FirebaseFirestore.instance
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .withConverter(
+  //           fromFirestore: ((snapshot, _) =>
+  //               MessageData.fromDocument(snapshot)),
+  //           toFirestore: (MessageData msg, options) => msg.toJson())
+  //       .where(FirestoreConstants.idFrom, isEqualTo: currentId)
+  //       .where(FirestoreConstants.idTo, isEqualTo: currentId)
+  //       .get();
+  //   return result;
+  //}
 
   Stream<QuerySnapshot> getChatStream(String groupChatId, int limit) {
     return firebaseFirestore
@@ -92,6 +101,15 @@ class ChatProvider {
         .limit(limit)
         .snapshots();
   }
+
+  // Stream<QuerySnapshot> getChatStream(String groupChatId) {
+  //   return firebaseFirestore
+  //       .collection(FirestoreConstants.pathMessageCollection)
+  //       .doc(groupChatId)
+  //       .collection('msglist')
+  //       .orderBy(FirestoreConstants.timestamp, descending: true)
+  //       .snapshots();
+  // }
 
   void sendMessage(String content, int type, String groupChatId,
       String currentUserId, String peerId) {
