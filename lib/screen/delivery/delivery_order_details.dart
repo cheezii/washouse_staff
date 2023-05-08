@@ -277,12 +277,12 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         }
                                                         return null;
                                                       },
-                                                      controller:
-                                                          dropoffShipperNameContronller,
-                                                      onSaved: (newValue) {
-                                                        dropoffShipperNameContronller
-                                                            .text = newValue!;
-                                                      },
+                                                      // controller:
+                                                      //     dropoffShipperNameContronller,
+                                                      // onSaved: (newValue) {
+                                                      //   dropoffShipperNameContronller
+                                                      //       .text = newValue!;
+                                                      // },
                                                       style: const TextStyle(
                                                         color: textColor,
                                                       ),
@@ -318,8 +318,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                           .withOpacity(.8),
                                                       onChanged: (value) {
                                                         setState(() {
-                                                          dropoffShipperNameContronller
-                                                              .text = value;
+                                                          dropoffShipperName =
+                                                              value;
                                                         });
                                                       },
                                                     ),
@@ -338,12 +338,12 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         }
                                                         return null;
                                                       },
-                                                      onSaved: (newValue) {
-                                                        dropoffShipperPhoneContronller
-                                                            .text = newValue!;
-                                                      },
-                                                      controller:
-                                                          dropoffShipperPhoneContronller,
+                                                      // onSaved: (newValue) {
+                                                      //   dropoffShipperPhoneContronller
+                                                      //       .text = newValue!;
+                                                      // },
+                                                      // controller:
+                                                      //     dropoffShipperPhoneContronller,
                                                       style: const TextStyle(
                                                         color: textColor,
                                                       ),
@@ -377,8 +377,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                           TextInputType.number,
                                                       onChanged: (value) {
                                                         setState(() {
-                                                          dropoffShipperPhoneContronller
-                                                              .text = value;
+                                                          dropoffShipperPhone =
+                                                              value;
                                                         });
                                                       },
                                                     ),
@@ -394,24 +394,23 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         _formPhoneNumberKey
                                                             .currentState!
                                                             .validate()) {
-                                                      _formNameKey.currentState!
-                                                          .save();
-                                                      _formPhoneNumberKey
-                                                          .currentState!
-                                                          .save();
+                                                      // _formNameKey.currentState!
+                                                      //     .save();
+                                                      // _formPhoneNumberKey
+                                                      //     .currentState!
+                                                      //     .save();
                                                       setState(() {
                                                         isLoading = true;
                                                       });
-                                                      Map<String,
-                                                              dynamic>? result =
-                                                          await centerController.assignDelivery(
-                                                              widget.order
-                                                                  .orderId!,
-                                                              'dropoff',
-                                                              dropoffShipperNameContronller
-                                                                  .text,
-                                                              dropoffShipperPhoneContronller
-                                                                  .text);
+                                                      Map<String, dynamic>?
+                                                          result =
+                                                          await centerController
+                                                              .assignDelivery(
+                                                                  widget.order
+                                                                      .orderId!,
+                                                                  'dropoff',
+                                                                  dropoffShipperName,
+                                                                  dropoffShipperPhone);
                                                       setState(() {
                                                         isLoading = false;
                                                       });
@@ -828,15 +827,15 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         }
                                                         return null;
                                                       },
-                                                      onSaved: (newValue) {
-                                                        deliverShipperNameContronller
-                                                            .text = newValue!;
-                                                      },
+                                                      // onSaved: (newValue) {
+                                                      //   deliverShipperNameContronller
+                                                      //       .text = newValue!;
+                                                      // },
                                                       style: const TextStyle(
                                                         color: textColor,
                                                       ),
-                                                      controller:
-                                                          deliverShipperNameContronller,
+                                                      // controller:
+                                                      //     deliverShipperNameContronller,
                                                       decoration:
                                                           InputDecoration(
                                                         labelText:
@@ -869,8 +868,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                           .withOpacity(.8),
                                                       onChanged: (value) {
                                                         setState(() {
-                                                          deliverShipperNameContronller
-                                                              .text = value;
+                                                          deliverShipperName =
+                                                              value;
                                                         });
                                                       },
                                                     ),
@@ -889,12 +888,12 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         }
                                                         return null;
                                                       },
-                                                      onSaved: (newValue) {
-                                                        deliverShipperPhoneContronller
-                                                            .text = newValue!;
-                                                      },
-                                                      controller:
-                                                          deliverShipperPhoneContronller,
+                                                      // onSaved: (newValue) {
+                                                      //   deliverShipperPhoneContronller
+                                                      //       .text = newValue!;
+                                                      // },
+                                                      // controller:
+                                                      //     deliverShipperPhoneContronller,
                                                       style: const TextStyle(
                                                         color: textColor,
                                                       ),
@@ -928,8 +927,8 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                           TextInputType.number,
                                                       onChanged: (value) {
                                                         setState(() {
-                                                          deliverShipperPhoneContronller
-                                                              .text = value;
+                                                          deliverShipperPhone =
+                                                              value;
                                                         });
                                                       },
                                                     ),
@@ -945,24 +944,18 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                                         _formPhoneNumberKey
                                                             .currentState!
                                                             .validate()) {
-                                                      _formNameKey.currentState!
-                                                          .save();
-                                                      _formPhoneNumberKey
-                                                          .currentState!
-                                                          .save();
                                                       setState(() {
                                                         isLoading = true;
                                                       });
-                                                      Map<String,
-                                                              dynamic>? result =
-                                                          await centerController.assignDelivery(
-                                                              widget.order
-                                                                  .orderId!,
-                                                              'deliver',
-                                                              deliverShipperNameContronller
-                                                                  .text,
-                                                              deliverShipperPhoneContronller
-                                                                  .text);
+                                                      Map<String, dynamic>?
+                                                          result =
+                                                          await centerController
+                                                              .assignDelivery(
+                                                                  widget.order
+                                                                      .orderId!,
+                                                                  'deliver',
+                                                                  deliverShipperName,
+                                                                  deliverShipperPhone);
                                                       setState(() {
                                                         isLoading = false;
                                                       });
@@ -1186,6 +1179,11 @@ class _DeliveryOrderDetailsState extends State<DeliveryOrderDetails> {
                                           });
                                           print(result);
                                           if (result != null) {
+                                            setState(() {
+                                              _processIndex =
+                                                  (_processIndex + 1) %
+                                                      _processes.length;
+                                            });
                                             showDialog(
                                               context: context,
                                               builder: (BuildContext context) {

@@ -29,6 +29,7 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
   double unitPriceOfService = 0;
   String? noteServiceOfCustomer;
   bool isLoadingService = false;
+  bool isHaveService = false;
 
   List<CenterServices> categoryList = [];
   List<ServiceCenter> serviceList = [];
@@ -165,6 +166,7 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
               onChanged: (value) {
                 setState(() {
                   serviceChoosen = value;
+                  isHaveService = true;
                 });
               },
             ),
@@ -323,37 +325,39 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
           ),
         ),
         ElevatedButton(
-          onPressed: () {
-            if (_formMeasurementKey.currentState!.validate() &&
-                _dropDownServiceKey.currentState!.validate()) {
-              setState(() {
-                var orderDetailItem = OrderDetailItem(
-                  serviceId: serviceChoosen!.serviceId!.toInt(),
-                  serviceName: serviceChoosen!.serviceName!,
-                  priceType: serviceChoosen!.priceType!,
-                  price: priceOfService,
-                  unitPrice: unitPriceOfService,
-                  measurement: measurementOfService,
-                  customerNote: noteServiceOfCustomer,
-                  weight:
-                      serviceChoosen!.rate!.toDouble() * measurementOfService,
-                  minPrice: serviceChoosen!.minPrice == null
-                      ? null
-                      : serviceChoosen!.minPrice!.toDouble(),
-                  prices: serviceChoosen!.prices,
-                  unit: serviceChoosen!.unit,
-                  staffNote: null,
-                );
-                provider
-                    .addOrderDetailItemToCart(orderDetailItem); //add to cart
-                measurementOfService = 0;
-                priceOfService = 0;
-                unitPriceOfService = 0;
-                noteServiceOfCustomer = null;
-              });
-              Navigator.of(context).pop();
-            }
-          },
+          onPressed: isHaveService == false
+              ? null
+              : () {
+                  if (_formMeasurementKey.currentState!.validate() &&
+                      _dropDownServiceKey.currentState!.validate()) {
+                    setState(() {
+                      var orderDetailItem = OrderDetailItem(
+                        serviceId: serviceChoosen!.serviceId!.toInt(),
+                        serviceName: serviceChoosen!.serviceName!,
+                        priceType: serviceChoosen!.priceType!,
+                        price: priceOfService,
+                        unitPrice: unitPriceOfService,
+                        measurement: measurementOfService,
+                        customerNote: noteServiceOfCustomer,
+                        weight: serviceChoosen!.rate!.toDouble() *
+                            measurementOfService,
+                        minPrice: serviceChoosen!.minPrice == null
+                            ? null
+                            : serviceChoosen!.minPrice!.toDouble(),
+                        prices: serviceChoosen!.prices,
+                        unit: serviceChoosen!.unit,
+                        staffNote: null,
+                      );
+                      provider.addOrderDetailItemToCart(
+                          orderDetailItem); //add to cart
+                      measurementOfService = 0;
+                      priceOfService = 0;
+                      unitPriceOfService = 0;
+                      noteServiceOfCustomer = null;
+                    });
+                    Navigator.of(context).pop();
+                  }
+                },
           style: ElevatedButton.styleFrom(
               padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: 19, vertical: 10),
@@ -361,8 +365,6 @@ class _AddToCartDialogState extends State<AddToCartDialog> {
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side:
-                    BorderSide(color: kPrimaryColor.withOpacity(.5), width: 1),
               ),
               backgroundColor: kPrimaryColor),
           child: const Text(

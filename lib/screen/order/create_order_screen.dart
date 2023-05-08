@@ -25,6 +25,7 @@ import '../../components/constants/text_constants.dart';
 import '../../resource/model/cart_item.dart';
 import '../../resource/model/cart_item_view.dart';
 import '../../resource/provider/cart_provider.dart';
+import '../../utils/custom_timer_picker_util.dart';
 import '../../utils/price_util.dart';
 import 'components/create_order/add_to_cart_dialog.dart';
 import 'components/create_order/choose_shipping_method.dart';
@@ -63,8 +64,16 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
   int lengthAddCate = 1;
   bool checkReceiveOrder = false;
   bool isLoadingWard = true;
+  bool checkSendOrder = false;
   num measurement = 1;
   int? payment;
+  int? h, m;
+
+  TimeOfDay? minToday;
+  TimeOfDay? maxToday;
+  TimeOfDay? minTomorrow;
+  TimeOfDay? maxTomorrow;
+
   bool isCalculateShipFee = false;
 
   String? DropoffAddress;
@@ -602,102 +611,129 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       itemCount: value.list.length,
                       itemBuilder: (context, index) {
                         final item = value.list[index];
-                        measurementController = TextEditingController(
-                            text: item.measurement.toString());
-                        return ListTile(
-                          title: Text('${index + 1}. ${item.serviceName}'),
-                          subtitle: SizedBox(
-                            width: 100,
+                        int? id = item.serviceId;
+                        bool checkUnit;
+                        double measurement = item.measurement;
+
+                        if (item.unit == 'kg') {
+                          checkUnit = true;
+                        } else {
+                          checkUnit = false;
+                        }
+                        return Dismissible(
+                          key: Key(id.toString()),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffffe6e6),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                             child: Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      //measurement--;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, -1);
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 25,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.shade300,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(Icons.remove,
-                                        color: Colors.white, size: 15),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: SizedBox(
-                                    height: 40,
-                                    width: 50,
-                                    child: TextField(
-                                      controller: measurementController,
-                                      textAlign: TextAlign.center,
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          measurementController.text = value;
-                                        });
-                                      },
-                                      decoration: const InputDecoration(
-                                        enabledBorder: InputBorder.none,
-                                        contentPadding: EdgeInsets.all(0),
-                                      ),
-                                      style: const TextStyle(
-                                        height: 0,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      //measurement++;
-                                      provider.updateOrderDetailItemToCart(
-                                          item, 1);
-                                    });
-                                  },
-                                  child: Container(
-                                    width: 25,
-                                    height: 25,
-                                    decoration: BoxDecoration(
-                                      color: kPrimaryColor.withOpacity(.8),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Icon(Icons.add,
-                                        color: Colors.white, size: 15),
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                Text(
-                                  '${item.unit}', //check uint để hiện kg hay cái
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 7),
-                                Text(
-                                  'x  ${PriceUtils().convertFormatPrice((item.price! / item.measurement).toInt())} đ', //check uint để hiện kg hay cái
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 10),
-                                const Text("="),
-                                const SizedBox(width: 10),
-                                Text(
-                                  '${PriceUtils().convertFormatPrice((item.price!).toInt())} đ',
-                                  style: const TextStyle(
-                                      color: kPrimaryColor,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
+                              children: const [
+                                Spacer(),
+                                Icon(
+                                  Icons.delete_outline_outlined,
+                                  color: Colors.red,
                                 ),
                               ],
                             ),
                           ),
-                          // Text(
-                          //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                          onDismissed: (direction) {
+                            //provider.clear(id!);
+                            value.removeItemFromCart(item);
+                          },
+                          child: ListTile(
+                            title: Text('${index + 1}. ${item.serviceName}'),
+                            subtitle: SizedBox(
+                              width: 100,
+                              child: Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        //measurement--;
+                                        provider.updateOrderDetailItemToCart(
+                                            item, -1);
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.shade300,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(Icons.remove,
+                                          color: Colors.white, size: 15),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6),
+                                    child: basic.SizedBox(
+                                      width: 25,
+                                      child: Text(
+                                        checkUnit
+                                            ? '$measurement'
+                                            : '${measurement.round()}',
+                                        style:
+                                            const TextStyle(color: textColor),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        //measurement++;
+                                        provider.updateOrderDetailItemToCart(
+                                            item, 1);
+                                      });
+                                    },
+                                    child: Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        color: kPrimaryColor.withOpacity(.8),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: const Icon(Icons.add,
+                                          color: Colors.white, size: 15),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 7),
+                                  basic.SizedBox(
+                                    width: 30,
+                                    child: Text(
+                                      '${item.unit}', //check uint để hiện kg hay cái
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 7),
+                                  SizedBox(
+                                    width: 90,
+                                    child: Text(
+                                      'x  ${PriceUtils().convertFormatPrice((item.price! / item.measurement).toInt())} đ', //check uint để hiện kg hay cái
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text("="),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '${PriceUtils().convertFormatPrice((item.price!).toInt())} đ',
+                                    style: const TextStyle(
+                                        color: kPrimaryColor,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Text(
+                            //     '${item.measurement} x ${item.unitPrice} = ${item.price}'),
+                          ),
                         );
                       },
                     ),
@@ -1541,50 +1577,50 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      height: 50,
-                      width: double.infinity,
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.grey.shade400,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 35,
-                                child: Image.asset(
-                                    'assets/images/shipping/vnpay-icon.png'),
-                              ),
-                              const SizedBox(width: 8),
-                              const Text(
-                                'Thanh toán bằng ví Washouse',
-                                style: TextStyle(fontSize: 15),
-                              ),
-                            ],
-                          ),
-                          Radio(
-                            value: 1,
-                            groupValue: payment,
-                            onChanged: (newVal) {
-                              setState(() {
-                                payment = newVal;
-                                print(newVal);
-                                baseController.saveInttoSharedPreference(
-                                    "paymentMethod", 1);
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.only(left: 16, right: 16),
+                    //   height: 50,
+                    //   width: double.infinity,
+                    //   alignment: Alignment.centerLeft,
+                    //   decoration: BoxDecoration(
+                    //     border: Border.all(
+                    //       width: 1,
+                    //       color: Colors.grey.shade400,
+                    //     ),
+                    //     borderRadius: BorderRadius.circular(15),
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //     children: [
+                    //       Row(
+                    //         children: [
+                    //           SizedBox(
+                    //             width: 35,
+                    //             child: Image.asset(
+                    //                 'assets/images/shipping/vnpay-icon.png'),
+                    //           ),
+                    //           const SizedBox(width: 8),
+                    //           const Text(
+                    //             'Thanh toán bằng ví Washouse',
+                    //             style: TextStyle(fontSize: 15),
+                    //           ),
+                    //         ],
+                    //       ),
+                    //       Radio(
+                    //         value: 1,
+                    //         groupValue: payment,
+                    //         onChanged: (newVal) {
+                    //           setState(() {
+                    //             payment = newVal;
+                    //             print(newVal);
+                    //             baseController.saveInttoSharedPreference(
+                    //                 "paymentMethod", 1);
+                    //           });
+                    //         },
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -1594,119 +1630,181 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
               // ),
               // const SizedBox(height: 5),
               const SizedBox(height: 15),
-              const Text(
-                'Thời gian gửi đơn',
-                style: TextStyle(
-                    fontSize: 18,
-                    color: textBoldColor,
-                    fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              basic.Row(
                 children: [
-                  SizedBox(
-                    width: 120,
-                    height: 40,
-                    child: DropdownButtonFormField(
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: textColor, width: 1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        contentPadding: const EdgeInsets.only(
-                            left: 8, right: 8, top: 0, bottom: 0),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: textColor, width: 1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      isDense: true,
-                      isExpanded: true,
-                      items: <String>['Hôm nay', 'Ngày mai'].map((String item) {
-                        return DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item),
-                        );
-                      }).toList(),
-                      icon: const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 25,
-                      ),
-                      iconSize: 30,
-                      hint: const Text('Chọn ngày'),
-                      value: receiveOrderDate,
-                      style: const TextStyle(color: textColor),
-                      onChanged: (String? newValue) async {
+                  const Text(
+                    'Thời gian gửi đơn',
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: textBoldColor,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  const Spacer(),
+                  FlutterSwitch(
+                      value: checkSendOrder,
+                      activeColor: kPrimaryColor,
+                      width: 50,
+                      height: 25,
+                      toggleSize: 20,
+                      onToggle: (val) {
                         setState(() {
-                          receiveOrderDate = newValue!;
+                          checkSendOrder = val;
                         });
-
-                        if (newValue!.compareTo("Hôm nay") == 0) {
-                          chooseDate =
-                              DateFormat('dd-MM-yyyy').format(DateTime.now());
-                        } else if (newValue.compareTo("Ngày mai") == 0) {
-                          chooseDate = DateFormat('dd-MM-yyyy')
-                              .format(DateTime.now().add(Duration(days: 1)));
-                        }
-                        //print(await baseController.getStringtoSharedPreference("preferredDropoffTime_Date"));
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 120,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        TimeOfDay? orderTime = await showTimePicker(
-                            context: context, initialTime: TimeOfDay.now());
-                        if (orderTime != null) {
-                          setState(() {
-                            receiveOrderTime =
-                                '${orderTime.hour}:${orderTime.minute}';
-                          });
-                          String hourSave =
-                              orderTime.hour.toString().padLeft(2, '0');
-                          String minuteSave =
-                              orderTime.minute.toString().padLeft(2, '0');
-                          String secondSave = '00';
-                          sendOrderTimeSave =
-                              '$hourSave:$minuteSave:$secondSave';
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsetsDirectional.symmetric(
-                            horizontal: 19, vertical: 10),
-                        foregroundColor: kPrimaryColor.withOpacity(.7),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: const BorderSide(color: textColor, width: 1),
-                        ),
-                        backgroundColor: kBackgroundColor,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            receiveOrderTime,
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(
-                            Icons.watch_later_outlined,
-                            size: 20,
-                            color: Colors.grey.shade600,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+                      })
                 ],
               ),
+              const SizedBox(height: 10),
+              checkSendOrder
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 120,
+                          height: 40,
+                          child: DropdownButtonFormField(
+                            decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: textColor, width: 1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: const EdgeInsets.only(
+                                  left: 8, right: 8, top: 0, bottom: 0),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: textColor, width: 1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            isDense: true,
+                            isExpanded: true,
+                            items: <String>['Hôm nay', 'Ngày mai']
+                                .map((String item) {
+                              return DropdownMenuItem<String>(
+                                value: item,
+                                child: Text(item),
+                              );
+                            }).toList(),
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              size: 25,
+                            ),
+                            iconSize: 30,
+                            hint: const Text('Chọn ngày'),
+                            value: sendOrderDate,
+                            style: const TextStyle(color: textColor),
+                            onChanged: (String? newValue) async {
+                              setState(() {
+                                sendOrderDate = newValue!;
+                              });
+                              if (newValue!.compareTo("Hôm nay") == 0) {
+                                chooseDate = DateFormat('dd-MM-yyyy')
+                                    .format(DateTime.now());
+                              } else if (newValue.compareTo("Ngày mai") == 0) {
+                                chooseDate = DateFormat('dd-MM-yyyy').format(
+                                    DateTime.now().add(Duration(days: 1)));
+                              }
+                              baseController.saveStringtoSharedPreference(
+                                  "preferredDropoffTime_Date", chooseDate!);
+                              print(await baseController
+                                  .getStringtoSharedPreference(
+                                      "preferredDropoffTime_Date"));
+                            },
+                          ),
+                        ),
+                        sendOrderDate != null
+                            ? Center(
+                                child: Column(
+                                  children: [
+                                    sendOrderDate!.compareTo("Hôm nay") == 0
+                                        ?
+
+                                        /// wrap with sizedBOx
+                                        SizedBox(
+                                            height: 200,
+                                            child: CustomTimerPicker(
+                                              intiTimeOfDay: TimeOfDay.now(),
+                                              maxTimeOfDay: maxToday,
+                                              onChanged: (selectedHour,
+                                                  selectedMinute) async {
+                                                setState(() {
+                                                  h = selectedHour;
+                                                  m = selectedMinute;
+                                                });
+                                                debugPrint(
+                                                    "H: $selectedHour minute: $selectedMinute");
+                                                String hourSave = h
+                                                    .toString()
+                                                    .padLeft(2, '0');
+                                                String minuteSave = m
+                                                    .toString()
+                                                    .padLeft(2, '0');
+                                                String secondSave = '00';
+                                                sendOrderTimeSave =
+                                                    '$hourSave:$minuteSave:$secondSave';
+                                                baseController
+                                                    .saveStringtoSharedPreference(
+                                                        "preferredDropoffTime_Time",
+                                                        sendOrderTimeSave);
+                                                print(await baseController
+                                                    .getStringtoSharedPreference(
+                                                        "preferredDropoffTime_Time"));
+                                              },
+                                            ),
+                                          )
+                                        : SizedBox(
+                                            height: 200,
+                                            child: CustomTimerPicker(
+                                              intiTimeOfDay:
+                                                  minTomorrow, // Giờ bắt đầu ngày mai
+                                              maxTimeOfDay:
+                                                  TimeOfDay.now().replacing(
+                                                hour: TimeOfDay.now().hour +
+                                                            24 >=
+                                                        24
+                                                    ? TimeOfDay.now().hour +
+                                                        24 -
+                                                        24
+                                                    : TimeOfDay.now().hour + 24,
+                                                minute: TimeOfDay.now().minute,
+                                              ), // Giờ này 24 tiếng sau.
+                                              onChanged: (selectedHour,
+                                                  selectedMinute) async {
+                                                setState(() {
+                                                  h = selectedHour;
+                                                  m = selectedMinute;
+                                                });
+                                                debugPrint(
+                                                    "H: $selectedHour minute: $selectedMinute");
+
+                                                String hourSave = h
+                                                    .toString()
+                                                    .padLeft(2, '0');
+                                                String minuteSave = m
+                                                    .toString()
+                                                    .padLeft(2, '0');
+                                                String secondSave = '00';
+                                                sendOrderTimeSave =
+                                                    '$hourSave:$minuteSave:$secondSave';
+                                                baseController
+                                                    .saveStringtoSharedPreference(
+                                                        "preferredDropoffTime_Time",
+                                                        sendOrderTimeSave);
+                                                print(await baseController
+                                                    .getStringtoSharedPreference(
+                                                        "preferredDropoffTime_Time"));
+                                              },
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                              )
+                            : SizedBox(
+                                height: 0,
+                              ),
+                      ],
+                    )
+                  : Container(),
             ],
           ),
         ),
@@ -1887,6 +1985,9 @@ class _CreateOrderScreenState extends State<CreateOrderScreen> {
                                         deliveryType: true));
                                   }
                                   String? preferredDropoffTime;
+                                  print('chooseDate: $chooseDate');
+                                  print(
+                                      'sendOrderTimeSave: $sendOrderTimeSave');
                                   if (chooseDate != null &&
                                       sendOrderTimeSave != null &&
                                       chooseDate != "" &&
