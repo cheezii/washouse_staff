@@ -15,6 +15,7 @@ import 'package:washouse_staff/utils/order_util.dart';
 import '../../components/constants/color_constants.dart';
 import '../../resource/controller/tracking_controller.dart';
 import '../../utils/price_util.dart';
+import 'bill/bill_detail_screen.dart';
 import 'components/details_widget/service_details.dart';
 import 'tracking_order_screen.dart';
 
@@ -144,7 +145,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       print(order_infomation.toJson());
       bool HasPermission = true;
       if (order_infomation.id == null) HasPermission = false;
-
+      Color billBoxColor = Theme.of(context).scaffoldBackgroundColor;
       if (!HasPermission) {
         return Scaffold(
           body: Visibility(
@@ -225,12 +226,32 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             icon: const Icon(
               Icons.arrow_back_ios_new_rounded,
               color: textColor,
-              size: 24,
+              size: 22,
             ),
           ),
           centerTitle: true,
-          title: Text('Chi tiết đơn hàng',
-              style: TextStyle(color: textColor, fontSize: 27)),
+          title: const Text('Chi tiết đơn hàng',
+              style: TextStyle(color: textColor, fontSize: 24)),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        child: const BillDetailScreen(),
+                        type: PageTransitionType.fade));
+              },
+              child: basic.Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Container(
+                  color: billBoxColor,
+                  width: 22,
+                  height: 22,
+                  child: Image.asset('assets/images/bill.png'),
+                ),
+              ),
+            )
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
